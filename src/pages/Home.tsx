@@ -28,8 +28,8 @@ export function Home() {
                 {ch}
               </span>
             ))}
-          </span>{' '}
-          work,
+          </span>
+          ,
           <i>by company</i>
         </h1>
         <div className="lede rise" style={{ animationDelay: '120ms' }}>
