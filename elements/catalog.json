@@ -1,0 +1,11 @@
+[
+  { "name": "piece-kit", "category": "runtime", "file": "elements/piece-kit.js", "use": "Every piece. Stage scaling, playback, Web Audio scheduling, site messaging, export API. Copy in with npm run sync-kit." },
+  { "name": "dots-to-wordmark", "category": "logo", "file": "companies/ebay/pieces/logo-sting.html", "use": "A multi-colour wordmark that can be split into one shape per letter: shapes drop, bounce, then pop into letters." },
+  { "name": "ring-to-G", "category": "logo", "file": "companies/google/pieces/logo-sting.html", "use": "A logo built from arcs: dots spin into a ring, and dash-length arcs lock into the mark (round-cap compensation included)." },
+  { "name": "count-up hero number", "category": "hero text", "file": "companies/ebay/pieces/promo-15s.html", "use": "A big stat that counts up in 0.5s with an underline wipe and a label; approximate values stay approximate (5T+)." },
+  { "name": "stamp + shake", "category": "motion", "file": "companies/ebay/pieces/promo-15s.html", "use": "A badge or stamp slams in with outBack plus a decaying shake on what it lands on. Approval, verified, sold." },
+  { "name": "whip-pan shelf", "category": "motion", "file": "companies/ebay/pieces/promo-15s.html", "use": "A row of cards whips in with motion blur, then keeps drifting. Catalogues, product ranges." },
+  { "name": "search pull-back", "category": "layout", "file": "companies/google/pieces/promo-15s.html", "use": "One search bar types, then the camera pulls back to a sea of queries that collapse to a point. Scale or crowd moments." },
+  { "name": "pendulum tag", "category": "loop", "file": "companies/ebay/pieces/social-loop.html", "use": "A swinging tag with a rotateY flip that resets its content on the back face, so the loop is seamless." },
+  { "name": "radial shape morph", "category": "loop", "file": "companies/google/pieces/social-loop.html", "use": "Morph any star-shaped forms (circle, rounded square, pill, triangle) point-for-point by sampling radius per angle." }
+]

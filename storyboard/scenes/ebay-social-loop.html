@@ -1,0 +1,63 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@500;600;700;800;900&display=block" rel="stylesheet">
+<link rel="stylesheet" href="_stage.css">
+<style>
+:root{--red:#E53238;--blue:#0064D2;--yellow:#F5AF02;--green:#86B817;--ink:#111820;--mute:#6b7280}
+body{background:var(--yellow);font-family:Figtree,sans-serif;color:var(--ink)}
+.tag{position:absolute;left:190px;top:200px;width:700px;height:720px;background:#fff;border-radius:40px;padding:48px;box-shadow:0 30px 0 rgba(17,24,32,.12)}
+.hole{position:absolute;left:50%;top:-30px;width:60px;height:60px;margin-left:-30px;border-radius:50%;background:var(--yellow);border:10px solid #fff}
+.string{position:absolute;left:538px;top:0;width:4px;height:200px;background:var(--ink)}
+.item{height:300px;border-radius:24px;background:#fff4d6;color:var(--yellow);display:flex;align-items:center;justify-content:center}
+.name{font-weight:800;font-size:44px;letter-spacing:-.02em;margin-top:30px}
+.row{display:flex;justify-content:space-between;align-items:flex-end;margin-top:18px}
+.bidlbl{font-weight:600;font-size:28px;color:var(--mute)}
+.bid{font-weight:900;font-size:110px;letter-spacing:-.05em;line-height:.9}
+.timer{font-weight:800;font-size:36px;color:var(--red);font-variant-numeric:tabular-nums}
+.bubble{position:absolute;font-weight:800;font-size:30px;color:#fff;padding:14px 24px;border-radius:999px}
+.logo{position:absolute;right:60px;bottom:40px;font-weight:800;font-size:64px;letter-spacing:-.07em}
+.logo span:nth-child(1){color:var(--red)}.logo span:nth-child(2){color:var(--blue)}.logo span:nth-child(3){color:#fff}.logo span:nth-child(4){color:var(--green)}
+</style></head><body>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <g id="camera"><rect x="30" y="70" width="240" height="150" rx="22" fill="currentColor"/><rect x="70" y="50" width="70" height="30" rx="8" fill="currentColor"/><circle cx="150" cy="145" r="56" fill="#111820"/><circle cx="150" cy="145" r="32" fill="#2b3440"/><circle cx="235" cy="100" r="10" fill="#fff"/></g>
+</defs></svg>
+<div class="stage sq">
+
+<section class="shot" data-shot="1">
+  <div class="string"></div>
+  <div class="tag"><div class="hole"></div>
+    <div class="item"><svg viewBox="0 0 300 250" style="width:380px"><use href="#camera"/></svg></div>
+    <div class="name">Vintage instant camera</div>
+    <div class="row"><div><div class="bidlbl">Current bid</div><div class="bid">$42</div></div><div class="timer">0:03 left</div></div>
+  </div>
+  <div class="logo"><span>e</span><span>b</span><span>a</span><span>y</span></div>
+</section>
+
+<section class="shot" data-shot="2">
+  <div class="string" style="transform:rotate(4deg);transform-origin:top"></div>
+  <div class="tag" style="transform:rotate(4deg);transform-origin:350px -200px"><div class="hole"></div>
+    <div class="item"><svg viewBox="0 0 300 250" style="width:380px"><use href="#camera"/></svg></div>
+    <div class="name">Vintage instant camera</div>
+    <div class="row"><div><div class="bidlbl">Current bid</div><div class="bid">$87</div></div><div class="timer">0:01 left</div></div>
+  </div>
+  <div class="bubble" style="left:60px;top:300px;background:var(--red)">+ bid</div>
+  <div class="bubble" style="left:830px;top:240px;background:var(--blue)">+ bid</div>
+  <div class="bubble" style="left:820px;top:560px;background:var(--green)">+ bid</div>
+  <div class="bubble" style="left:40px;top:640px;background:var(--ink)">+ bid</div>
+  <div class="logo"><span>e</span><span>b</span><span>a</span><span>y</span></div>
+</section>
+
+<section class="shot" data-shot="3">
+  <div class="string"></div>
+  <div class="tag"><div class="hole"></div>
+    <div class="item"><svg viewBox="0 0 300 250" style="width:380px"><use href="#camera"/></svg></div>
+    <div class="name">Vintage instant camera</div>
+    <div class="row"><div><div class="bidlbl">Winning bid</div><div class="bid">$87</div></div><div class="timer" style="color:var(--mute)">Ended</div></div>
+  </div>
+  <div style="position:absolute;left:250px;top:330px;transform:rotate(-14deg);border:16px solid var(--red);color:var(--red);font-weight:900;font-size:190px;letter-spacing:-.04em;padding:0 40px;border-radius:24px;background:rgba(255,255,255,.85)">SOLD</div>
+  <div class="logo"><span>e</span><span>b</span><span>a</span><span>y</span></div>
+</section>
+
+</div>
+<script src="_stage.js"></script>
+</body></html>

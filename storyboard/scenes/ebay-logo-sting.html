@@ -1,0 +1,55 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@500;700;800&display=block" rel="stylesheet">
+<link rel="stylesheet" href="_stage.css">
+<style>
+:root{--red:#E53238;--blue:#0064D2;--yellow:#F5AF02;--green:#86B817;--ink:#111820}
+body{background:#fff;font-family:Figtree,sans-serif;color:var(--ink)}
+.dot{position:absolute;width:120px;height:120px;border-radius:50%}
+.r{background:var(--red)}.b{background:var(--blue)}.y{background:var(--yellow)}.g{background:var(--green)}
+.trail{position:absolute;width:120px;border-radius:60px;opacity:.18}
+.word{position:absolute;left:50%;top:50%;transform:translate(-50%,-58%);font-weight:800;font-size:340px;letter-spacing:-26px;line-height:1;white-space:nowrap}
+.word span:nth-child(1){color:var(--red)}.word span:nth-child(2){color:var(--blue)}.word span:nth-child(3){color:var(--yellow)}.word span:nth-child(4){color:var(--green)}
+.tag{position:absolute;left:0;right:0;top:790px;text-align:center;font-weight:500;font-size:48px;letter-spacing:-.5px}
+.shadow{position:absolute;height:14px;border-radius:50%;background:rgba(17,24,32,.08)}
+</style></head><body>
+<div class="stage w169">
+
+<section class="shot" data-shot="1">
+  <!-- dots falling, staggered -->
+  <div class="trail r" style="left:630px;top:340px;height:260px"></div>
+  <div class="dot r" style="left:630px;top:480px"></div>
+  <div class="shadow" style="left:640px;top:640px;width:100px"></div>
+  <div class="trail b" style="left:810px;top:120px;height:300px"></div>
+  <div class="dot b" style="left:810px;top:300px"></div>
+  <div class="trail y" style="left:990px;top:-60px;height:200px"></div>
+  <div class="dot y" style="left:990px;top:40px"></div>
+</section>
+
+<section class="shot" data-shot="2">
+  <div class="dot r" style="left:630px;top:500px;height:100px;width:140px;border-radius:50%/50%"></div>
+  <div class="dot b" style="left:810px;top:380px"></div>
+  <div class="dot y" style="left:990px;top:470px"></div>
+  <div class="dot g" style="left:1170px;top:360px"></div>
+  <div class="shadow" style="left:630px;top:612px;width:140px"></div>
+  <div class="shadow" style="left:830px;top:640px;width:80px;opacity:.6"></div>
+  <div class="shadow" style="left:1005px;top:640px;width:90px"></div>
+  <div class="shadow" style="left:1190px;top:640px;width:80px;opacity:.6"></div>
+</section>
+
+<section class="shot" data-shot="3">
+  <div class="word" style="clip-path:inset(42% 0 0 0)"><span>e</span><span>b</span><span>a</span><span>y</span></div>
+  <div class="dot r" style="left:640px;top:380px;width:90px;height:90px;opacity:.9"></div>
+  <div class="dot b" style="left:860px;top:300px;width:70px;height:70px;opacity:.9"></div>
+  <div class="dot y" style="left:1060px;top:390px;width:80px;height:80px;opacity:.9"></div>
+  <div class="dot g" style="left:1250px;top:410px;width:70px;height:70px;opacity:.9"></div>
+</section>
+
+<section class="shot" data-shot="4">
+  <div class="word"><span>e</span><span>b</span><span>a</span><span>y</span></div>
+  <div class="tag">Things people love.</div>
+</section>
+
+</div>
+<script src="_stage.js"></script>
+</body></html>

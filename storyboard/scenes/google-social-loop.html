@@ -1,0 +1,41 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500&display=block" rel="stylesheet">
+<link rel="stylesheet" href="_stage.css">
+<style>
+:root{--blue:#4285F4;--red:#EA4335;--yellow:#FBBC05;--green:#34A853;--ink:#202124}
+body{background:#fff;font-family:Outfit,sans-serif}
+.s{position:absolute;width:300px;height:300px}
+.circle{border-radius:50%}.sq{border-radius:72px}.pill{border-radius:150px;height:300px;width:300px}
+.mark{position:absolute;left:0;right:0;bottom:60px;text-align:center;font-weight:500;font-size:56px;letter-spacing:-.03em}
+.mark span:nth-child(1),.mark span:nth-child(4){color:var(--blue)}.mark span:nth-child(2),.mark span:nth-child(6){color:var(--red)}.mark span:nth-child(3){color:var(--yellow)}.mark span:nth-child(5){color:var(--green)}
+</style></head><body>
+<div class="stage sq">
+
+<section class="shot" data-shot="1">
+  <div class="s circle" style="left:200px;top:160px;background:var(--blue)"></div>
+  <div class="s sq" style="left:580px;top:160px;background:var(--red)"></div>
+  <svg class="s" viewBox="0 0 300 300" style="left:200px;top:540px"><path d="M150 20 L285 270 L15 270 Z" fill="#FBBC05" stroke="#FBBC05" stroke-width="30" stroke-linejoin="round"/></svg>
+  <div class="s" style="left:580px;top:600px;height:180px;border-radius:90px;background:var(--green)"></div>
+  <div class="mark"><span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span></div>
+</section>
+
+<section class="shot" data-shot="2">
+  <div class="s" style="left:390px;top:130px;border-radius:40%;background:var(--blue);transform:rotate(20deg)"></div>
+  <div class="s" style="left:640px;top:360px;border-radius:30%;background:var(--red);transform:rotate(-12deg)"></div>
+  <svg class="s" viewBox="0 0 300 300" style="left:140px;top:380px;transform:rotate(30deg)"><path d="M150 20 L285 270 L15 270 Z" fill="#FBBC05" stroke="#FBBC05" stroke-width="30" stroke-linejoin="round"/></svg>
+  <div class="s" style="left:390px;top:650px;height:200px;border-radius:100px;background:var(--green);transform:rotate(-24deg)"></div>
+  <div class="mark"><span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span></div>
+</section>
+
+<section class="shot" data-shot="3">
+  <div class="s circle" style="left:330px;top:250px;width:200px;height:200px;background:var(--blue)"></div>
+  <div class="s circle" style="left:550px;top:250px;width:200px;height:200px;background:var(--red)"></div>
+  <div class="s circle" style="left:330px;top:470px;width:200px;height:200px;background:var(--yellow)"></div>
+  <div class="s circle" style="left:550px;top:470px;width:200px;height:200px;background:var(--green)"></div>
+  <div class="mark"><span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span></div>
+</section>
+
+</div>
+<script src="_stage.js"></script>
+</body></html>

@@ -1,0 +1,49 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=block" rel="stylesheet">
+<link rel="stylesheet" href="_stage.css">
+<style>
+:root{--blue:#4285F4;--red:#EA4335;--yellow:#FBBC05;--green:#34A853;--ink:#202124}
+body{background:#fff;font-family:Outfit,sans-serif;color:var(--ink)}
+.dot{position:absolute;width:90px;height:90px;border-radius:50%}
+.word{font-weight:500;font-size:230px;letter-spacing:-.03em;line-height:1}
+.word span:nth-child(1),.word span:nth-child(4){color:var(--blue)}.word span:nth-child(2),.word span:nth-child(6){color:var(--red)}.word span:nth-child(3){color:var(--yellow)}.word span:nth-child(5){color:var(--green)}
+</style></head><body>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <g id="G" fill="none" stroke-width="44">
+    <circle cx="150" cy="150" r="100" stroke="#4285F4" stroke-dasharray="78.5 999" transform="rotate(0 150 150)"/>
+    <circle cx="150" cy="150" r="100" stroke="#34A853" stroke-dasharray="183 999" transform="rotate(45 150 150)"/>
+    <circle cx="150" cy="150" r="100" stroke="#FBBC05" stroke-dasharray="113 999" transform="rotate(150 150 150)"/>
+    <circle cx="150" cy="150" r="100" stroke="#EA4335" stroke-dasharray="183 999" transform="rotate(215 150 150)"/>
+    <rect x="150" y="128" width="122" height="44" fill="#4285F4" stroke="none"/>
+  </g>
+</defs></svg>
+<div class="stage w169">
+
+<section class="shot" data-shot="1">
+  <div class="dot" style="left:735px;top:470px;background:var(--blue)"></div>
+  <div class="dot" style="left:855px;top:420px;background:var(--red)"></div>
+  <div class="dot" style="left:975px;top:500px;background:var(--yellow)"></div>
+  <div class="dot" style="left:1095px;top:450px;background:var(--green)"></div>
+</section>
+
+<section class="shot" data-shot="2">
+  <svg viewBox="0 0 300 300" style="position:absolute;left:810px;top:390px;width:300px" fill="none" stroke-width="44" stroke-linecap="round">
+    <circle cx="150" cy="150" r="100" stroke="#4285F4" stroke-dasharray="40 999" transform="rotate(10 150 150)" opacity=".9"/>
+    <circle cx="150" cy="150" r="100" stroke="#EA4335" stroke-dasharray="60 999" transform="rotate(100 150 150)"/>
+    <circle cx="150" cy="150" r="100" stroke="#FBBC05" stroke-dasharray="50 999" transform="rotate(190 150 150)"/>
+    <circle cx="150" cy="150" r="100" stroke="#34A853" stroke-dasharray="70 999" transform="rotate(280 150 150)"/>
+  </svg>
+</section>
+
+<section class="shot" data-shot="3">
+  <svg viewBox="0 0 300 300" style="position:absolute;left:760px;top:340px;width:400px"><use href="#G"/></svg>
+</section>
+
+<section class="shot" data-shot="4">
+  <div style="position:absolute;left:0;right:0;top:400px;display:flex;justify-content:center"><div class="word"><span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span></div></div>
+</section>
+
+</div>
+<script src="_stage.js"></script>
+</body></html>

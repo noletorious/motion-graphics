@@ -1,0 +1,52 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=block" rel="stylesheet">
+<link rel="stylesheet" href="_site.css">
+<style>
+h1{font-size:236px;line-height:.86;letter-spacing:-.035em;margin-top:130px}
+h1 i{color:var(--mute)}
+.lede{display:flex;justify-content:space-between;align-items:flex-end;margin-top:72px}
+.lede p{max-width:440px;color:var(--mute);font-size:19px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:28px;margin-top:110px}
+.tile{position:relative}
+.frame{position:relative;aspect-ratio:16/9;overflow:hidden;background:#151517}
+.meta{display:flex;justify-content:space-between;align-items:baseline;margin-top:22px}
+.meta .name{font-size:64px;line-height:1;letter-spacing:-.02em}
+.meta .idx{margin-right:22px}
+.chip{position:absolute;left:20px;top:20px;background:rgba(10,10,11,.82);color:var(--fg);padding:8px 12px;display:flex;gap:10px;align-items:center}
+.chip b{width:8px;height:8px;border-radius:50%;background:#ff4d3d;display:inline-block}
+.progress{position:absolute;left:0;bottom:0;height:3px;background:var(--fg)}
+.dim{opacity:.38}
+.cursor{position:absolute;width:30px}
+</style></head><body>
+<div class="wrap">
+  <div class="top"><div class="brandmark">Motion Index</div><div class="navr mono"><span>Work</span><span class="muted">About</span><span class="muted">Contact</span></div></div>
+
+  <h1 class="serif">Motion work,<br><i>by company.</i></h1>
+  <div class="lede"><p>Logo stings, promos and loops for brands, built entirely in code. Every piece plays live here and exports to 1080p.</p><div class="mono muted">02 companies — 06 pieces</div></div>
+
+  <!-- shot 1: rest -->
+  <div class="shot" data-shot="1">
+    <div class="grid">
+      <div class="tile"><div class="frame"><img src="../shots/ebay-promo-15s-1.png"></div>
+        <div class="meta"><div><span class="mono muted idx">01</span><span class="serif name">eBay</span></div><div class="mono muted">3 pieces · sting · promo · loop</div></div></div>
+      <div class="tile"><div class="frame"><img src="../shots/google-promo-15s-2.png"></div>
+        <div class="meta"><div><span class="mono muted idx">02</span><span class="serif name">Google</span></div><div class="mono muted">3 pieces · sting · promo · loop</div></div></div>
+    </div>
+  </div>
+
+  <!-- shot 2: hover on eBay -->
+  <div class="shot" data-shot="2">
+    <div class="grid">
+      <div class="tile"><div class="frame"><img src="../shots/ebay-promo-15s-2.png"><div class="chip mono"><b></b>15s promo · 0:02 / 0:15</div><div class="progress" style="width:14%"></div>
+        <svg class="cursor" style="left:560px;top:300px" viewBox="0 0 24 24"><path d="M3 2 L3 20 L8 15 L11 22 L14 21 L11 14 L18 14 Z" fill="#fff" stroke="#000" stroke-width="1.2"/></svg></div>
+        <div class="meta"><div><span class="mono muted idx">01</span><span class="serif name">eBay</span></div><div class="mono">View company →</div></div></div>
+      <div class="tile dim"><div class="frame"><img src="../shots/google-promo-15s-2.png"></div>
+        <div class="meta"><div><span class="mono muted idx">02</span><span class="serif name">Google</span></div><div class="mono muted">3 pieces · sting · promo · loop</div></div></div>
+    </div>
+  </div>
+
+  <footer class="mono muted"><span>Spec work. Not affiliated with the companies shown.</span><span>© 2026</span></footer>
+</div>
+<script src="_stage.js"></script>
+</body></html>

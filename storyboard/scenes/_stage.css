@@ -1,0 +1,7 @@
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{overflow:hidden}
+.stage{position:relative;overflow:hidden}
+.stage.w169{width:1920px;height:1080px}
+.stage.sq{width:1080px;height:1080px}
+.shot{position:absolute;inset:0}
+.shot[hidden]{display:none}

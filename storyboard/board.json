@@ -1,0 +1,255 @@
+{
+  "version": 1,
+  "intro": "Every still is real HTML in its final look, with the motion left out. Times are each shot's start. Comment by shot number and time, e.g. \"eBay promo, shot 04, 5.5s: badge too small\". Nothing gets built until you've commented.",
+  "sections": [
+    {
+      "title": "The site",
+      "scenes": [
+        {
+          "id": "site-home",
+          "title": "Home",
+          "meta": "1920 wide · scrolls",
+          "page": true,
+          "note": "Quiet frame: near-black, off-white, Instrument Serif headline, mono labels. The only colour on the page comes from the company tiles.",
+          "size": [
+            1920,
+            1080
+          ],
+          "shots": [
+            {
+              "t": "load",
+              "d": "The headline sets in line by line, 80ms apart. Tiles fade up from 12px below. Each tile shows a poster still; no iframes load yet."
+            },
+            {
+              "t": "hover",
+              "d": "On hover the eBay tile's poster crossfades to its featured piece, playing muted and looping, with a mono timecode chip top-left. The other tile dims to 40%. The iframe mounts on first hover and stays mounted after that."
+            }
+          ]
+        },
+        {
+          "id": "site-company",
+          "title": "Company page — eBay",
+          "meta": "1920 wide · scrolls",
+          "page": true,
+          "note": "Transition from home: the clicked tile's poster grows into the hero reel (View Transitions, shared element, 0.5s), and the name rises in under it.",
+          "size": [
+            1920,
+            1080
+          ],
+          "shots": [
+            {
+              "t": "top",
+              "d": "Name in huge serif, description, then key facts in a mono row, each with its value. Below that the hero reel autoplays at full width, muted, with a sound toggle."
+            },
+            {
+              "t": "scrolled",
+              "d": "Every piece in pieces/, each labelled by type, length and aspect. Clicking a piece plays it with sound. Square pieces sit in a narrower column. Footer: spec work, not affiliated."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "eBay",
+      "scenes": [
+        {
+          "id": "ebay-logo-sting",
+          "title": "Logo sting",
+          "meta": "4.0s · 16:9 · white",
+          "note": "Idea: four dots drop in like bids landing, then become the letters.",
+          "size": [
+            1920,
+            1080
+          ],
+          "shots": [
+            {
+              "t": "0.00s",
+              "d": "White frame. Red, blue and yellow dots drop in from above, staggered 120ms apart, leaving soft motion trails. A pitched pluck sounds as each one lands."
+            },
+            {
+              "t": "0.80s",
+              "d": "The green dot joins. All four squash on landing and bounce once, out of phase, like a crowd of bids."
+            },
+            {
+              "t": "1.60s",
+              "d": "Each dot stretches upward and the letters e b a y rise out of it, revealed bottom to top. The dots shrink away as the letters fill."
+            },
+            {
+              "t": "2.60s",
+              "d": "Wordmark settles with a small overshoot. \"Things people love.\" fades up beneath it. One soft low thump, then hold to 4.0s."
+            }
+          ]
+        },
+        {
+          "id": "ebay-promo-15s",
+          "title": "15s promo",
+          "meta": "15.0s · 16:9 · prompt 05 structure",
+          "note": "Structure: hook → product → numbers → features → how it works → numbers → CTA. Music: an upbeat 120 bpm pluck bed with cuts on the beat (every 2 bars ≈ 2s).",
+          "size": [
+            1920,
+            1080
+          ],
+          "shots": [
+            {
+              "t": "0.0s",
+              "d": "Hard cut in. \"Things / people / love.\" slams in one word per beat. \"love.\" lands in red. The small wordmark sits top-left for the whole piece."
+            },
+            {
+              "t": "1.5s",
+              "d": "Whip pan right onto an endless shelf of listings, with motion blur on the edge cards. Prices tick up on the bid items. The line reads \"Bid on it. Or buy it now.\""
+            },
+            {
+              "t": "3.5s",
+              "d": "Cut to white. \"134M\" counts up in blue over 0.5s, then holds. \"active buyers\" and an underline wipe in."
+            },
+            {
+              "t": "5.5s",
+              "d": "The sneaker card slides in. A green check badge stamps on with a short shake and a click. \"Authenticity Guarantee\" sets in beside it."
+            },
+            {
+              "t": "7.5s",
+              "d": "A blue field wipes across. The shield draws on and the $ pops. \"Money Back Guarantee\" and its one-line promise appear."
+            },
+            {
+              "t": "9.5s",
+              "d": "The three steps cascade in left to right, 0.3s apart: the photo snaps with a flash, the listing text shimmers as it drafts, and a \"You sold an item!\" notification drops in."
+            },
+            {
+              "t": "11.5s",
+              "d": "\"$75B\" counts up. The yellow bar sweeps under it. \"in goods sold on eBay in 2024\"."
+            },
+            {
+              "t": "13.0s",
+              "d": "End card. The wordmark scales down from oversized, then the tagline and CTA pill appear. Hold 1.5s. The music resolves on the final beat."
+            }
+          ]
+        },
+        {
+          "id": "ebay-social-loop",
+          "title": "Social loop",
+          "meta": "6.0s · 1:1 · seamless",
+          "note": "A three-second auction, forever. Last frame matches the first.",
+          "size": [
+            1080,
+            1080
+          ],
+          "shots": [
+            {
+              "t": "0.0s",
+              "d": "A price tag swings gently on its string over eBay yellow. The bid sits at $42 and the timer reads 0:03."
+            },
+            {
+              "t": "2.0s",
+              "d": "Bids flood in as \"+ bid\" bubbles from all sides in the brand colours. The price ticks up fast and the tag sways harder."
+            },
+            {
+              "t": "4.0s",
+              "d": "The timer hits zero. A red SOLD stamp slams in with a thud. The tag spins 360° on its string, the stamp falls away, and the price resets to $42, matching frame 1."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Google",
+      "scenes": [
+        {
+          "id": "google-logo-sting",
+          "title": "Logo sting",
+          "meta": "4.0s · 16:9 · white",
+          "note": "Idea: Google's four dots, \"thinking\", resolve into the G and then the wordmark.",
+          "size": [
+            1920,
+            1080
+          ],
+          "shots": [
+            {
+              "t": "0.00s",
+              "d": "Four dots (blue, red, yellow, green) bob in a wave, like something is listening. A soft rising tone plays."
+            },
+            {
+              "t": "1.00s",
+              "d": "The dots whip into a ring and spin, stretching into arcs as they speed up."
+            },
+            {
+              "t": "1.80s",
+              "d": "The arcs lock into the four-colour G and the crossbar slides in. A clean chime plays."
+            },
+            {
+              "t": "2.60s",
+              "d": "The G morphs into the capital of the wordmark, and o-o-g-l-e type on to the right, 60ms apart. Hold to 4.0s."
+            }
+          ]
+        },
+        {
+          "id": "google-promo-15s",
+          "title": "15s promo",
+          "meta": "15.0s · 16:9 · prompt 05 structure",
+          "note": "Structure: hook → scale → number → three features → number → CTA. Music: light piano and soft synth, warmer than eBay.",
+          "size": [
+            1920,
+            1080
+          ],
+          "shots": [
+            {
+              "t": "0.0s",
+              "d": "A search bar alone on white. \"why is the sky\" types in with key clicks, and the cursor blinks."
+            },
+            {
+              "t": "1.5s",
+              "d": "The camera pulls back fast. The bar shrinks into a sea of other people's searches in many languages, all drifting slowly."
+            },
+            {
+              "t": "3.5s",
+              "d": "All the pills collapse to a point. \"5T+\" counts up in blue, \"searches a year\" sets in, and four colour dashes draw under it."
+            },
+            {
+              "t": "5.5s",
+              "d": "A long question appears in a soft bubble. The AI Mode answer streams in line by line with a ✦, then the source chips pop in."
+            },
+            {
+              "t": "7.5s",
+              "d": "A phone slides in on a plant. Lens corners snap to the leaf and the result card rises: \"Monstera deliciosa\"."
+            },
+            {
+              "t": "9.5s",
+              "d": "Hard cut to a map. The blue route draws from start to pin in 1.2s and the pin drops with a bounce. \"Get there.\""
+            },
+            {
+              "t": "11.5s",
+              "d": "\"6\" lands big. Six shapes pop in a 3×2 grid, 70ms apart: \"products, each used by more than 2 billion people\"."
+            },
+            {
+              "t": "13.0s",
+              "d": "End card. The wordmark appears, then the search bar types \"Start at google.com\". Hold 1.5s."
+            }
+          ]
+        },
+        {
+          "id": "google-social-loop",
+          "title": "Social loop",
+          "meta": "6.0s · 1:1 · seamless",
+          "note": "Four soft shapes play musical chairs. Last frame matches the first.",
+          "size": [
+            1080,
+            1080
+          ],
+          "shots": [
+            {
+              "t": "0.0s",
+              "d": "Four shapes in a 2×2 grid: a blue circle, a red rounded square, a yellow triangle and a green pill. Each breathes very slightly."
+            },
+            {
+              "t": "2.0s",
+              "d": "The shapes orbit one step clockwise, morphing toward each other's form as they pass, with a soft whoosh."
+            },
+            {
+              "t": "4.0s",
+              "d": "They pull into a tight cluster of four circles, the shapes rounding off as they meet, then spring back out to the 2×2 grid. The loop restarts."
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

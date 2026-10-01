@@ -1,0 +1,542 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="piece:type" content="promo-15s">
+<meta name="piece:title" content="Everyone is asking">
+<meta name="piece:duration" content="15">
+<meta name="piece:aspect" content="16:9">
+<meta name="piece:loop" content="false">
+<meta name="piece:poster" content="2.6">
+<title>Google — 15s promo</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=block" rel="stylesheet">
+<style>
+:root{--blue:#4285F4;--red:#EA4335;--yellow:#FBBC05;--green:#34A853;--ink:#202124;--grey:#5F6368;--line:#dadce0;--soft:#f1f3f4}
+#stage{background:#fff;font-family:Outfit,sans-serif;color:var(--ink)}
+.scene{position:absolute;inset:0;visibility:hidden}
+.a{position:absolute;will-change:transform}
+.pill{border-radius:999px;background:#fff;box-shadow:0 2px 6px rgba(32,33,36,.12),0 10px 40px rgba(32,33,36,.10);display:flex;align-items:center;white-space:nowrap}
+.mag{flex:none}
+.caret{display:inline-block;width:3px;background:var(--blue);vertical-align:middle;margin-left:3px}
+.q{left:0;top:0;white-space:nowrap;border-radius:999px;background:#fff;border:2px solid var(--line);padding:12px 26px;font-size:30px;color:var(--grey)}
+.eyebrow{font-weight:500;font-size:34px;color:var(--grey);letter-spacing:.01em}
+.h{font-weight:500;font-size:120px;letter-spacing:-.035em;line-height:.95}
+.src{display:inline-block;border-radius:999px;background:var(--soft);padding:12px 22px;font-size:24px;color:var(--grey);margin-right:12px}
+.wm span{display:inline-block}
+.wm span:nth-child(1),.wm span:nth-child(4){color:var(--blue)}.wm span:nth-child(2),.wm span:nth-child(6){color:var(--red)}.wm span:nth-child(3){color:var(--yellow)}.wm span:nth-child(5){color:var(--green)}
+.ansline{clip-path:inset(0 100% 0 0)}
+</style>
+<script id="piece-kit">
+// piece-kit v1. Source of truth: elements/piece-kit.js.
+// `npm run sync-kit` copies this into every piece's <script id="piece-kit">,
+// so each piece stays a single self-contained file.
+//
+// A piece defines (before the kit boots on load):
+//   Piece.setup()            optional, runs once after fonts load (measure layout here)
+//   Piece.render(t)          draw everything for time t; must be pure
+//   Piece.sounds             [{ t, fn(ctx, out, at) }] one-shot sound events
+//   Piece.cuts               optional scene-cut times, shown as trim handles on the review page
+//   Piece.gain               optional master trim, to keep the export peak near -7 dBFS
+// The kit provides: stage scaling, playback, Web Audio scheduling, URL params,
+// postMessage control from the site, and window.piece for export.
+;(() => {
+  const P = new URLSearchParams(location.search)
+  const meta = (n) => document.querySelector(`meta[name="piece:${n}"]`)?.content
+  const DUR = Number(meta('duration'))
+  const LOOP = meta('loop') === 'true'
+  const [W, H] = meta('aspect') === '1:1' ? [1080, 1080] : [1920, 1080]
+  const EXPORT = P.has('export')
+  const EMBED = window.parent !== window
+
+  // ---------- math ----------
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v))
+  const lerp = (a, b, p) => a + (b - a) * p
+  const ease = {
+    lin: (p) => p,
+    in3: (p) => p * p * p,
+    out3: (p) => 1 - Math.pow(1 - p, 3),
+    inOut3: (p) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2),
+    outExpo: (p) => (p >= 1 ? 1 : 1 - Math.pow(2, -10 * p)),
+    inExpo: (p) => (p <= 0 ? 0 : Math.pow(2, 10 * p - 10)),
+    inOutExpo: (p) => (p <= 0 ? 0 : p >= 1 ? 1 : p < 0.5 ? Math.pow(2, 20 * p - 10) / 2 : (2 - Math.pow(2, -20 * p + 10)) / 2),
+    outBack: (p) => 1 + 2.70158 * Math.pow(p - 1, 3) + 1.70158 * Math.pow(p - 1, 2),
+    outBackSoft: (p) => 1 + 2.2 * Math.pow(p - 1, 3) + 1.2 * Math.pow(p - 1, 2),
+    outElastic: (p) => (p <= 0 ? 0 : p >= 1 ? 1 : Math.pow(2, -10 * p) * Math.sin((p * 10 - 0.75) * ((2 * Math.PI) / 3)) + 1),
+    outBounce: (p) => {
+      const n = 7.5625, d = 2.75
+      if (p < 1 / d) return n * p * p
+      if (p < 2 / d) return n * (p -= 1.5 / d) * p + 0.75
+      if (p < 2.5 / d) return n * (p -= 2.25 / d) * p + 0.9375
+      return n * (p -= 2.625 / d) * p + 0.984375
+    },
+  }
+  /** eased progress of t between a and b, 0..1 */
+  const tw = (t, a, b, e = ease.out3) => e(clamp((t - a) / (b - a)))
+  /** set transform/opacity/filter in one call */
+  const css = (el, o) => {
+    if (!el) return
+    const tr = []
+    if (o.x != null || o.y != null) tr.push(`translate(${o.x ?? 0}px,${o.y ?? 0}px)`)
+    if (o.r != null) tr.push(`rotate(${o.r}deg)`)
+    if (o.ry != null) tr.push(`perspective(1600px) rotateY(${o.ry}deg)`)
+    if (o.s != null) tr.push(`scale(${o.s})`)
+    if (o.sx != null || o.sy != null) tr.push(`scale(${o.sx ?? 1},${o.sy ?? 1})`)
+    el.style.transform = tr.join(' ')
+    if (o.o != null) el.style.opacity = o.o
+    if (o.blur != null) el.style.filter = o.blur > 0.05 ? `blur(${o.blur}px)` : 'none'
+    if (o.clip != null) el.style.clipPath = o.clip
+    if (o.v != null) el.style.visibility = o.v ? 'visible' : 'hidden'
+  }
+  /** seeded PRNG, so "random" layouts are identical every render */
+  const rng = (seed) => () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646
+  const $ = (s) => document.querySelector(s)
+  const $$ = (s) => [...document.querySelectorAll(s)]
+
+  // ---------- sound ----------
+  const noiseBufs = new WeakMap()
+  const noiseBuf = (ctx) => {
+    if (!noiseBufs.has(ctx)) {
+      const b = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate)
+      const d = b.getChannelData(0), r = rng(7)
+      for (let i = 0; i < d.length; i++) d[i] = r() * 2 - 1
+      noiseBufs.set(ctx, b)
+    }
+    return noiseBufs.get(ctx)
+  }
+  const env = (ctx, at, { attack = 0.005, dur = 0.3, gain = 0.3, curve = 'exp' } = {}) => {
+    const g = ctx.createGain()
+    g.gain.setValueAtTime(0.0001, at)
+    g.gain.linearRampToValueAtTime(gain, at + attack)
+    if (curve === 'exp') g.gain.exponentialRampToValueAtTime(0.0001, at + dur)
+    else g.gain.linearRampToValueAtTime(0.0001, at + dur)
+    return g
+  }
+  const S = {
+    tone(ctx, out, at, { f = 440, to, type = 'sine', dur = 0.3, gain = 0.2, attack = 0.005, detune = 0 } = {}) {
+      const o = ctx.createOscillator()
+      o.type = type
+      o.frequency.setValueAtTime(f, at)
+      if (to) o.frequency.exponentialRampToValueAtTime(to, at + dur)
+      o.detune.value = detune
+      const g = env(ctx, at, { attack, dur, gain })
+      o.connect(g).connect(out)
+      o.start(at)
+      o.stop(at + dur + 0.05)
+    },
+    noise(ctx, out, at, { dur = 0.2, gain = 0.2, f = 2000, to, q = 0.8, type = 'bandpass', attack = 0.005, curve = 'exp' } = {}) {
+      const s = ctx.createBufferSource()
+      s.buffer = noiseBuf(ctx)
+      const fl = ctx.createBiquadFilter()
+      fl.type = type
+      fl.Q.value = q
+      fl.frequency.setValueAtTime(f, at)
+      if (to) fl.frequency.exponentialRampToValueAtTime(to, at + dur)
+      const g = env(ctx, at, { attack, dur, gain, curve })
+      s.connect(fl).connect(g).connect(out)
+      s.start(at, 0)
+      s.stop(at + dur + 0.05)
+    },
+    kick(ctx, out, at, gain = 0.5) {
+      S.tone(ctx, out, at, { f: 150, to: 45, dur: 0.28, gain, type: 'sine' })
+      S.noise(ctx, out, at, { f: 3000, dur: 0.02, gain: gain * 0.25, type: 'highpass' })
+    },
+    hat(ctx, out, at, gain = 0.06) {
+      S.noise(ctx, out, at, { f: 8000, dur: 0.05, gain, type: 'highpass', q: 0.5 })
+    },
+    click(ctx, out, at, gain = 0.15, f = 2400) {
+      S.noise(ctx, out, at, { f, dur: 0.025, gain, q: 2 })
+    },
+    pluck(ctx, out, at, f, gain = 0.18, dur = 0.5) {
+      S.tone(ctx, out, at, { f, dur, gain, type: 'triangle' })
+      S.tone(ctx, out, at, { f: f * 2, dur: dur * 0.5, gain: gain * 0.25, type: 'sine' })
+    },
+    keys(ctx, out, at, f, gain = 0.12, dur = 1.6) {
+      // soft electric-piano-ish tone
+      S.tone(ctx, out, at, { f, dur, gain, type: 'sine', attack: 0.004 })
+      S.tone(ctx, out, at, { f: f * 2, dur: dur * 0.4, gain: gain * 0.3, type: 'sine' })
+      S.tone(ctx, out, at, { f: f * 3.01, dur: dur * 0.15, gain: gain * 0.12, type: 'sine' })
+    },
+    pad(ctx, out, at, freqs, dur = 2, gain = 0.05) {
+      for (const f of freqs) {
+        S.tone(ctx, out, at, { f, dur, gain, type: 'triangle', attack: 0.25, detune: -6 })
+        S.tone(ctx, out, at, { f, dur, gain: gain * 0.7, type: 'sine', attack: 0.25, detune: 7 })
+      }
+    },
+    whoosh(ctx, out, at, dur = 0.4, gain = 0.18, up = true) {
+      S.noise(ctx, out, at, { f: up ? 400 : 4000, to: up ? 4000 : 400, dur, gain, q: 1.2, attack: dur * 0.6, curve: 'lin' })
+    },
+    thump(ctx, out, at, gain = 0.5) {
+      S.tone(ctx, out, at, { f: 90, to: 38, dur: 0.45, gain })
+      S.noise(ctx, out, at, { f: 600, dur: 0.12, gain: gain * 0.35, type: 'lowpass' })
+    },
+    chime(ctx, out, at, f = 880, gain = 0.12) {
+      ;[1, 2.01, 3.02, 4.2].forEach((m, i) => S.tone(ctx, out, at, { f: f * m, dur: 1.4 - i * 0.25, gain: gain / (i + 1) }))
+    },
+  }
+  const note = (n) => 440 * Math.pow(2, (n - 69) / 12) // MIDI → Hz
+
+  // ---------- playback ----------
+  const Piece = (window.Piece = { setup: null, render: () => {}, sounds: [], cuts: [], gain: 1 })
+  window.K = { clamp, lerp, ease, tw, css, rng, $, $$, S, note, W, H, DUR }
+
+  let t = clamp(Number(P.get('t') ?? 0), 0, DUR)
+  let playing = false, raf = 0, lastNow = 0, lastPost = -1, rate = 1
+  let muted = P.has('muted') ? P.get('muted') !== '0' : EMBED
+  let ctx = null, bus = null, schedAbs = 0, absT = 0
+
+  const draw = () => {
+    Piece.render(t)
+    if (EMBED && Math.abs(t - lastPost) > 0.03) post('time')
+  }
+  const post = (type) => {
+    lastPost = t
+    if (EMBED) window.parent.postMessage({ source: 'piece', type, t, duration: DUR, playing, muted, rate, cuts: Piece.cuts }, '*')
+  }
+
+  function audioOn() {
+    if (muted || EXPORT) return false
+    ctx ??= new (window.AudioContext || window.webkitAudioContext)()
+    if (ctx.state === 'suspended') ctx.resume()
+    return true
+  }
+  function newBus() {
+    if (bus) {
+      const old = bus
+      old.gain.setTargetAtTime(0, ctx.currentTime, 0.02)
+      setTimeout(() => old.disconnect(), 200)
+    }
+    bus = null
+    if (!audioOn()) return
+    bus = master(ctx)
+    absT = t
+    schedAbs = t
+  }
+  function master(c) {
+    const comp = c.createDynamicsCompressor()
+    comp.threshold.value = -10
+    comp.ratio.value = 4
+    const g = c.createGain()
+    g.gain.value = 0.9 * Piece.gain
+    g.connect(comp).connect(c.destination)
+    return g
+  }
+  // Lookahead scheduler on a monotonic clock, so loops wrap cleanly.
+  function schedule() {
+    if (!bus || !ctx) return
+    const horizon = absT + 0.25 * rate
+    const sounds = Piece.sounds
+    while (schedAbs < horizon) {
+      const cycle = Math.floor(schedAbs / DUR)
+      const from = schedAbs - cycle * DUR
+      const to = Math.min(DUR, from + (horizon - schedAbs))
+      for (const e of sounds) {
+        if (e.t >= from && e.t < to) {
+          const at = ctx.currentTime + (cycle * DUR + e.t - absT) / rate
+          if (at >= ctx.currentTime - 0.01) e.fn(ctx, bus, Math.max(at, ctx.currentTime))
+        }
+      }
+      schedAbs = cycle * DUR + to
+      if (to >= DUR && !LOOP) break
+    }
+  }
+
+  function frame(now) {
+    if (!playing) return
+    const dt = Math.min(0.1, (now - lastNow) / 1000) * rate
+    lastNow = now
+    t += dt
+    absT += dt
+    if (t >= DUR) {
+      if (LOOP) t -= DUR
+      else {
+        t = DUR
+        draw()
+        pause()
+        post('ended')
+        return
+      }
+    }
+    draw()
+    schedule()
+    raf = requestAnimationFrame(frame)
+  }
+  function play() {
+    if (playing) return
+    if (!LOOP && t >= DUR - 0.01) t = 0
+    playing = true
+    lastNow = performance.now()
+    newBus()
+    schedule()
+    raf = requestAnimationFrame(frame)
+    post('play')
+  }
+  function pause() {
+    playing = false
+    cancelAnimationFrame(raf)
+    if (bus && ctx) newBus()
+    post('pause')
+  }
+  function seek(x) {
+    t = clamp(x, 0, DUR)
+    draw()
+    if (playing) newBus()
+  }
+  function setRate(r) {
+    rate = r
+    if (playing) newBus()
+    post('rate')
+  }
+  function setMuted(m) {
+    muted = m
+    if (playing) newBus()
+    post('mute')
+  }
+
+  // Export: schedule every sound for one pass onto any BaseAudioContext.
+  function buildAudio(c, when = 0) {
+    const out = master(c)
+    for (const e of Piece.sounds) e.fn(c, out, when + e.t)
+  }
+
+  window.piece = { duration: DUR, loop: LOOP, width: W, height: H, seek, play, pause, buildAudio, setMuted, setRate, get cuts() { return Piece.cuts }, get t() { return t }, ready: false }
+
+  // ---------- stage ----------
+  function fit() {
+    const stage = document.getElementById('stage')
+    if (EXPORT) {
+      stage.style.transform = 'none'
+      return
+    }
+    const s = Math.min(innerWidth / W, innerHeight / H)
+    stage.style.transform = `translate(${(innerWidth - W * s) / 2}px,${(innerHeight - H * s) / 2}px) scale(${s})`
+  }
+  const base = document.createElement('style')
+  base.textContent = `*,*::before,*::after{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:#000}#stage{position:absolute;left:0;top:0;width:${W}px;height:${H}px;overflow:hidden;transform-origin:0 0}`
+  document.head.prepend(base)
+  addEventListener('resize', fit)
+
+  addEventListener('message', (e) => {
+    const m = e.data
+    if (!m || m.source !== 'site') return
+    if (m.type === 'play') play()
+    if (m.type === 'pause') pause()
+    if (m.type === 'seek') seek(m.t)
+    if (m.type === 'restart') { seek(0); play() }
+    if (m.type === 'mute') setMuted(!!m.muted)
+    if (m.type === 'rate') setRate(Number(m.rate) || 1)
+  })
+  if (!EMBED && !EXPORT) {
+    // Opened directly: click toggles sound + restarts, space toggles play.
+    addEventListener('click', () => { setMuted(false); seek(0); play() })
+    addEventListener('keydown', (e) => { if (e.code === 'Space') { e.preventDefault(); playing ? pause() : play() } })
+  }
+
+  addEventListener('load', async () => {
+    fit()
+    await document.fonts.ready
+    Piece.setup?.()
+    draw()
+    window.piece.ready = true
+    post('ready')
+    if (!EXPORT && !P.has('t') && (P.get('autoplay') === '1' || !EMBED)) play()
+  })
+})()
+</script>
+</head><body>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <g id="mag"><circle cx="20" cy="20" r="13" fill="none" stroke="#5F6368" stroke-width="5"/><path d="M30 30 L42 42" stroke="#5F6368" stroke-width="5" stroke-linecap="round"/></g>
+</defs></svg>
+<div id="stage">
+
+  <!-- 0–3.5 · one search, then everyone's -->
+  <section class="scene" id="s1" style="background:#fff">
+    <div class="a" id="sea" style="left:0;top:0;width:1920px;height:1080px;transform-origin:960px 540px">
+      <div class="a" id="seabg" style="inset:0;background:var(--soft)"></div>
+      <div id="qs"></div>
+      <div class="a pill" id="main" style="left:615px;top:502.5px;width:690px;height:75px;padding:0 30px;gap:18px;font-size:30px">
+        <svg class="mag" viewBox="0 0 46 46" style="width:28px;height:28px"><use href="#mag"/></svg><span><span id="typed"></span><span class="caret" id="caret" style="height:36px"></span></span>
+      </div>
+    </div>
+  </section>
+
+  <section class="scene" id="s3">
+    <div class="a" id="n5" style="left:140px;top:230px;font-weight:600;font-size:460px;letter-spacing:-.05em;line-height:.9;color:var(--blue);font-variant-numeric:tabular-nums;transform-origin:0 80%">5T+</div>
+    <div class="a" id="s3l" style="left:150px;top:700px;font-size:72px">searches a year</div>
+    <div class="a" style="left:150px;top:810px;display:flex;gap:14px" id="dashes">
+      <span style="width:90px;height:14px;border-radius:7px;background:var(--blue);transform-origin:0 50%"></span><span style="width:90px;height:14px;border-radius:7px;background:var(--red);transform-origin:0 50%"></span><span style="width:90px;height:14px;border-radius:7px;background:var(--yellow);transform-origin:0 50%"></span><span style="width:90px;height:14px;border-radius:7px;background:var(--green);transform-origin:0 50%"></span>
+    </div>
+  </section>
+
+  <section class="scene" id="s4">
+    <div class="a" id="s4h" style="left:140px;top:140px"><div class="eyebrow">AI Mode in Search</div><div class="h" style="margin-top:16px">Ask the<br>whole question.</div></div>
+    <div class="a" id="s4q" style="left:960px;top:120px;width:840px;border-radius:40px;background:var(--soft);padding:30px 40px;font-size:38px">plan 3 days in Kyoto for someone who hates crowds</div>
+    <div class="a" id="s4a" style="left:960px;top:330px;width:840px;border-radius:32px;border:2px solid var(--line);padding:40px;font-size:30px;line-height:1.5;background:#fff">
+      <div class="ansline" style="font-weight:600;font-size:34px;margin-bottom:16px"><span style="color:var(--blue)">✦</span> Here's a quieter plan</div>
+      <div class="ansline"><b style="font-weight:600">Day 1</b> · Fushimi Inari at sunrise, before the tour buses</div>
+      <div class="ansline"><b style="font-weight:600">Day 2</b> · Ohara's temples, an hour north of the city</div>
+      <div class="ansline"><b style="font-weight:600">Day 3</b> · Kurama to Kibune hike, lunch by the river</div>
+      <div style="margin-top:28px"><span class="src">kyoto.travel</span><span class="src">japan-guide.com</span><span class="src">+4</span></div>
+    </div>
+  </section>
+
+  <section class="scene" id="s5">
+    <div class="a" id="phone" style="left:260px;top:90px;width:470px;height:900px;border-radius:64px;background:#1f2a1f;overflow:hidden;border:14px solid var(--ink)">
+      <svg viewBox="0 0 400 800" style="position:absolute;inset:0;width:100%;height:100%">
+        <rect width="400" height="800" fill="#2c3a2a"/>
+        <path d="M200 700 Q190 520 200 380" stroke="#3d6b35" stroke-width="12" fill="none"/>
+        <path d="M200 400 C80 380 40 240 120 160 C170 110 260 110 300 170 C360 260 300 380 200 400 Z" fill="#34A853"/>
+        <path d="M140 220 L180 260 M120 280 L175 300 M260 210 L225 255 M285 280 L228 300" stroke="#2c3a2a" stroke-width="16" stroke-linecap="round"/>
+        <path d="M200 395 L200 170" stroke="#2a8a45" stroke-width="6"/>
+        <g id="lens" stroke="#fff" stroke-width="8" fill="none" stroke-linecap="round" style="transform-box:view-box;transform-origin:200px 280px"><path d="M70 120 v-40 h40"/><path d="M330 120 v-40 h-40"/><path d="M70 440 v40 h40"/><path d="M330 440 v40 h-40"/></g>
+      </svg>
+      <div id="result" style="position:absolute;left:24px;right:24px;bottom:30px;background:#fff;border-radius:28px;padding:24px 28px"><div style="font-size:30px;font-weight:600">Monstera deliciosa</div><div style="font-size:22px;color:var(--grey);margin-top:4px">Swiss cheese plant · care guide</div></div>
+    </div>
+    <div class="a" id="s5t" style="left:900px;top:330px"><div class="eyebrow">Google Lens</div><div class="h" style="margin-top:16px">Search<br>what you see.</div></div>
+  </section>
+
+  <section class="scene" id="s6">
+    <svg viewBox="0 0 1920 1080" style="position:absolute;inset:0">
+      <rect width="1920" height="1080" fill="#eef1f3"/>
+      <rect x="1180" y="620" width="420" height="300" rx="20" fill="#cdebd5"/>
+      <path d="M0 300 L1920 220 M0 760 L1920 820 M520 0 L620 1080 M1180 0 L1080 1080 M1500 0 L1700 1080" stroke="#fff" stroke-width="42"/>
+      <path d="M0 520 Q900 470 1920 560" stroke="#fde293" stroke-width="54" fill="none"/>
+      <path id="route" pathLength="1" stroke-dasharray="1" d="M300 900 L580 760 L640 510 L1110 480 L1150 300 L1500 270" stroke="#4285F4" stroke-width="22" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+      <circle cx="300" cy="900" r="22" fill="#fff" stroke="#4285F4" stroke-width="10"/>
+      <g id="pin"><path d="M1500 260 c-40 0 -64 -30 -64 -64 c0 -50 64 -110 64 -110 s64 60 64 110 c0 34 -24 64 -64 64z" fill="#EA4335"/><circle cx="1500" cy="186" r="20" fill="#a50e0e"/></g>
+      <ellipse id="pinshadow" cx="1500" cy="270" rx="26" ry="8" fill="rgba(0,0,0,.18)"/>
+    </svg>
+    <div class="a" id="s6c" style="left:120px;top:110px;background:#fff;border-radius:36px;padding:40px 48px;box-shadow:0 10px 40px rgba(32,33,36,.12)"><div class="eyebrow">Google Maps</div><div class="h" style="margin-top:12px;font-size:110px">Get there.</div></div>
+  </section>
+
+  <section class="scene" id="s7">
+    <div class="a" id="six" style="left:140px;top:180px;font-weight:600;font-size:520px;letter-spacing:-.05em;line-height:.9;transform-origin:30% 80%">6</div>
+    <div class="a" id="s7l" style="left:150px;top:700px;font-size:64px;width:760px;line-height:1.1">products, each used by more than 2 billion people</div>
+    <div class="a" style="left:1000px;top:200px;display:grid;grid-template-columns:repeat(3,240px);gap:36px" id="tiles">
+      <div style="height:240px;border-radius:48px;background:var(--blue)"></div><div style="height:240px;border-radius:50%;background:var(--red)"></div><div style="height:240px;border-radius:48px;background:var(--yellow)"></div>
+      <div style="height:240px;border-radius:50%;background:var(--green)"></div><div style="height:240px;border-radius:48px;background:var(--blue)"></div><div style="height:240px;border-radius:50%;background:var(--red)"></div>
+    </div>
+  </section>
+
+  <section class="scene" id="s8">
+    <div class="a wm" id="wm" style="left:0;right:0;top:250px;display:flex;justify-content:center;font-weight:500;font-size:230px;letter-spacing:-.03em;line-height:1"><span>G</span><span>o</span><span>o</span><span>g</span><span>l</span><span>e</span></div>
+    <div class="a pill" id="endpill" style="left:560px;top:620px;width:800px;height:120px;padding:0 48px;gap:28px;font-size:48px">
+      <svg class="mag" viewBox="0 0 46 46" style="width:44px;height:44px"><use href="#mag"/></svg><span><span id="endtyped"></span><span class="caret" id="endcaret" style="height:58px;width:4px"></span></span>
+    </div>
+  </section>
+</div>
+<script>
+const { tw, css, ease, lerp, clamp, $, $$, S, note, rng } = K
+Piece.cuts = [1.5, 3.5, 5.5, 7.5, 9.5, 11.5, 13]
+const CUTS = { s1: [0, 3.5], s3: [3.5, 5.5], s4: [5.5, 7.5], s5: [7.5, 9.5], s6: [9.5, 11.5], s7: [11.5, 13], s8: [13, 15.01] }
+
+// the sea of other people's searches
+const QUERIES = ['pasta near me', 'cómo hacer pan', '天気 東京', 'how tall is k2', 'best time to see the aurora', 'fix a leaky tap', 'comment dire merci',
+  'dinosaurs with feathers', 'kurta design ideas', 'is pluto a planet', 'how to tie a tie', 'wie spät ist es in sydney', 'jollof rice recipe',
+  'train times tomorrow', 'who painted the starry night', 'हिंदी में अनुवाद', 'cheap flights lisbon', 'why do cats purr', 'como plantar tomate',
+  'world cup schedule', 'easy sourdough starter', '서울 맛집', 'how far is the moon', 'what is a black hole', 'learn guitar chords', 'best hiking boots']
+const r = rng(5)
+const Q = []
+// jittered rows, staggered like brickwork, leaving the centre pill clear
+let qi = 0
+for (let row = 0; row < 7 && qi < QUERIES.length; row++) {
+  for (let col = 0; col < 4 && qi < QUERIES.length; col++) {
+    const x = 40 + col * 470 + (row % 2) * 220 + r() * 90, y = 64 + row * 140 + r() * 30
+    if (Math.abs(y + 28 - 540) < 110 && x + 320 > 560 && x < 1360) continue
+    Q.push({ text: QUERIES[qi++], x, y, dx: (r() - 0.5) * 40, delay: Math.hypot(x - 960, y - 540) / 1600 })
+  }
+}
+$('#qs').innerHTML = Q.map((q) => `<div class="a q">${q.text}</div>`).join('')
+const qs = $$('#qs .q')
+const LINE1 = 'why is the sky blue', LINE2 = 'Start at google.com'
+const TYPE1 = (i) => 0.3 + i * 0.055, TYPE2 = (i) => 13.55 + i * 0.035
+
+Piece.render = (t) => {
+  for (const [id, [a, b]] of Object.entries(CUTS)) $('#' + id).style.visibility = t >= a && t < b ? 'visible' : 'hidden'
+
+  // 1 · typing, then the camera pulls back into the sea
+  const typed = LINE1.slice(0, LINE1.split('').filter((_, i) => t >= TYPE1(i)).length)
+  $('#typed').textContent = typed
+  css($('#caret'), { o: (t > TYPE1(LINE1.length - 1) + 0.1 && Math.floor(t * 2.5) % 2) ? 0 : 1 })
+  const pull = tw(t, 1.5, 2.15, ease.outExpo)
+  const collapse = tw(t, 3.05, 3.5, ease.in3)
+  css($('#sea'), { s: lerp(1.6, 1, pull) })
+  css($('#seabg'), { o: pull })
+  qs.forEach((el, i) => {
+    const q = Q[i], o = tw(t, 1.55 + q.delay * 0.5, 1.9 + q.delay * 0.5)
+    const x = q.x + q.dx * (t - 1.5), y = q.y
+    css(el, { x: lerp(x, 960 - 100, collapse), y: lerp(y, 520, collapse), s: 1 - collapse, o: o * (1 - collapse * 0.5) })
+  })
+  css($('#main'), { s: lerp(0.9, 1, tw(t, 0, 0.3, ease.outBack)) * (1 - collapse), o: tw(t, 0, 0.2) })
+
+  // 3 · 5T+ counts up
+  const c = tw(t, 3.55, 4.0, ease.out3)
+  $('#n5').textContent = Math.max(1, Math.ceil(5 * c)) + 'T+'
+  css($('#n5'), { s: lerp(0.9, 1, tw(t, 3.5, 3.8, ease.outBack)), o: tw(t, 3.5, 3.6) })
+  css($('#s3l'), { y: lerp(30, 0, tw(t, 3.95, 4.3)), o: tw(t, 3.95, 4.2) })
+  $$('#dashes span').forEach((d, i) => css(d, { sx: tw(t, 4.1 + i * 0.07, 4.35 + i * 0.07, ease.out3) }))
+
+  // 4 · AI Mode answer streams in
+  css($('#s4h'), { x: lerp(-80, 0, tw(t, 5.5, 5.85, ease.outExpo)), o: tw(t, 5.5, 5.7) })
+  css($('#s4q'), { y: lerp(40, 0, tw(t, 5.6, 5.9, ease.outBack)), o: tw(t, 5.6, 5.75) })
+  css($('#s4a'), { y: lerp(60, 0, tw(t, 5.85, 6.2, ease.outExpo)), o: tw(t, 5.85, 6.0) })
+  $$('.ansline').forEach((l, i) => { l.style.clipPath = `inset(0 ${100 - 100 * tw(t, 6.0 + i * 0.25, 6.3 + i * 0.25, ease.inOut3)}% 0 0)` })
+  $$('#s4 .src').forEach((s, i) => css(s, { s: tw(t, 6.95 + i * 0.07, 7.2 + i * 0.07, ease.outBack) }))
+
+  // 5 · Lens snaps to the leaf
+  css($('#phone'), { y: lerp(800, 0, tw(t, 7.5, 7.9, ease.outExpo)) })
+  css($('#lens'), { s: lerp(1.6, 1, tw(t, 7.95, 8.25, ease.outBack)), o: tw(t, 7.95, 8.05) })
+  css($('#result'), { y: lerp(200, 0, tw(t, 8.35, 8.7, ease.outBack)) })
+  css($('#s5t'), { x: lerp(80, 0, tw(t, 7.6, 7.95, ease.outExpo)), o: tw(t, 7.6, 7.8) })
+
+  // 6 · route draws, pin drops
+  $('#route').style.strokeDashoffset = 1 - tw(t, 9.65, 10.8, ease.inOut3)
+  const drop = tw(t, 10.75, 11.15, ease.outBounce)
+  css($('#pin'), { y: lerp(-340, 0, drop), o: t >= 10.75 ? 1 : 0 })
+  css($('#pinshadow'), { s: lerp(0.3, 1, drop), o: t >= 10.75 ? drop : 0 })
+  $('#pin').style.transformBox = $('#pinshadow').style.transformBox = 'fill-box'
+  $('#pinshadow').style.transformOrigin = 'center'
+  css($('#s6c'), { x: lerp(-80, 0, tw(t, 9.55, 9.9, ease.outExpo)), o: tw(t, 9.55, 9.7) })
+
+  // 7 · six products
+  css($('#six'), { s: lerp(1.35, 1, tw(t, 11.5, 11.75, ease.outBack)), o: tw(t, 11.5, 11.56) })
+  $$('#tiles div').forEach((d, i) => css(d, { s: tw(t, 11.6 + i * 0.07, 11.9 + i * 0.07, ease.outBack) }))
+  css($('#s7l'), { y: lerp(30, 0, tw(t, 11.8, 12.15)), o: tw(t, 11.8, 12.05) })
+
+  // 8 · end card
+  $$('#wm span').forEach((l, i) => css(l, { y: lerp(50, 0, tw(t, 13.0 + i * 0.05, 13.35 + i * 0.05, ease.outBack)), o: tw(t, 13.0 + i * 0.05, 13.12 + i * 0.05) }))
+  css($('#endpill'), { s: lerp(0.9, 1, tw(t, 13.35, 13.65, ease.outBack)), o: tw(t, 13.35, 13.5) })
+  $('#endtyped').textContent = LINE2.slice(0, LINE2.split('').filter((_, i) => t >= TYPE2(i)).length)
+  css($('#endcaret'), { o: (t > TYPE2(LINE2.length - 1) + 0.1 && Math.floor(t * 2.5) % 2) ? 0 : 1 })
+}
+
+// ---- sound: warm keys at 120 bpm, a cut every bar ----
+const snd = []
+const at = (t, fn) => snd.push({ t, fn })
+const CH = [[53, 65, 69, 72], [48, 64, 67, 72], [55, 62, 67, 71], [57, 64, 69, 72], [53, 65, 69, 72], [48, 64, 67, 72]]
+at(0, (c, o, a) => S.pad(c, o, a, [note(60), note(64), note(67)], 1.6, 0.025))
+LINE1.split('').forEach((ch, i) => ch !== ' ' && at(TYPE1(i), (c, o, a) => S.click(c, o, a, 0.07, 2200 + (i % 4) * 300)))
+at(1.45, (c, o, a) => S.whoosh(c, o, a, 0.7, 0.12, false))
+for (let bar = 0; bar < 6; bar++) {
+  const t0 = 1.5 + bar * 2, ch = CH[bar]
+  at(t0, (c, o, a) => { S.keys(c, o, a, note(ch[0] - 12), 0.12, 2); ch.slice(1).forEach((n, k) => S.keys(c, o, a + k * 0.02, note(n), 0.06, 1.8)) })
+  for (let e = 0; e < 8; e++) {
+    const tt = t0 + e * 0.25
+    if (tt >= 13) break
+    at(tt, (c, o, a) => S.pluck(c, o, a, note(ch[1 + (e % 3)] + 12), 0.025, 0.25))
+    if (t0 >= 3.5 && e % 4 === 0) at(tt, (c, o, a) => S.kick(c, o, a, 0.22))
+    if (t0 >= 3.5 && e % 2 === 1) at(tt, (c, o, a) => S.hat(c, o, a, 0.035))
+  }
+}
+at(3.05, (c, o, a) => S.whoosh(c, o, a, 0.45, 0.14))
+at(3.5, (c, o, a) => S.thump(c, o, a, 0.35))
+for (let i = 0; i < 5; i++) at(3.55 + i * 0.09, (c, o, a) => S.click(c, o, a, 0.08, 2600 + i * 250))
+at(6.0, (c, o, a) => S.chime(c, o, a, note(91), 0.04))
+at(8.0, (c, o, a) => { S.click(c, o, a, 0.2, 3500); S.chime(c, o, a + 0.05, note(84), 0.05) })
+at(9.65, (c, o, a) => S.whoosh(c, o, a, 1.0, 0.08))
+at(10.95, (c, o, a) => { S.thump(c, o, a, 0.3); S.pluck(c, o, a, note(79), 0.08, 0.4) })
+for (let i = 0; i < 6; i++) at(11.6 + i * 0.07, (c, o, a) => S.tone(c, o, a, { f: note(72 + [0, 2, 4, 7, 9, 12][i]), dur: 0.14, gain: 0.07 }))
+at(13.0, (c, o, a) => { S.chime(c, o, a, note(81), 0.08); S.keys(c, o, a, note(48), 0.12, 2); [60, 64, 67, 72].forEach((n, k) => S.keys(c, o, a + k * 0.03, note(n), 0.06, 2)) })
+LINE2.split('').forEach((ch, i) => ch !== ' ' && at(TYPE2(i), (c, o, a) => S.click(c, o, a, 0.06, 2200 + (i % 4) * 300)))
+Piece.sounds = snd
+</script>
+</body></html>

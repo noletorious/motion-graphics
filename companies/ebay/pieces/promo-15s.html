@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="piece:type" content="promo-15s">
+<meta name="piece:title" content="Things people love">
+<meta name="piece:duration" content="15">
+<meta name="piece:aspect" content="16:9">
+<meta name="piece:loop" content="false">
+<meta name="piece:poster" content="1.2">
+<title>eBay — 15s promo</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@500;600;700;800;900&display=block" rel="stylesheet">
+<style>
+:root{--red:#E53238;--blue:#0064D2;--yellow:#F5AF02;--green:#86B817;--ink:#111820;--mute:#6b7280;--line:#e6e8eb;--soft:#f6f7f8}
+#stage{background:#fff;font-family:Figtree,sans-serif;color:var(--ink)}
+.scene{position:absolute;inset:0;visibility:hidden}
+.a{position:absolute;will-change:transform}
+.logo{font-weight:800;letter-spacing:-.07em;line-height:1}
+.logo span:nth-child(1){color:var(--red)}.logo span:nth-child(2){color:var(--blue)}.logo span:nth-child(3){color:var(--yellow)}.logo span:nth-child(4){color:var(--green)}
+#corner{left:80px;top:64px;font-size:56px;z-index:5}
+.big{font-weight:900;letter-spacing:-.045em;line-height:.88}
+.label{font-weight:600;font-size:64px;letter-spacing:-.01em}
+.card{top:290px;width:420px;height:560px;border-radius:32px;padding:28px;display:flex;flex-direction:column;justify-content:space-between}
+.card svg{width:100%;height:300px}
+.price{font-weight:800;font-size:56px;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.chip{display:inline-block;font-weight:700;font-size:24px;padding:8px 16px;border-radius:999px;background:#fff}
+.bar{height:22px;border-radius:11px;transform-origin:0 50%}
+.step{top:280px;width:500px;height:560px;border-radius:36px;background:var(--soft);padding:40px}
+.step .n{font-weight:900;font-size:120px;letter-spacing:-.05em;line-height:1}
+.step .t{font-weight:800;font-size:56px;letter-spacing:-.03em;margin-top:6px}
+.ln{height:16px;border-radius:8px;background:var(--line);margin-top:14px;transform-origin:0 50%}
+.word{display:inline-block;will-change:transform}
+</style>
+<script id="piece-kit">
+// piece-kit v1. Source of truth: elements/piece-kit.js.
+// `npm run sync-kit` copies this into every piece's <script id="piece-kit">,
+// so each piece stays a single self-contained file.
+//
+// A piece defines (before the kit boots on load):
+//   Piece.setup()            optional, runs once after fonts load (measure layout here)
+//   Piece.render(t)          draw everything for time t; must be pure
+//   Piece.sounds             [{ t, fn(ctx, out, at) }] one-shot sound events
+//   Piece.cuts               optional scene-cut times, shown as trim handles on the review page
+//   Piece.gain               optional master trim, to keep the export peak near -7 dBFS
+// The kit provides: stage scaling, playback, Web Audio scheduling, URL params,
+// postMessage control from the site, and window.piece for export.
+;(() => {
+  const P = new URLSearchParams(location.search)
+  const meta = (n) => document.querySelector(`meta[name="piece:${n}"]`)?.content
+  const DUR = Number(meta('duration'))
+  const LOOP = meta('loop') === 'true'
+  const [W, H] = meta('aspect') === '1:1' ? [1080, 1080] : [1920, 1080]
+  const EXPORT = P.has('export')
+  const EMBED = window.parent !== window
+
+  // ---------- math ----------
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v))
+  const lerp = (a, b, p) => a + (b - a) * p
+  const ease = {
+    lin: (p) => p,
+    in3: (p) => p * p * p,
+    out3: (p) => 1 - Math.pow(1 - p, 3),
+    inOut3: (p) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2),
+    outExpo: (p) => (p >= 1 ? 1 : 1 - Math.pow(2, -10 * p)),
+    inExpo: (p) => (p <= 0 ? 0 : Math.pow(2, 10 * p - 10)),
+    inOutExpo: (p) => (p <= 0 ? 0 : p >= 1 ? 1 : p < 0.5 ? Math.pow(2, 20 * p - 10) / 2 : (2 - Math.pow(2, -20 * p + 10)) / 2),
+    outBack: (p) => 1 + 2.70158 * Math.pow(p - 1, 3) + 1.70158 * Math.pow(p - 1, 2),
+    outBackSoft: (p) => 1 + 2.2 * Math.pow(p - 1, 3) + 1.2 * Math.pow(p - 1, 2),
+    outElastic: (p) => (p <= 0 ? 0 : p >= 1 ? 1 : Math.pow(2, -10 * p) * Math.sin((p * 10 - 0.75) * ((2 * Math.PI) / 3)) + 1),
+    outBounce: (p) => {
+      const n = 7.5625, d = 2.75
+      if (p < 1 / d) return n * p * p
+      if (p < 2 / d) return n * (p -= 1.5 / d) * p + 0.75
+      if (p < 2.5 / d) return n * (p -= 2.25 / d) * p + 0.9375
+      return n * (p -= 2.625 / d) * p + 0.984375
+    },
+  }
+  /** eased progress of t between a and b, 0..1 */
+  const tw = (t, a, b, e = ease.out3) => e(clamp((t - a) / (b - a)))
+  /** set transform/opacity/filter in one call */
+  const css = (el, o) => {
+    if (!el) return
+    const tr = []
+    if (o.x != null || o.y != null) tr.push(`translate(${o.x ?? 0}px,${o.y ?? 0}px)`)
+    if (o.r != null) tr.push(`rotate(${o.r}deg)`)
+    if (o.ry != null) tr.push(`perspective(1600px) rotateY(${o.ry}deg)`)
+    if (o.s != null) tr.push(`scale(${o.s})`)
+    if (o.sx != null || o.sy != null) tr.push(`scale(${o.sx ?? 1},${o.sy ?? 1})`)
+    el.style.transform = tr.join(' ')
+    if (o.o != null) el.style.opacity = o.o
+    if (o.blur != null) el.style.filter = o.blur > 0.05 ? `blur(${o.blur}px)` : 'none'
+    if (o.clip != null) el.style.clipPath = o.clip
+    if (o.v != null) el.style.visibility = o.v ? 'visible' : 'hidden'
+  }
+  /** seeded PRNG, so "random" layouts are identical every render */
+  const rng = (seed) => () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646
+  const $ = (s) => document.querySelector(s)
+  const $$ = (s) => [...document.querySelectorAll(s)]
+
+  // ---------- sound ----------
+  const noiseBufs = new WeakMap()
+  const noiseBuf = (ctx) => {
+    if (!noiseBufs.has(ctx)) {
+      const b = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate)
+      const d = b.getChannelData(0), r = rng(7)
+      for (let i = 0; i < d.length; i++) d[i] = r() * 2 - 1
+      noiseBufs.set(ctx, b)
+    }
+    return noiseBufs.get(ctx)
+  }
+  const env = (ctx, at, { attack = 0.005, dur = 0.3, gain = 0.3, curve = 'exp' } = {}) => {
+    const g = ctx.createGain()
+    g.gain.setValueAtTime(0.0001, at)
+    g.gain.linearRampToValueAtTime(gain, at + attack)
+    if (curve === 'exp') g.gain.exponentialRampToValueAtTime(0.0001, at + dur)
+    else g.gain.linearRampToValueAtTime(0.0001, at + dur)
+    return g
+  }
+  const S = {
+    tone(ctx, out, at, { f = 440, to, type = 'sine', dur = 0.3, gain = 0.2, attack = 0.005, detune = 0 } = {}) {
+      const o = ctx.createOscillator()
+      o.type = type
+      o.frequency.setValueAtTime(f, at)
+      if (to) o.frequency.exponentialRampToValueAtTime(to, at + dur)
+      o.detune.value = detune
+      const g = env(ctx, at, { attack, dur, gain })
+      o.connect(g).connect(out)
+      o.start(at)
+      o.stop(at + dur + 0.05)
+    },
+    noise(ctx, out, at, { dur = 0.2, gain = 0.2, f = 2000, to, q = 0.8, type = 'bandpass', attack = 0.005, curve = 'exp' } = {}) {
+      const s = ctx.createBufferSource()
+      s.buffer = noiseBuf(ctx)
+      const fl = ctx.createBiquadFilter()
+      fl.type = type
+      fl.Q.value = q
+      fl.frequency.setValueAtTime(f, at)
+      if (to) fl.frequency.exponentialRampToValueAtTime(to, at + dur)
+      const g = env(ctx, at, { attack, dur, gain, curve })
+      s.connect(fl).connect(g).connect(out)
+      s.start(at, 0)
+      s.stop(at + dur + 0.05)
+    },
+    kick(ctx, out, at, gain = 0.5) {
+      S.tone(ctx, out, at, { f: 150, to: 45, dur: 0.28, gain, type: 'sine' })
+      S.noise(ctx, out, at, { f: 3000, dur: 0.02, gain: gain * 0.25, type: 'highpass' })
+    },
+    hat(ctx, out, at, gain = 0.06) {
+      S.noise(ctx, out, at, { f: 8000, dur: 0.05, gain, type: 'highpass', q: 0.5 })
+    },
+    click(ctx, out, at, gain = 0.15, f = 2400) {
+      S.noise(ctx, out, at, { f, dur: 0.025, gain, q: 2 })
+    },
+    pluck(ctx, out, at, f, gain = 0.18, dur = 0.5) {
+      S.tone(ctx, out, at, { f, dur, gain, type: 'triangle' })
+      S.tone(ctx, out, at, { f: f * 2, dur: dur * 0.5, gain: gain * 0.25, type: 'sine' })
+    },
+    keys(ctx, out, at, f, gain = 0.12, dur = 1.6) {
+      // soft electric-piano-ish tone
+      S.tone(ctx, out, at, { f, dur, gain, type: 'sine', attack: 0.004 })
+      S.tone(ctx, out, at, { f: f * 2, dur: dur * 0.4, gain: gain * 0.3, type: 'sine' })
+      S.tone(ctx, out, at, { f: f * 3.01, dur: dur * 0.15, gain: gain * 0.12, type: 'sine' })
+    },
+    pad(ctx, out, at, freqs, dur = 2, gain = 0.05) {
+      for (const f of freqs) {
+        S.tone(ctx, out, at, { f, dur, gain, type: 'triangle', attack: 0.25, detune: -6 })
+        S.tone(ctx, out, at, { f, dur, gain: gain * 0.7, type: 'sine', attack: 0.25, detune: 7 })
+      }
+    },
+    whoosh(ctx, out, at, dur = 0.4, gain = 0.18, up = true) {
+      S.noise(ctx, out, at, { f: up ? 400 : 4000, to: up ? 4000 : 400, dur, gain, q: 1.2, attack: dur * 0.6, curve: 'lin' })
+    },
+    thump(ctx, out, at, gain = 0.5) {
+      S.tone(ctx, out, at, { f: 90, to: 38, dur: 0.45, gain })
+      S.noise(ctx, out, at, { f: 600, dur: 0.12, gain: gain * 0.35, type: 'lowpass' })
+    },
+    chime(ctx, out, at, f = 880, gain = 0.12) {
+      ;[1, 2.01, 3.02, 4.2].forEach((m, i) => S.tone(ctx, out, at, { f: f * m, dur: 1.4 - i * 0.25, gain: gain / (i + 1) }))
+    },
+  }
+  const note = (n) => 440 * Math.pow(2, (n - 69) / 12) // MIDI → Hz
+
+  // ---------- playback ----------
+  const Piece = (window.Piece = { setup: null, render: () => {}, sounds: [], cuts: [], gain: 1 })
+  window.K = { clamp, lerp, ease, tw, css, rng, $, $$, S, note, W, H, DUR }
+
+  let t = clamp(Number(P.get('t') ?? 0), 0, DUR)
+  let playing = false, raf = 0, lastNow = 0, lastPost = -1, rate = 1
+  let muted = P.has('muted') ? P.get('muted') !== '0' : EMBED
+  let ctx = null, bus = null, schedAbs = 0, absT = 0
+
+  const draw = () => {
+    Piece.render(t)
+    if (EMBED && Math.abs(t - lastPost) > 0.03) post('time')
+  }
+  const post = (type) => {
+    lastPost = t
+    if (EMBED) window.parent.postMessage({ source: 'piece', type, t, duration: DUR, playing, muted, rate, cuts: Piece.cuts }, '*')
+  }
+
+  function audioOn() {
+    if (muted || EXPORT) return false
+    ctx ??= new (window.AudioContext || window.webkitAudioContext)()
+    if (ctx.state === 'suspended') ctx.resume()
+    return true
+  }
+  function newBus() {
+    if (bus) {
+      const old = bus
+      old.gain.setTargetAtTime(0, ctx.currentTime, 0.02)
+      setTimeout(() => old.disconnect(), 200)
+    }
+    bus = null
+    if (!audioOn()) return
+    bus = master(ctx)
+    absT = t
+    schedAbs = t
+  }
+  function master(c) {
+    const comp = c.createDynamicsCompressor()
+    comp.threshold.value = -10
+    comp.ratio.value = 4
+    const g = c.createGain()
+    g.gain.value = 0.9 * Piece.gain
+    g.connect(comp).connect(c.destination)
+    return g
+  }
+  // Lookahead scheduler on a monotonic clock, so loops wrap cleanly.
+  function schedule() {
+    if (!bus || !ctx) return
+    const horizon = absT + 0.25 * rate
+    const sounds = Piece.sounds
+    while (schedAbs < horizon) {
+      const cycle = Math.floor(schedAbs / DUR)
+      const from = schedAbs - cycle * DUR
+      const to = Math.min(DUR, from + (horizon - schedAbs))
+      for (const e of sounds) {
+        if (e.t >= from && e.t < to) {
+          const at = ctx.currentTime + (cycle * DUR + e.t - absT) / rate
+          if (at >= ctx.currentTime - 0.01) e.fn(ctx, bus, Math.max(at, ctx.currentTime))
+        }
+      }
+      schedAbs = cycle * DUR + to
+      if (to >= DUR && !LOOP) break
+    }
+  }
+
+  function frame(now) {
+    if (!playing) return
+    const dt = Math.min(0.1, (now - lastNow) / 1000) * rate
+    lastNow = now
+    t += dt
+    absT += dt
+    if (t >= DUR) {
+      if (LOOP) t -= DUR
+      else {
+        t = DUR
+        draw()
+        pause()
+        post('ended')
+        return
+      }
+    }
+    draw()
+    schedule()
+    raf = requestAnimationFrame(frame)
+  }
+  function play() {
+    if (playing) return
+    if (!LOOP && t >= DUR - 0.01) t = 0
+    playing = true
+    lastNow = performance.now()
+    newBus()
+    schedule()
+    raf = requestAnimationFrame(frame)
+    post('play')
+  }
+  function pause() {
+    playing = false
+    cancelAnimationFrame(raf)
+    if (bus && ctx) newBus()
+    post('pause')
+  }
+  function seek(x) {
+    t = clamp(x, 0, DUR)
+    draw()
+    if (playing) newBus()
+  }
+  function setRate(r) {
+    rate = r
+    if (playing) newBus()
+    post('rate')
+  }
+  function setMuted(m) {
+    muted = m
+    if (playing) newBus()
+    post('mute')
+  }
+
+  // Export: schedule every sound for one pass onto any BaseAudioContext.
+  function buildAudio(c, when = 0) {
+    const out = master(c)
+    for (const e of Piece.sounds) e.fn(c, out, when + e.t)
+  }
+
+  window.piece = { duration: DUR, loop: LOOP, width: W, height: H, seek, play, pause, buildAudio, setMuted, setRate, get cuts() { return Piece.cuts }, get t() { return t }, ready: false }
+
+  // ---------- stage ----------
+  function fit() {
+    const stage = document.getElementById('stage')
+    if (EXPORT) {
+      stage.style.transform = 'none'
+      return
+    }
+    const s = Math.min(innerWidth / W, innerHeight / H)
+    stage.style.transform = `translate(${(innerWidth - W * s) / 2}px,${(innerHeight - H * s) / 2}px) scale(${s})`
+  }
+  const base = document.createElement('style')
+  base.textContent = `*,*::before,*::after{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:#000}#stage{position:absolute;left:0;top:0;width:${W}px;height:${H}px;overflow:hidden;transform-origin:0 0}`
+  document.head.prepend(base)
+  addEventListener('resize', fit)
+
+  addEventListener('message', (e) => {
+    const m = e.data
+    if (!m || m.source !== 'site') return
+    if (m.type === 'play') play()
+    if (m.type === 'pause') pause()
+    if (m.type === 'seek') seek(m.t)
+    if (m.type === 'restart') { seek(0); play() }
+    if (m.type === 'mute') setMuted(!!m.muted)
+    if (m.type === 'rate') setRate(Number(m.rate) || 1)
+  })
+  if (!EMBED && !EXPORT) {
+    // Opened directly: click toggles sound + restarts, space toggles play.
+    addEventListener('click', () => { setMuted(false); seek(0); play() })
+    addEventListener('keydown', (e) => { if (e.code === 'Space') { e.preventDefault(); playing ? pause() : play() } })
+  }
+
+  addEventListener('load', async () => {
+    fit()
+    await document.fonts.ready
+    Piece.setup?.()
+    draw()
+    window.piece.ready = true
+    post('ready')
+    if (!EXPORT && !P.has('t') && (P.get('autoplay') === '1' || !EMBED)) play()
+  })
+})()
+</script>
+</head><body>
+<svg width="0" height="0" style="position:absolute"><defs>
+  <g id="sneaker"><path d="M18 150 L18 104 Q20 92 34 92 L90 96 Q118 60 150 64 L176 70 Q190 112 238 124 Q282 134 282 158 L282 168 L18 168 Z" fill="currentColor"/><rect x="14" y="166" width="272" height="20" rx="10" fill="#111820"/><path d="M110 92 l14 -10 M126 98 l14 -10 M142 104 l14 -10" stroke="#fff" stroke-width="6" stroke-linecap="round"/></g>
+  <g id="watch"><rect x="120" y="10" width="60" height="70" rx="10" fill="#111820"/><rect x="120" y="170" width="60" height="70" rx="10" fill="#111820"/><circle cx="150" cy="125" r="70" fill="currentColor"/><circle cx="150" cy="125" r="54" fill="#fff"/><path d="M150 125 L150 88 M150 125 L176 136" stroke="#111820" stroke-width="7" stroke-linecap="round"/></g>
+  <g id="camera"><rect x="30" y="70" width="240" height="150" rx="22" fill="currentColor"/><rect x="70" y="50" width="70" height="30" rx="8" fill="currentColor"/><circle cx="150" cy="145" r="56" fill="#111820"/><circle cx="150" cy="145" r="32" fill="#2b3440"/><circle cx="235" cy="100" r="10" fill="#fff"/></g>
+  <g id="tcard"><g transform="rotate(-6 150 115)"><rect x="80" y="10" width="140" height="210" rx="14" fill="currentColor"/><rect x="96" y="30" width="108" height="100" rx="8" fill="#fff" opacity=".85"/><path d="M150 52 l10 22 24 3 -18 16 5 24 -21 -12 -21 12 5 -24 -18 -16 24 -3z" fill="#111820"/></g></g>
+  <g id="phones"><path d="M70 150 Q70 40 150 40 Q230 40 230 150" stroke="#111820" stroke-width="18" fill="none"/><rect x="48" y="130" width="54" height="90" rx="18" fill="currentColor"/><rect x="198" y="130" width="54" height="90" rx="18" fill="currentColor"/></g>
+</defs></svg>
+<div id="stage">
+  <div id="corner" class="a logo"><span>e</span><span>b</span><span>a</span><span>y</span></div>
+
+  <section class="scene" id="s1">
+    <div class="a big" id="hook" style="left:120px;top:300px;font-size:260px"><span class="word">Things</span><br><span class="word">people</span> <span class="word" style="color:var(--red)">love.</span></div>
+  </section>
+
+  <section class="scene" id="s2" style="background:var(--soft)">
+    <div class="a" id="shelf" style="left:0;top:0"></div>
+    <div class="a" id="s2h" style="left:120px;top:150px;font-weight:800;font-size:72px;letter-spacing:-.03em">Bid on it. Or buy it now.</div>
+  </section>
+
+  <section class="scene" id="s3">
+    <div class="a big" id="n134" style="left:120px;top:250px;font-size:440px;color:var(--blue);font-variant-numeric:tabular-nums">134M</div>
+    <div class="a label" id="s3l" style="left:132px;top:680px">active buyers</div>
+    <div class="a bar" id="s3b" style="left:132px;top:790px;width:520px;background:var(--blue)"></div>
+  </section>
+
+  <section class="scene" id="s4">
+    <div class="a" id="s4card" style="left:180px;top:200px;width:760px;height:680px;border-radius:44px;background:#e3eefb;color:var(--blue);display:flex;align-items:center;justify-content:center">
+      <svg viewBox="0 0 300 250" style="width:620px"><use href="#sneaker"/></svg>
+    </div>
+    <div class="a" id="s4badge" style="left:800px;top:150px;width:220px;height:220px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center">
+      <svg viewBox="0 0 100 100" style="width:120px"><path id="s4tick" pathLength="1" d="M22 52 L42 72 L80 30" stroke="#fff" stroke-width="13" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-dasharray="1"/></svg>
+    </div>
+    <div class="a" id="s4t" style="left:1080px;top:340px;width:720px;font-weight:900;font-size:110px;letter-spacing:-.045em;line-height:.92">Authenticity Guarantee</div>
+    <div class="a" id="s4s" style="left:1080px;top:580px;font-weight:600;font-size:44px;color:var(--mute)">Checked by experts before it ships.</div>
+  </section>
+
+  <section class="scene" id="s5">
+    <div class="a" id="s5bg" style="inset:0;background:var(--blue);transform-origin:0 50%"></div>
+    <svg class="a" id="s5shield" viewBox="0 0 200 230" style="left:200px;top:220px;width:520px;overflow:visible">
+      <path id="s5path" pathLength="1" d="M100 8 L188 40 L188 112 Q188 188 100 222 Q12 188 12 112 L12 40 Z" fill="#fff" fill-opacity="0" stroke="#fff" stroke-width="8" stroke-linejoin="round" stroke-dasharray="1"/>
+      <text id="s5d" x="100" y="140" text-anchor="middle" font-family="Figtree" font-weight="900" font-size="92" fill="#0064D2" style="transform-box:fill-box;transform-origin:center">$</text>
+    </svg>
+    <div class="a" id="s5t" style="left:880px;top:300px;width:880px;font-weight:900;font-size:110px;letter-spacing:-.045em;line-height:.92;color:#fff">Money Back Guarantee</div>
+    <div class="a" id="s5s" style="left:880px;top:540px;font-weight:600;font-size:44px;color:#fff;opacity:.85">Get the item you ordered, or your money back.</div>
+  </section>
+
+  <section class="scene" id="s6">
+    <div class="a" id="s6h" style="left:120px;top:160px;font-weight:800;font-size:64px;letter-spacing:-.03em">Selling takes three steps.</div>
+    <div class="a step" style="left:120px"><div class="n" style="color:var(--red)">1</div><div class="t">Snap a photo</div>
+      <div style="margin-top:40px;height:250px;border-radius:24px;border:6px solid var(--ink);position:relative;overflow:hidden;color:var(--yellow)">
+        <svg id="s6cam" viewBox="0 0 300 250" style="position:absolute;inset:20px;width:calc(100% - 40px);height:200px"><use href="#camera"/></svg>
+        <div id="s6flash" style="position:absolute;inset:0;background:#fff;opacity:0"></div>
+      </div></div>
+    <div class="a step" style="left:710px"><div class="n" style="color:var(--blue)">2</div><div class="t">List in seconds</div>
+      <div style="margin-top:40px;background:#fff;border-radius:24px;padding:28px">
+        <div class="ln" style="height:22px;width:85%;background:var(--ink);margin-top:0"></div>
+        <div class="ln" style="width:95%;margin-top:22px"></div>
+        <div class="ln" style="width:70%"></div>
+        <div class="ln" style="width:80%"></div>
+        <div id="s6ai" style="margin-top:26px;font-weight:700;font-size:24px;color:var(--blue)">✦ Drafted from your photo</div>
+      </div></div>
+    <div class="a step" style="left:1300px;overflow:hidden"><div class="n" style="color:var(--green)">3</div><div class="t">Sell worldwide</div>
+      <div id="s6note" style="margin-top:40px;background:var(--ink);color:#fff;border-radius:24px;padding:28px;font-weight:700;font-size:30px">
+        <div style="opacity:.6;font-size:22px">eBay · now</div>You sold an item!<div id="s6amt" style="font-weight:900;font-size:64px;margin-top:8px;color:var(--green);font-variant-numeric:tabular-nums">$95.00</div>
+      </div></div>
+  </section>
+
+  <section class="scene" id="s7">
+    <div class="a big" id="n75" style="left:120px;top:250px;font-size:440px;font-variant-numeric:tabular-nums">$75B</div>
+    <div class="a bar" id="s7b" style="left:132px;top:640px;width:980px;height:30px;border-radius:15px;background:var(--yellow)"></div>
+    <div class="a label" id="s7l" style="left:132px;top:710px">in goods sold on eBay in 2024</div>
+  </section>
+
+  <section class="scene" id="s8">
+    <div class="a logo" id="s8logo" style="left:0;right:0;top:250px;text-align:center;font-size:300px"><span>e</span><span>b</span><span>a</span><span>y</span></div>
+    <div class="a" id="s8tag" style="left:0;right:0;top:620px;text-align:center;font-weight:600;font-size:52px">Things people love.</div>
+    <div class="a" id="s8cta" style="left:50%;top:740px;margin-left:-280px;width:560px;text-align:center;background:var(--blue);color:#fff;font-weight:700;font-size:38px;padding:26px 0;border-radius:999px">Shop and sell on ebay.com</div>
+  </section>
+</div>
+<script>
+const { tw, css, ease, lerp, clamp, $, $$, S, note } = K
+Piece.cuts = [1.5, 3.5, 5.5, 7.5, 9.5, 11.5, 13]
+const CUTS = { s1: [0, 1.5], s2: [1.5, 3.5], s3: [3.5, 5.5], s4: [5.5, 7.75], s5: [7.5, 9.5], s6: [9.5, 11.5], s7: [11.5, 13], s8: [13, 15.01] }
+
+// shelf of listings
+const ITEMS = [
+  ['watch', 'red', '#fde7e8', 310, 'Buy It Now'], ['sneaker', 'blue', '#e3eefb', 184, 'Bid'], ['camera', 'yellow', '#fff4d6', 95, 'Buy It Now'],
+  ['tcard', 'green', '#eef6dc', 62, 'Bid'], ['phones', 'red', '#fde7e8', 140, 'Buy It Now'], ['watch', 'blue', '#e3eefb', 220, 'Bid'],
+  ['camera', 'green', '#eef6dc', 75, 'Buy It Now'], ['sneaker', 'yellow', '#fff4d6', 130, 'Bid'], ['tcard', 'red', '#fde7e8', 48, 'Bid'],
+]
+const CHIP = { red: '#c21d23', blue: '#0064D2', yellow: '#a87600', green: '#5c8010' }
+$('#shelf').innerHTML = ITEMS.map(([icon, c, bg, , kind], i) =>
+  `<div class="a card" style="left:${i * 460 - 220}px;background:${bg};color:var(--${c})"><svg viewBox="0 0 300 250"><use href="#${icon}"/></svg><div><span class="chip" style="color:${CHIP[c]}">${kind === 'Bid' ? 'Bid · <b class=bids>3</b> bids' : 'Buy It Now'}</span><div class="price" style="margin-top:10px">$${ITEMS[i][3]}</div></div></div>`).join('')
+const prices = $$('#shelf .price'), bidCounts = $$('#shelf .bids')
+
+const words = $$('#hook .word')
+const WORD_T = [0, 0.375, 0.75]
+const lines = $$('#s6 .ln'), steps = $$('#s6 .step')
+
+Piece.render = (t) => {
+  for (const [id, [a, b]] of Object.entries(CUTS)) $('#' + id).style.visibility = t >= a && t < b ? 'visible' : 'hidden'
+  css($('#corner'), { o: (t >= 7.5 && t < 9.5) || t >= 13 ? 0 : 1 })
+
+  // 1 · hook: words slam in on the beat, whip out
+  words.forEach((w, i) => { const p = tw(t, WORD_T[i], WORD_T[i] + 0.16, ease.outExpo); css(w, { s: lerp(1.5, 1, p), o: p > 0 ? 1 : 0, blur: (1 - p) * 8 }) })
+  const out1 = tw(t, 1.32, 1.5, ease.inExpo)
+  css($('#hook'), { x: -500 * out1, blur: 24 * out1 })
+
+  // 2 · shelf: whip pan in, keep drifting
+  const whip = tw(t, 1.5, 1.9, ease.outExpo)
+  css($('#shelf'), { x: lerp(1500, 0, whip) - (t - 1.5) * 380, blur: (1 - whip) * 26 })
+  const ticks = Math.max(0, Math.floor((t - 1.7) * 4))
+  let bi = 0
+  ITEMS.forEach(([, , , p, kind], i) => {
+    if (kind !== 'Bid') return
+    const n = Math.max(0, ticks - ((i * 3) % 4))
+    prices[i].textContent = '$' + (p + n * 5)
+    bidCounts[bi++].textContent = 3 + n + i
+  })
+  css($('#s2h'), { y: lerp(40, 0, tw(t, 1.75, 2.1)), o: tw(t, 1.75, 2.0) })
+
+  // 3 · 134M count-up
+  const c3 = tw(t, 3.6, 4.1, ease.outExpo)
+  $('#n134').textContent = Math.round(134 * c3) + 'M'
+  css($('#n134'), { s: lerp(0.94, 1, c3) })
+  $('#n134').style.transformOrigin = '0 70%'
+  css($('#s3l'), { y: lerp(30, 0, tw(t, 4.0, 4.35)), o: tw(t, 4.0, 4.3) })
+  css($('#s3b'), { sx: tw(t, 4.05, 4.45, ease.inOut3) })
+
+  // 4 · authenticity: card slides in, badge stamps with a shake
+  css($('#s4card'), { x: lerp(-1000, 0, tw(t, 5.5, 5.88, ease.outExpo)) + shake(t, 6.12, 16) })
+  const st = tw(t, 6.1, 6.28, ease.outBack)
+  css($('#s4badge'), { s: lerp(2.4, 1, st), r: lerp(-40, -10, st), o: t >= 6.1 ? 1 : 0 })
+  $('#s4tick').style.strokeDashoffset = 1 - tw(t, 6.22, 6.45)
+  css($('#s4t'), { x: lerp(160, 0, tw(t, 5.7, 6.05, ease.outExpo)), o: tw(t, 5.7, 5.9) })
+  css($('#s4s'), { y: lerp(30, 0, tw(t, 6.35, 6.7)), o: tw(t, 6.35, 6.6) })
+
+  // 5 · money back: blue wipe, shield draws, $ pops
+  css($('#s5bg'), { sx: tw(t, 7.5, 7.75, ease.inOutExpo) })
+  $('#s5path').style.strokeDashoffset = 1 - tw(t, 7.75, 8.2, ease.inOut3)
+  $('#s5path').setAttribute('fill-opacity', tw(t, 8.1, 8.3))
+  css($('#s5d'), { s: tw(t, 8.22, 8.45, ease.outBack) })
+  css($('#s5t'), { x: lerp(120, 0, tw(t, 7.85, 8.2, ease.outExpo)), o: tw(t, 7.85, 8.0) })
+  css($('#s5s'), { y: lerp(30, 0, tw(t, 8.3, 8.65)), o: tw(t, 8.3, 8.55) * 0.85 })
+
+  // 6 · three steps cascade
+  css($('#s6h'), { y: lerp(30, 0, tw(t, 9.5, 9.8)), o: tw(t, 9.5, 9.7) })
+  steps.forEach((s, i) => { const p = tw(t, 9.6 + i * 0.3, 9.95 + i * 0.3, ease.outExpo); css(s, { y: lerp(80, 0, p), o: p }) })
+  css($('#s6flash'), { o: t >= 10.05 ? 1 - tw(t, 10.05, 10.35) : 0 })
+  css($('#s6cam'), { s: t >= 10.05 ? lerp(0.92, 1, tw(t, 10.05, 10.3, ease.outBack)) : 1 })
+  lines.forEach((l, i) => css(l, { sx: tw(t, 10.2 + i * 0.1, 10.45 + i * 0.1, ease.out3) }))
+  lines[3].style.background = `linear-gradient(90deg,#e6e8eb ${(t - 10.5) * 120 - 40}%,#cfe0f7 ${(t - 10.5) * 120}%,#e6e8eb ${(t - 10.5) * 120 + 40}%)`
+  css($('#s6ai'), { o: tw(t, 10.55, 10.75) })
+  css($('#s6note'), { y: lerp(-260, 0, tw(t, 10.65, 11.0, ease.outBack)) })
+  $('#s6amt').textContent = '$' + (95 * tw(t, 10.75, 11.1, ease.outExpo)).toFixed(2)
+
+  // 7 · $75B count-up
+  const c7 = tw(t, 11.55, 12.05, ease.outExpo)
+  $('#n75').textContent = '$' + Math.round(75 * c7) + 'B'
+  css($('#s7b'), { sx: tw(t, 11.85, 12.25, ease.inOut3) })
+  css($('#s7l'), { y: lerp(30, 0, tw(t, 12.05, 12.4)), o: tw(t, 12.05, 12.3) })
+
+  // 8 · end card
+  const e = tw(t, 13.0, 13.5, ease.outExpo)
+  css($('#s8logo'), { s: lerp(2.2, 1, e), o: tw(t, 13.0, 13.1) })
+  css($('#s8tag'), { y: lerp(24, 0, tw(t, 13.4, 13.75)), o: tw(t, 13.4, 13.7) })
+  css($('#s8cta'), { s: lerp(0.7, 1, tw(t, 13.6, 13.95, ease.outBack)), o: tw(t, 13.6, 13.75) })
+}
+function shake(t, at, amp) { const d = t - at; return d < 0 ? 0 : amp * Math.sin(d * 70) * Math.exp(-d * 9) }
+
+// ---- sound: 120 bpm pluck bed, hits on every cut ----
+const snd = []
+const at = (t, fn) => snd.push({ t, fn })
+const CH = [[48, 60, 64, 67], [45, 57, 60, 64], [41, 57, 60, 65], [43, 55, 59, 62], [48, 60, 64, 67], [45, 57, 60, 64]]
+WORD_T.forEach((w) => at(w, (c, o, a) => { S.thump(c, o, a, 0.55); S.noise(c, o, a, { f: 1800, dur: 0.12, gain: 0.18 }) }))
+at(1.3, (c, o, a) => S.whoosh(c, o, a, 0.22, 0.2))
+for (let b = 3; b < 26; b++) {                       // beats 1.5s → 13s
+  const t = b * 0.5, bar = Math.floor((t - 1.5) / 2), ch = CH[Math.min(bar, CH.length - 1)]
+  at(t, (c, o, a) => S.kick(c, o, a, 0.42))
+  at(t + 0.25, (c, o, a) => S.hat(c, o, a))
+  if (b % 2 === 0) at(t, (c, o, a) => S.noise(c, o, a, { f: 1500, dur: 0.12, gain: 0.09 }))
+  at(t, (c, o, a) => S.tone(c, o, a, { f: note(ch[0] - 12), dur: 0.4, gain: 0.16, type: 'triangle' }))
+  ;[0, 0.25].forEach((h, k) => at(t + h, (c, o, a) => S.pluck(c, o, a, note(ch[1 + ((b * 2 + k) % 3)] + 12), 0.05, 0.3)))
+}
+for (let i = 0; i < 12; i++) at(3.6 + i * 0.04, (c, o, a) => S.click(c, o, a, 0.06, 3000 + i * 120))
+at(6.1, (c, o, a) => { S.thump(c, o, a, 0.4); S.click(c, o, a, 0.25, 1800) })
+at(6.22, (c, o, a) => S.pluck(c, o, a, note(84), 0.08, 0.4))
+at(7.45, (c, o, a) => S.whoosh(c, o, a, 0.3, 0.18))
+at(8.22, (c, o, a) => S.pluck(c, o, a, note(79), 0.1, 0.5))
+at(10.05, (c, o, a) => { S.click(c, o, a, 0.3, 4000); S.noise(c, o, a, { f: 6000, dur: 0.15, gain: 0.08, type: 'highpass' }) })
+at(10.65, (c, o, a) => { S.chime(c, o, a, note(88), 0.07); S.chime(c, o, a, note(95), 0.05) })
+for (let i = 0; i < 12; i++) at(11.55 + i * 0.04, (c, o, a) => S.click(c, o, a, 0.06, 3000 + i * 120))
+at(12.6, (c, o, a) => S.whoosh(c, o, a, 0.4, 0.14))
+at(13.0, (c, o, a) => { S.thump(c, o, a, 0.5); S.pad(c, o, a, [note(48), note(60), note(64), note(67), note(72), note(76)], 2.0, 0.05); ;[72, 76, 79, 84].forEach((n, i) => S.pluck(c, o, a + i * 0.06, note(n), 0.1, 1)) })
+Piece.gain = 0.55
+Piece.sounds = snd
+</script>
+</body></html>

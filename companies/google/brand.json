@@ -1,0 +1,37 @@
+{
+  "name": "Google",
+  "tagline": "Organize the world's information.",
+  "description": "Search, Maps, Gemini and the products billions of people use to find things out every day.",
+  "website": "https://www.google.com",
+  "order": 2,
+  "colors": {
+    "blue": "#4285F4",
+    "red": "#EA4335",
+    "yellow": "#FBBC05",
+    "green": "#34A853",
+    "ink": "#202124",
+    "grey": "#5F6368",
+    "paper": "#FFFFFF"
+  },
+  "fonts": {
+    "display": "Outfit",
+    "body": "Outfit",
+    "note": "Google Sans is restricted; Outfit is the geometric stand-in."
+  },
+  "logo": "assets/logo.svg",
+  "featured": "promo-15s.html",
+  "hero": "promo-15s.html",
+  "cta": "Start at google.com",
+  "features": [
+    "AI Mode in Search: ask longer questions, get a composed answer with links",
+    "Google Lens: search what you see with your camera",
+    "Google Maps: live directions and places, everywhere",
+    "Gemini: Google's AI assistant across your apps"
+  ],
+  "howItWorks": ["Ask anything", "Get an answer", "Go deeper"],
+  "keyFacts": [
+    { "label": "Searches a year", "value": "5T+", "source": "Google, 2025 (verify before publishing)" },
+    { "label": "Products with 2B+ users", "value": "6", "source": "Alphabet earnings remarks (verify before publishing)" },
+    { "label": "Founded", "value": "1998", "source": "Google company history" }
+  ]
+}

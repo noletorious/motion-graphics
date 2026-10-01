@@ -1,0 +1,36 @@
+{
+  "name": "eBay",
+  "tagline": "Things people love.",
+  "description": "Global online marketplace where people buy and sell almost anything, new or used.",
+  "website": "https://www.ebay.com",
+  "order": 1,
+  "colors": {
+    "red": "#E53238",
+    "blue": "#0064D2",
+    "yellow": "#F5AF02",
+    "green": "#86B817",
+    "ink": "#111820",
+    "paper": "#FFFFFF"
+  },
+  "fonts": {
+    "display": "Figtree",
+    "body": "Figtree",
+    "note": "eBay's brand face (Market Sans) is proprietary; Figtree is the stand-in."
+  },
+  "logo": "assets/logo.svg",
+  "featured": "promo-15s.html",
+  "hero": "promo-15s.html",
+  "cta": "Shop and sell on ebay.com",
+  "features": [
+    "Auctions and Buy It Now on the same marketplace",
+    "Authenticity Guarantee: expert checks on sneakers, watches, handbags and trading cards",
+    "eBay Money Back Guarantee: get the item you ordered or your money back",
+    "List from a photo: AI drafts the title and description from your picture"
+  ],
+  "howItWorks": ["Snap a photo", "List in seconds", "Sell to buyers worldwide"],
+  "keyFacts": [
+    { "label": "Active buyers", "value": "134M", "source": "eBay FY2024 results (verify before publishing)" },
+    { "label": "Gross merchandise volume, 2024", "value": "$75B", "source": "eBay FY2024 results, $74.7B (verify before publishing)" },
+    { "label": "Founded", "value": "1995", "source": "eBay company history" }
+  ]
+}

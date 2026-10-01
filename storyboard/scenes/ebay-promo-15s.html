@@ -1,0 +1,118 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@500;600;700;800;900&display=block" rel="stylesheet">
+<link rel="stylesheet" href="_stage.css">
+<style>
+:root{--red:#E53238;--blue:#0064D2;--yellow:#F5AF02;--green:#86B817;--ink:#111820;--mute:#6b7280;--line:#e6e8eb}
+body{background:#fff;font-family:Figtree,sans-serif;color:var(--ink)}
+.logo{font-weight:800;letter-spacing:-.07em;line-height:1}
+.logo span:nth-child(1){color:var(--red)}.logo span:nth-child(2){color:var(--blue)}.logo span:nth-child(3){color:var(--yellow)}.logo span:nth-child(4){color:var(--green)}
+.corner{position:absolute;left:80px;top:64px;font-size:56px}
+.big{position:absolute;left:120px;font-weight:900;letter-spacing:-.045em;line-height:.88}
+.label{font-weight:600;font-size:44px;letter-spacing:-.01em;color:var(--mute)}
+.card{position:absolute;width:420px;height:560px;border-radius:32px;padding:28px;display:flex;flex-direction:column;justify-content:space-between}
+.card svg{width:100%;height:300px}
+.price{font-weight:800;font-size:52px;letter-spacing:-.03em}
+.chip{display:inline-block;font-weight:700;font-size:22px;padding:8px 16px;border-radius:999px;background:#fff}
+.blur{filter:blur(0px)}
+.bar{position:absolute;height:22px;border-radius:11px}
+.step{position:absolute;top:250px;width:500px;height:560px;border-radius:36px;background:#f6f7f8;padding:40px}
+.step .n{font-weight:900;font-size:120px;letter-spacing:-.05em;line-height:1}
+.step .t{font-weight:800;font-size:56px;letter-spacing:-.03em;margin-top:6px}
+</style></head><body>
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <g id="sneaker"><path d="M18 150 L18 104 Q20 92 34 92 L90 96 Q118 60 150 64 L176 70 Q190 112 238 124 Q282 134 282 158 L282 168 L18 168 Z" fill="currentColor"/><rect x="14" y="166" width="272" height="20" rx="10" fill="#111820"/><path d="M110 92 l14 -10 M126 98 l14 -10 M142 104 l14 -10" stroke="#fff" stroke-width="6" stroke-linecap="round"/></g>
+    <g id="watch"><rect x="120" y="10" width="60" height="70" rx="10" fill="#111820"/><rect x="120" y="170" width="60" height="70" rx="10" fill="#111820"/><circle cx="150" cy="125" r="70" fill="currentColor"/><circle cx="150" cy="125" r="54" fill="#fff"/><path d="M150 125 L150 88 M150 125 L176 136" stroke="#111820" stroke-width="7" stroke-linecap="round"/></g>
+    <g id="camera"><rect x="30" y="70" width="240" height="150" rx="22" fill="currentColor"/><rect x="70" y="50" width="70" height="30" rx="8" fill="currentColor"/><circle cx="150" cy="145" r="56" fill="#111820"/><circle cx="150" cy="145" r="32" fill="#2b3440"/><circle cx="235" cy="100" r="10" fill="#fff"/></g>
+    <g id="tcard"><rect x="80" y="10" width="140" height="210" rx="14" fill="currentColor" transform="rotate(-6 150 115)"/><rect x="96" y="30" width="108" height="100" rx="8" fill="#fff" opacity=".85" transform="rotate(-6 150 115)"/><path d="M150 52 l10 22 24 3 -18 16 5 24 -21 -12 -21 12 5 -24 -18 -16 24 -3z" fill="#111820" transform="rotate(-6 150 115)"/></g>
+    <g id="phones"><path d="M70 150 Q70 40 150 40 Q230 40 230 150" stroke="#111820" stroke-width="18" fill="none"/><rect x="48" y="130" width="54" height="90" rx="18" fill="currentColor"/><rect x="198" y="130" width="54" height="90" rx="18" fill="currentColor"/></g>
+  </defs>
+</svg>
+<div class="stage w169">
+
+<!-- 1 · 0.0s hook -->
+<section class="shot" data-shot="1">
+  <div class="logo corner"><span>e</span><span>b</span><span>a</span><span>y</span></div>
+  <div class="big" style="top:290px;font-size:260px">Things<br>people <span style="color:var(--red)">love.</span></div>
+</section>
+
+<!-- 2 · 1.5s endless shelf -->
+<section class="shot" data-shot="2" style="background:#f6f7f8">
+  <div class="card" style="left:-220px;top:290px;background:#fde7e8;color:var(--red);filter:blur(6px)"><svg viewBox="0 0 300 250"><use href="#watch"/></svg><div><div class="price">$310</div></div></div>
+  <div class="card" style="left:240px;top:290px;background:#e3eefb;color:var(--blue)"><svg viewBox="0 0 300 250"><use href="#sneaker"/></svg><div><span class="chip" style="color:var(--blue)">Bid · 2h left</span><div class="price" style="margin-top:10px">$184</div></div></div>
+  <div class="card" style="left:700px;top:290px;background:#fff4d6;color:var(--yellow)"><svg viewBox="0 0 300 250"><use href="#camera"/></svg><div><span class="chip" style="color:#a87600">Buy It Now</span><div class="price" style="margin-top:10px">$95</div></div></div>
+  <div class="card" style="left:1160px;top:290px;background:#eef6dc;color:var(--green)"><svg viewBox="0 0 300 250"><use href="#tcard"/></svg><div><span class="chip" style="color:#5c8010">Bid · 14 bids</span><div class="price" style="margin-top:10px">$62</div></div></div>
+  <div class="card" style="left:1620px;top:290px;background:#fde7e8;color:var(--red);filter:blur(6px)"><svg viewBox="0 0 300 250"><use href="#phones"/></svg><div><div class="price">$140</div></div></div>
+  <div style="position:absolute;left:120px;top:150px;font-weight:800;font-size:72px;letter-spacing:-.03em">Bid on it. Or buy it now.</div>
+</section>
+
+<!-- 3 · 3.5s stat -->
+<section class="shot" data-shot="3">
+  <div class="big" style="top:250px;font-size:440px;color:var(--blue)">134M</div>
+  <div class="label" style="position:absolute;left:132px;top:680px;font-size:64px;color:var(--ink)">active buyers</div>
+  <div class="bar" style="left:132px;top:790px;width:520px;background:var(--blue)"></div>
+</section>
+
+<!-- 4 · 5.5s authenticity -->
+<section class="shot" data-shot="4">
+  <div style="position:absolute;left:180px;top:200px;width:760px;height:680px;border-radius:44px;background:#e3eefb;color:var(--blue);display:flex;align-items:center;justify-content:center">
+    <svg viewBox="0 0 300 250" style="width:620px"><use href="#sneaker"/></svg>
+  </div>
+  <div style="position:absolute;left:800px;top:150px;width:220px;height:220px;border-radius:50%;background:var(--green);display:flex;align-items:center;justify-content:center;transform:rotate(-10deg)">
+    <svg viewBox="0 0 100 100" style="width:120px"><path d="M22 52 L42 72 L80 30" stroke="#fff" stroke-width="13" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+  <div style="position:absolute;left:1080px;top:340px;width:720px">
+    <div style="font-weight:900;font-size:110px;letter-spacing:-.045em;line-height:.92">Authenticity Guarantee</div>
+    <div class="label" style="margin-top:30px">Checked by experts before it ships.</div>
+  </div>
+</section>
+
+<!-- 5 · 7.5s money back -->
+<section class="shot" data-shot="5" style="background:var(--blue);color:#fff">
+  <svg viewBox="0 0 200 230" style="position:absolute;left:200px;top:220px;width:520px">
+    <path d="M100 8 L188 40 L188 112 Q188 188 100 222 Q12 188 12 112 L12 40 Z" fill="#fff"/>
+    <text x="100" y="140" text-anchor="middle" font-family="Figtree" font-weight="900" font-size="92" fill="#0064D2">$</text>
+  </svg>
+  <div style="position:absolute;left:880px;top:290px;width:880px">
+    <div style="font-weight:900;font-size:110px;letter-spacing:-.045em;line-height:.92">Money Back Guarantee</div>
+    <div style="margin-top:30px;font-weight:600;font-size:44px;opacity:.85">Get the item you ordered, or your money back.</div>
+  </div>
+</section>
+
+<!-- 6 · 9.5s how it works -->
+<section class="shot" data-shot="6">
+  <div style="position:absolute;left:120px;top:110px;font-weight:800;font-size:64px;letter-spacing:-.03em">Selling takes three steps.</div>
+  <div class="step" style="left:120px"><div class="n" style="color:var(--red)">1</div><div class="t">Snap a photo</div>
+    <div style="margin-top:40px;height:250px;border-radius:24px;border:6px solid var(--ink);position:relative;color:var(--yellow)"><svg viewBox="0 0 300 250" style="position:absolute;inset:20px;width:calc(100% - 40px);height:200px"><use href="#camera"/></svg></div></div>
+  <div class="step" style="left:710px"><div class="n" style="color:var(--blue)">2</div><div class="t">List in seconds</div>
+    <div style="margin-top:40px;background:#fff;border-radius:24px;padding:28px">
+      <div style="height:22px;width:85%;border-radius:11px;background:var(--ink)"></div>
+      <div style="height:16px;width:95%;border-radius:8px;background:var(--line);margin-top:22px"></div>
+      <div style="height:16px;width:70%;border-radius:8px;background:var(--line);margin-top:14px"></div>
+      <div style="height:16px;width:80%;border-radius:8px;background:linear-gradient(90deg,var(--line),#cfe0f7,var(--line));margin-top:14px"></div>
+      <div style="margin-top:26px;font-weight:700;font-size:24px;color:var(--blue)">✦ Drafted from your photo</div>
+    </div></div>
+  <div class="step" style="left:1300px"><div class="n" style="color:var(--green)">3</div><div class="t">Sell worldwide</div>
+    <div style="margin-top:40px;background:var(--ink);color:#fff;border-radius:24px;padding:28px;font-weight:700;font-size:30px">
+      <div style="opacity:.6;font-size:22px">eBay · now</div>You sold an item!<div style="font-weight:900;font-size:64px;margin-top:8px;color:var(--green)">$95.00</div>
+    </div></div>
+</section>
+
+<!-- 7 · 11.5s stat -->
+<section class="shot" data-shot="7">
+  <div class="big" style="top:250px;font-size:440px">$75B</div>
+  <div class="bar" style="left:132px;top:640px;width:980px;height:30px;background:var(--yellow)"></div>
+  <div class="label" style="position:absolute;left:132px;top:710px;font-size:64px;color:var(--ink)">in goods sold on eBay in 2024</div>
+</section>
+
+<!-- 8 · 13.0s end card -->
+<section class="shot" data-shot="8">
+  <div class="logo" style="position:absolute;left:0;right:0;top:250px;text-align:center;font-size:300px"><span>e</span><span>b</span><span>a</span><span>y</span></div>
+  <div style="position:absolute;left:0;right:0;top:620px;text-align:center;font-weight:600;font-size:52px">Things people love.</div>
+  <div style="position:absolute;left:50%;top:740px;transform:translateX(-50%);background:var(--blue);color:#fff;font-weight:700;font-size:38px;padding:26px 56px;border-radius:999px;white-space:nowrap">Shop and sell on ebay.com</div>
+</section>
+
+</div>
+<script src="_stage.js"></script>
+</body></html>
