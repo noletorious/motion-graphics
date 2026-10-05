@@ -1,20 +1,27 @@
 import { useEffect, useRef, useState } from 'react'
 import companies from 'virtual:companies'
-import type { Company as CompanyT, Piece } from '@/lib/types'
-import { clock, hero as heroOf, host, pad2, typeLabel } from '@/lib/pieces'
+import type { Company, Piece, Version } from '@/lib/types'
+import { clock, hero as heroOf, host, pad2, showcase, typeLabel, versionLabel, versionPath } from '@/lib/pieces'
 import { linkTo } from '@/lib/router'
 import { PieceFrame, type PieceFrameHandle } from '@/components/PieceFrame'
 import { Foot, TopBar } from '@/components/Chrome'
 import { cn } from '@/lib/utils'
 
-export function Company({ company: c }: { company: CompanyT }) {
-  const i = companies.indexOf(c)
-  const next = companies[(i + 1) % companies.length]
-  const hero = heroOf(c)
+/** Next stop after this version: the company's next version, else the next company's showcase. */
+function nextOf(c: Company, v: Version) {
+  const vi = c.versions.indexOf(v)
+  if (vi < c.versions.length - 1) return { company: c, version: c.versions[vi + 1] }
+  const nc = companies[(companies.indexOf(c) + 1) % companies.length]
+  return { company: nc, version: showcase(nc)! }
+}
+
+export function VersionPage({ company: c, version: v }: { company: Company; version: Version }) {
+  const next = nextOf(c, v)
+  const hero = heroOf(v)
   const heroRef = useRef<PieceFrameHandle>(null)
   const [active, setActive] = useState<string | null>(null)
-  useEffect(() => void (document.title = `${c.brand.name} — Motion`), [c])
-  useEffect(() => setActive(null), [c])
+  useEffect(() => void (document.title = `${c.brand.name} ${versionLabel(v)} — Motion`), [c, v])
+  useEffect(() => setActive(null), [c, v])
 
   const play = (file: string) => {
     heroRef.current?.send({ type: 'mute', muted: true }) // one sound at a time
@@ -23,20 +30,17 @@ export function Company({ company: c }: { company: CompanyT }) {
 
   return (
     <div className="page">
-      <TopBar
-        right={
-          <>
-            <a href="/" onClick={linkTo('/')}>← Index</a>
-            <span className="muted">
-              {pad2(i + 1)} / {pad2(companies.length)}
-            </span>
-          </>
-        }
-      />
+      <TopBar crumbs={[{ label: c.brand.name, href: `/${c.slug}` }, { label: versionLabel(v) }]} />
       <section className="co-head">
-        <h1 className="co-name rise">{c.brand.name}</h1>
+        <div className="rise">
+          <h1 className="co-name">{c.brand.name}</h1>
+          <p className="v-label">
+            <span className="mono muted">{v.id}</span> <i>{v.name}</i>
+          </p>
+        </div>
         <div className="rise" style={{ animationDelay: '80ms' }}>
-          <p className="co-desc">{c.brand.description}</p>
+          <p className="co-desc">{v.premise}</p>
+          <p className="co-about muted">{c.brand.description}</p>
           <a className="mono co-site" href={c.brand.website} target="_blank" rel="noreferrer">
             {host(c.brand.website)} ↗
           </a>
@@ -51,22 +55,24 @@ export function Company({ company: c }: { company: CompanyT }) {
         ))}
       </dl>
 
-      {hero && <Hero key={c.slug} slug={c.slug} piece={hero} frameRef={heroRef} onSound={() => setActive(null)} />}
+      {hero && <Hero key={versionPath(c, v)} name={`frame-${c.slug}-${v.id}`} piece={hero} frameRef={heroRef} onSound={() => setActive(null)} />}
 
       <section className="pieces-head">
         <h2>Pieces</h2>
-        <span className="mono muted">{pad2(c.pieces.length)}</span>
+        <span className="mono muted">{pad2(v.pieces.length)}</span>
       </section>
       <section className="pieces">
-        {c.pieces.map((p, n) => (
+        {v.pieces.map((p, n) => (
           <PieceCard key={p.file} piece={p} index={n} active={active === p.file} onPlay={() => play(p.file)} />
         ))}
       </section>
 
       <Foot>
-        <a className="next" href={`/${next.slug}`} onClick={linkTo(`/${next.slug}`)}>
-          <span className="mono muted">Next company</span>
-          <span className="next-name">{next.brand.name} →</span>
+        <a className="next" href={versionPath(next.company, next.version)} onClick={linkTo(versionPath(next.company, next.version))}>
+          <span className="mono muted">
+            Next · {next.company.brand.name} {next.version.id}
+          </span>
+          <span className="next-name">{next.company === c ? next.version.name : next.company.brand.name} →</span>
         </a>
         <span className="mono muted disclaim">
           Spec work. {c.brand.name} is a trademark of its owner.
@@ -78,7 +84,7 @@ export function Company({ company: c }: { company: CompanyT }) {
   )
 }
 
-function Hero({ slug, piece, frameRef, onSound }: { slug: string; piece: Piece; frameRef: React.RefObject<PieceFrameHandle>; onSound: () => void }) {
+function Hero({ name, piece, frameRef, onSound }: { name: string; piece: Piece; frameRef: React.RefObject<PieceFrameHandle>; onSound: () => void }) {
   const [ready, setReady] = useState(false)
   const [t, setT] = useState(0)
   const [muted, setMuted] = useState(true)
@@ -91,7 +97,7 @@ function Hero({ slug, piece, frameRef, onSound }: { slug: string; piece: Piece; 
     }
   }
   return (
-    <section className="hero" style={{ viewTransitionName: `frame-${slug}` }}>
+    <section className="hero" style={{ viewTransitionName: name }}>
       {piece.poster && <img src={piece.poster} alt="" />}
       <PieceFrame
         ref={frameRef}

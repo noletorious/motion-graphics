@@ -12,8 +12,6 @@ export interface Brand {
   colors: Record<string, string>
   fonts: { display: string; body: string; note?: string }
   logo: string
-  featured?: string
-  hero?: string
   order?: number
   features?: string[]
   keyFacts: KeyFact[]
@@ -32,8 +30,19 @@ export interface Piece {
   poster: string | null
 }
 
+export interface Version {
+  /** folder name, e.g. "v1"; also the URL segment */
+  id: string
+  name: string
+  premise: string
+  showcase?: boolean
+  featured?: string
+  hero?: string
+  pieces: Piece[]
+}
+
 export interface Company {
   slug: string
   brand: Brand
-  pieces: Piece[]
+  versions: Version[]
 }

@@ -28,10 +28,10 @@ const load = (): Note[] => {
     return []
   }
 }
-const all = companies.flatMap((c) => c.pieces.map((p) => ({ id: `${c.slug}/${p.file}`, company: c, piece: p })))
+const all = companies.flatMap((c) => c.versions.flatMap((v) => v.pieces.map((p) => ({ id: `${c.slug}/${v.id}/${p.file}`, company: c, version: v, piece: p }))))
 const labelOf = (id: string) => {
   const e = all.find((a) => a.id === id)
-  return e ? `${e.company.brand.name} · ${typeLabel(e.piece.type)}` : id
+  return e ? `${e.company.brand.name} ${e.version.id} · ${typeLabel(e.piece.type)}` : id
 }
 const fmt = (n: Note) => {
   const head = `${labelOf(n.piece)} · ${n.t.toFixed(2)}s`
@@ -130,11 +130,13 @@ export default function Review() {
       <aside className="rv-list">
         <a href="/" className="wordmark"><img src={logo} alt="" />Motion</a>
         <p className="mono muted rv-k">Review</p>
-        {companies.map((c) => (
-          <div key={c.slug}>
-            <p className="mono muted rv-co">{c.brand.name}</p>
-            {c.pieces.map((p) => {
-              const id = `${c.slug}/${p.file}`
+        {companies.flatMap((c) => c.versions.map((v) => ({ c, v }))).map(({ c, v }) => (
+          <div key={`${c.slug}/${v.id}`}>
+            <p className="mono muted rv-co">
+              {c.brand.name} · {v.id} {v.name}
+            </p>
+            {v.pieces.map((p) => {
+              const id = `${c.slug}/${v.id}/${p.file}`
               const n = notes.filter((x) => x.piece === id).length
               return (
                 <button key={id} className={cn('rv-item', id === entry.id && 'on')} onClick={() => setSel(id)}>

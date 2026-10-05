@@ -2,14 +2,14 @@ import { lazy, Suspense } from 'react'
 import companies from 'virtual:companies'
 import { usePath } from '@/lib/router'
 import { Home } from '@/pages/Home'
-import { Company } from '@/pages/Company'
+import { CompanyPage } from '@/pages/CompanyPage'
+import { VersionPage } from '@/pages/Version'
 
 // Review page (PDF prompt 11) is a dev tool; it never ships in the build.
 const Review = import.meta.env.DEV ? lazy(() => import('@/pages/Review')) : null
 
 export default function App() {
-  const path = usePath()
-  const slug = path.replace(/^\/|\/$/g, '')
+  const [slug, vid] = usePath().split('/').filter(Boolean)
   if (slug === 'review' && Review)
     return (
       <Suspense fallback={null}>
@@ -17,5 +17,8 @@ export default function App() {
       </Suspense>
     )
   const company = companies.find((c) => c.slug === slug)
-  return company ? <Company key={company.slug} company={company} /> : <Home />
+  const version = company?.versions.find((v) => v.id === vid)
+  if (company && version) return <VersionPage key={`${company.slug}/${version.id}`} company={company} version={version} />
+  if (company && !vid) return <CompanyPage key={company.slug} company={company} />
+  return <Home />
 }

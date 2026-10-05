@@ -11,33 +11,38 @@ Vite + React + TypeScript + Tailwind v4, scaffolded from `../vitejs-starter` wit
 ```
 npm run dev                          # site (5173, or next free port); /review = Level 3 review page, dev only
 npm run sync-kit                     # copy elements/piece-kit.js into every piece (run after editing the kit)
-npm run frames -- <slug>/<piece> [t…] # QA contact sheet → exports/frames/
-npm run posters [-- <slug>]          # <piece>.poster.jpg at each piece's piece:poster time
-npm run export -- <slug>/<piece> | <slug> | --all [--fps 60]   # → exports/<slug>/<piece>.mp4, ffprobe-checked
+npm run frames -- <slug>/<v>/<piece> [t…]  # QA contact sheet → exports/frames/
+npm run posters [-- <slug>[/<v>]]    # <piece>.poster.jpg at each piece's piece:poster time
+npm run export -- <slug>[/<v>[/<piece>]] | --all [--fps 60]   # → exports/<slug>/<v>/<piece>.mp4, ffprobe-checked
 npm run storyboard                   # re-screenshot storyboard stills
 ```
 
 ## Layout
 
 ```
-companies/<slug>/brand.json     # one company = one folder; nothing else to register
-companies/<slug>/assets/        # logo, images used by that company's pieces
-companies/<slug>/pieces/*.html  # self-contained motion pieces (+ generated *.poster.jpg)
+companies/<slug>/brand.json                    # company facts; one company = one folder
+companies/<slug>/assets/                       # logo, images shared by its pieces
+companies/<slug>/versions/<vN>/version.json    # one version = one folder: name, premise, showcase, featured, hero
+companies/<slug>/versions/<vN>/pieces/*.html   # self-contained motion pieces (+ generated *.poster.jpg)
 scripts/companies-plugin.ts     # scans companies/ → `virtual:companies`; copies folder into dist on build
 scripts/*.mjs                   # export, posters, frames, storyboard, sync-kit (headless Chrome via puppeteer-core)
-src/                            # site: Home grid, Company page, Review page (dev only)
+src/                            # site: Home, /<slug> (version list), /<slug>/<vN> (version page), /review (dev only)
 exports/                        # MP4s + QA sheets (gitignored)
 storyboard/                     # Level 2 stills: scenes/*.html → shots/*.png → index.html
 elements/                       # piece-kit.js (shared runtime) + catalog.json (reusable element library)
 ```
 
-Adding a company means adding `companies/<slug>/` with a `brand.json` and a `pieces/` folder. Do not hardcode slugs anywhere in `src/`.
+Adding a company means adding `companies/<slug>/` with a `brand.json` and at least one `versions/<vN>/`. Adding a version means adding a `versions/<vN>/` folder. Do not hardcode slugs or versions anywhere in `src/`.
+
+## Versions
+
+Each version is an exploration with a name and a premise: v1 is the first take, and later versions redesign a feature, propose new features, or experiment. One version per company has `"showcase": true`; it's what home and the carousel lead with. Every version also gets a 9:16 recap video for posting. Navigation is breadcrumbs (`Motion / eBay / v1 Bright Bounce`) plus the Directory modal, which is the main way around the site.
 
 ## brand.json
 
-`name, tagline, description, website, order, colors{}, fonts{display, body, note}, logo, featured, hero, cta, features[], howItWorks[], keyFacts[{label, value, source}]`
+`name, tagline, description, website, order, colors{}, fonts{display, body, note}, logo, cta, features[], howItWorks[], keyFacts[{label, value, source}]`
 
-- `featured` is the piece that loops on the home tile when hovered. `hero` is the reel at the top of the company page. Both default to the first piece.
+`version.json`: `name, premise, showcase, featured, hero`. `featured` is the piece that loops on home; `hero` is the reel at the top of the version page. Both default to the first piece.
 - Every number in `keyFacts` needs a `source`. Never invent figures. If a fact is unverified, its source says "verify before publishing".
 - Use real brand colours. For proprietary fonts, pick a stand-in and say so in `fonts.note`.
 
@@ -63,5 +68,7 @@ Dark, editorial, big type, minimal chrome. Near-black `#0a0a0b`, off-white `#ece
 The work is spec and unaffiliated. The site footer and each company page must say so. Logos in `assets/` are type-set stand-ins until real files are supplied.
 
 ## Process
+
+`TODO.md` is the current work, in order. `BACKLOG.md` holds the roadmap and everything else. When the user describes new needs, file them in the backlog, or in TODO if they're immediate. Pull from the backlog into TODO only when it's next.
 
 Storyboard first (PDF prompt 08). Build each scene as HTML in its final look, screenshot it, and put the stills on one page with start times and descriptions. Then stop for comments. Apply comments exactly and change nothing else (prompt 10). After a build, the user reviews on `/review` (prompt 11) and pastes comments back; apply them, change nothing else, and re-render posters. The final MP4 renders only when the user says the piece is done (prompt 12). Draft exports are fine for checking the pipeline.

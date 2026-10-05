@@ -1,6 +1,6 @@
 // Writes <piece>.poster.jpg next to each piece, at its piece:poster time.
 // Home tiles and piece cards show these until the live piece is needed.
-// Usage: npm run posters [-- <slug> | <slug>/<piece> ...]
+// Usage: npm run posters [-- <slug> | <slug>/<v> | <slug>/<v>/<piece> ...]
 import path from 'path'
 import { ROOT, findPieces, launch, openPiece } from './lib.mjs'
 

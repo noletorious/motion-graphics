@@ -2,8 +2,8 @@ import fs from 'fs'
 import path from 'path'
 import type { Plugin } from 'vite'
 
-// Scans companies/*/brand.json + companies/*/pieces/*.html and exposes them
-// as `virtual:companies`. Adding a company = adding a folder; nothing else.
+// Scans companies/<slug>/brand.json and companies/<slug>/versions/<v>/{version.json,pieces/*.html}
+// and exposes them as `virtual:companies`. Adding a company or a version = adding a folder.
 
 const VIRTUAL_ID = 'virtual:companies'
 const RESOLVED_ID = '\0' + VIRTUAL_ID
@@ -14,37 +14,44 @@ function readMeta(html: string, name: string): string | undefined {
   return html.match(re)?.[1]
 }
 
-function scan() {
-  if (!fs.existsSync(ROOT)) return []
+const readJson = (p: string) => JSON.parse(fs.readFileSync(p, 'utf8'))
+const dirs = (p: string) => (fs.existsSync(p) ? fs.readdirSync(p, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name) : [])
+
+function scanPieces(slug: string, v: string) {
+  const dir = path.join(ROOT, slug, 'versions', v, 'pieces')
+  if (!fs.existsSync(dir)) return []
+  const base = `/companies/${slug}/versions/${v}/pieces`
   return fs
-    .readdirSync(ROOT, { withFileTypes: true })
-    .filter((d) => d.isDirectory() && fs.existsSync(path.join(ROOT, d.name, 'brand.json')))
-    .map((d) => {
-      const slug = d.name
-      const brand = JSON.parse(fs.readFileSync(path.join(ROOT, slug, 'brand.json'), 'utf8'))
-      const piecesDir = path.join(ROOT, slug, 'pieces')
-      const pieces = fs.existsSync(piecesDir)
-        ? fs
-            .readdirSync(piecesDir)
-            .filter((f) => f.endsWith('.html'))
-            .sort()
-            .map((file) => {
-              const html = fs.readFileSync(path.join(piecesDir, file), 'utf8')
-              const poster = file.replace(/\.html$/, '.poster.jpg')
-              return {
-                file,
-                url: `/companies/${slug}/pieces/${file}`,
-                type: readMeta(html, 'type') ?? 'piece',
-                title: readMeta(html, 'title') ?? file.replace(/\.html$/, ''),
-                duration: Number(readMeta(html, 'duration') ?? 0),
-                aspect: readMeta(html, 'aspect') ?? '16:9',
-                loop: readMeta(html, 'loop') === 'true',
-                posterTime: Number(readMeta(html, 'poster') ?? 0),
-                poster: fs.existsSync(path.join(piecesDir, poster)) ? `/companies/${slug}/pieces/${poster}` : null,
-              }
-            })
-        : []
-      return { slug, brand, pieces }
+    .readdirSync(dir)
+    .filter((f) => f.endsWith('.html'))
+    .sort()
+    .map((file) => {
+      const html = fs.readFileSync(path.join(dir, file), 'utf8')
+      const poster = file.replace(/\.html$/, '.poster.jpg')
+      return {
+        file,
+        url: `${base}/${file}`,
+        type: readMeta(html, 'type') ?? 'piece',
+        title: readMeta(html, 'title') ?? file.replace(/\.html$/, ''),
+        duration: Number(readMeta(html, 'duration') ?? 0),
+        aspect: readMeta(html, 'aspect') ?? '16:9',
+        loop: readMeta(html, 'loop') === 'true',
+        posterTime: Number(readMeta(html, 'poster') ?? 0),
+        poster: fs.existsSync(path.join(dir, poster)) ? `${base}/${poster}` : null,
+      }
+    })
+}
+
+function scan() {
+  return dirs(ROOT)
+    .filter((slug) => fs.existsSync(path.join(ROOT, slug, 'brand.json')))
+    .map((slug) => {
+      const brand = readJson(path.join(ROOT, slug, 'brand.json'))
+      const versions = dirs(path.join(ROOT, slug, 'versions'))
+        .filter((v) => fs.existsSync(path.join(ROOT, slug, 'versions', v, 'version.json')))
+        .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+        .map((id) => ({ id, ...readJson(path.join(ROOT, slug, 'versions', id, 'version.json')), pieces: scanPieces(slug, id) }))
+      return { slug, brand, versions }
     })
     .sort((a, b) => (a.brand.order ?? 99) - (b.brand.order ?? 99) || a.slug.localeCompare(b.slug))
 }

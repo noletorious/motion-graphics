@@ -19,8 +19,6 @@
     "note": "Google Sans is restricted; Outfit is the geometric stand-in."
   },
   "logo": "assets/logo.svg",
-  "featured": "promo-15s.html",
-  "hero": "promo-15s.html",
   "cta": "Start at google.com",
   "features": [
     "AI Mode in Search: ask longer questions, get a composed answer with links",

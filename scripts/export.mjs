@@ -1,7 +1,7 @@
 // Renders pieces to MP4: steps every frame in headless Chrome, pipes PNGs
 // to ffmpeg, renders the Web Audio graph offline, muxes both, then checks
 // the result with ffprobe.
-// Usage: npm run export -- <slug>/<piece> | <slug> | --all  [--fps 60]
+// Usage: npm run export -- <slug> | <slug>/<v> | <slug>/<v>/<piece> | --all  [--fps 60]
 import fs from 'fs'
 import path from 'path'
 import { spawn, execFileSync } from 'child_process'
@@ -12,7 +12,7 @@ const fpsAt = args.indexOf('--fps')
 const FPS = fpsAt >= 0 ? Number(args.splice(fpsAt, 2)[1]) : 60
 const targets = args.includes('--all') ? findPieces() : findPieces(args)
 if (!targets.length) {
-  console.error('Usage: npm run export -- <slug>/<piece> | <slug> | --all [--fps 60]')
+  console.error('Usage: npm run export -- <slug> | <slug>/<v> | <slug>/<v>/<piece> | --all [--fps 60]')
   process.exit(1)
 }
 const FFMPEG = process.env.FFMPEG ?? 'ffmpeg'
@@ -20,11 +20,11 @@ const FFMPEG = process.env.FFMPEG ?? 'ffmpeg'
 const browser = await launch()
 for (const p of targets) {
   const { page, width, height, duration } = await openPiece(browser, p.file)
-  const outDir = path.join(ROOT, 'exports', p.slug)
+  const outDir = path.join(ROOT, 'exports', p.slug, p.version)
   fs.mkdirSync(outDir, { recursive: true })
   const out = path.join(outDir, `${p.name}.mp4`)
   const wav = path.join(outDir, `${p.name}.wav`)
-  console.log(`▶ ${p.slug}/${p.name}  ${width}×${height}  ${duration}s @ ${FPS}fps`)
+  console.log(`▶ ${p.id}  ${width}×${height}  ${duration}s @ ${FPS}fps`)
 
   // 1 · audio, rendered offline from the same sound events the preview plays
   const b64 = await page.evaluate(async () => {

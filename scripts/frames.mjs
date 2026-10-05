@@ -1,6 +1,7 @@
-// QA contact sheet: node scripts/frames.mjs <slug>/<piece> [t1 t2 ...]
-// Renders the piece at each time and writes exports/frames/<slug>-<piece>.png
+// QA contact sheet: node scripts/frames.mjs <slug>/<v>/<piece> [t1 t2 ...]
+// Renders the piece at each time and writes exports/frames/<slug>-<v>-<piece>.png
 import fs from 'fs'
+import { findPieces } from './lib.mjs'
 import path from 'path'
 import { fileURLToPath, pathToFileURL } from 'url'
 import puppeteer from 'puppeteer-core'
@@ -8,8 +9,9 @@ import puppeteer from 'puppeteer-core'
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const CHROME = process.env.CHROME_PATH ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 const [id, ...ts] = process.argv.slice(2)
-const [slug, name] = id.split('/')
-const file = path.join(ROOT, 'companies', slug, 'pieces', `${name}.html`)
+const match = findPieces([id]).find((p) => p.id === id)
+if (!match) throw new Error(`No piece ${id} (expected <slug>/<v>/<piece>)`)
+const { file } = match
 
 const browser = await puppeteer.launch({ executablePath: CHROME, args: ['--allow-file-access-from-files', '--autoplay-policy=no-user-gesture-required'] })
 const page = await browser.newPage()
@@ -31,7 +33,7 @@ await page.setViewport({ width: 1600, height: 900 })
 await page.setContent(`<body style="margin:0;background:#222;display:grid;grid-template-columns:repeat(${cols},1fr);gap:4px;font:600 15px monospace;color:#fff">${shots
   .map((s) => `<div><img style="width:100%;display:block" src="data:image/jpeg;base64,${s.b64}">${s.t.toFixed(2)}s</div>`)
   .join('')}</body>`)
-const out = path.join(ROOT, 'exports', 'frames', `${slug}-${name}.png`)
+const out = path.join(ROOT, 'exports', 'frames', `${id.replaceAll('/', '-')}.png`)
 fs.mkdirSync(path.dirname(out), { recursive: true })
 await page.screenshot({ path: out, fullPage: true })
 await browser.close()

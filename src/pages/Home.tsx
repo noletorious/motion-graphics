@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
 import companies from 'virtual:companies'
 import type { Company } from '@/lib/types'
-import { clock, featured, pad2, typeLabel } from '@/lib/pieces'
+import { clock, featured, pad2, showcase, typeLabel, versionLabel, versionPath } from '@/lib/pieces'
 import { linkTo } from '@/lib/router'
 import { PieceFrame, type PieceFrameHandle } from '@/components/PieceFrame'
 import { Foot, TopBar } from '@/components/Chrome'
 import { cn } from '@/lib/utils'
 
-const total = companies.reduce((n, c) => n + c.pieces.length, 0)
+const versions = companies.reduce((n, c) => n + c.versions.length, 0)
 
 export function Home() {
   const [hovered, setHovered] = useState<string | null>(null)
@@ -15,7 +15,7 @@ export function Home() {
 
   return (
     <div className="page">
-      <TopBar right={<><span>Work</span><span className="muted">Index</span></>} />
+      <TopBar />
       <section className="intro">
         <a className="byline mono rise" href="https://noletorious.com">
           ← By noletorious
@@ -35,7 +35,7 @@ export function Home() {
         <div className="lede rise" style={{ animationDelay: '120ms' }}>
           <p>Let's rethink branding and put motion first for companies we love and know.</p>
           <span className="mono muted">
-            {pad2(companies.length)} companies — {pad2(total)} pieces
+            {pad2(companies.length)} companies — {pad2(versions)} versions
           </span>
         </div>
       </section>
@@ -52,7 +52,9 @@ export function Home() {
 const canHover = () => matchMedia('(hover: hover)').matches
 
 function Tile({ company: c, index, dimmed, onHover }: { company: Company; index: number; dimmed: boolean; onHover: (s: string | null) => void }) {
-  const piece = featured(c)
+  const v = showcase(c)
+  const piece = v && featured(v)
+  const href = v ? versionPath(c, v) : `/${c.slug}`
   const frame = useRef<PieceFrameHandle>(null)
   const el = useRef<HTMLAnchorElement>(null)
   const active = useRef(false)
@@ -82,12 +84,11 @@ function Tile({ company: c, index, dimmed, onHover }: { company: Company; index:
     return () => io.disconnect()
   }, [])
 
-  const types = [...new Set(c.pieces.map((p) => typeLabel(p.type).toLowerCase()))].join(' · ')
   return (
     <a
       ref={el}
-      href={`/${c.slug}`}
-      onClick={linkTo(`/${c.slug}`)}
+      href={href}
+      onClick={linkTo(href)}
       onMouseEnter={() => canHover() && (start(), onHover(c.slug))}
       onMouseLeave={() => canHover() && (stop(), onHover(null))}
       onFocus={start}
@@ -95,7 +96,7 @@ function Tile({ company: c, index, dimmed, onHover }: { company: Company; index:
       className={cn('tile rise', dimmed && 'dim')}
       style={{ animationDelay: `${200 + index * 90}ms` }}
     >
-      <div className="frame" style={{ viewTransitionName: `frame-${c.slug}` }}>
+      <div className="frame" style={{ viewTransitionName: v ? `frame-${c.slug}-${v.id}` : undefined }}>
         {piece?.poster && <img src={piece.poster} alt="" loading="lazy" decoding="async" />}
         {piece && live && (
           <PieceFrame
@@ -127,9 +128,9 @@ function Tile({ company: c, index, dimmed, onHover }: { company: Company; index:
         </div>
         <span className="mono muted hint">
           <span className="rest">
-            {c.pieces.length} pieces · {types}
+            {v ? versionLabel(v) : ''} · {c.versions.length} version{c.versions.length === 1 ? '' : 's'}
           </span>
-          <span className="go">View company →</span>
+          <span className="go">View {v?.id} →</span>
         </span>
       </div>
     </a>

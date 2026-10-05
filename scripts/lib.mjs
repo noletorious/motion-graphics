@@ -7,18 +7,23 @@ import puppeteer from 'puppeteer-core'
 export const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const CHROME = process.env.CHROME_PATH ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 
-/** All pieces, or the ones matching `slug` / `slug/piece` args. */
+const subdirs = (p) => (fs.existsSync(p) ? fs.readdirSync(p, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name) : [])
+
+/** All pieces, or the ones matching `slug`, `slug/v1` or `slug/v1/piece` args. */
 export function findPieces(args = []) {
   const all = []
-  for (const slug of fs.readdirSync(path.join(ROOT, 'companies'))) {
-    const dir = path.join(ROOT, 'companies', slug, 'pieces')
-    if (!fs.existsSync(dir)) continue
-    for (const f of fs.readdirSync(dir).filter((f) => f.endsWith('.html')).sort()) {
-      all.push({ slug, name: f.replace(/\.html$/, ''), file: path.join(dir, f) })
+  for (const slug of subdirs(path.join(ROOT, 'companies'))) {
+    for (const version of subdirs(path.join(ROOT, 'companies', slug, 'versions'))) {
+      const dir = path.join(ROOT, 'companies', slug, 'versions', version, 'pieces')
+      if (!fs.existsSync(dir)) continue
+      for (const f of fs.readdirSync(dir).filter((f) => f.endsWith('.html')).sort()) {
+        const name = f.replace(/\.html$/, '')
+        all.push({ slug, version, name, id: `${slug}/${version}/${name}`, file: path.join(dir, f) })
+      }
     }
   }
   if (!args.length) return all
-  return all.filter((p) => args.some((a) => a === p.slug || a === `${p.slug}/${p.name}`))
+  return all.filter((p) => args.some((a) => p.id === a || p.id.startsWith(a + '/')))
 }
 
 export const launch = () =>

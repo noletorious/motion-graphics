@@ -1,4 +1,4 @@
-import type { Company, Piece } from './types'
+import type { Company, Piece, Version } from './types'
 
 export const TYPE_LABEL: Record<string, string> = {
   'logo-sting': 'Logo sting',
@@ -12,9 +12,14 @@ export const typeLabel = (t: string) => TYPE_LABEL[t] ?? t
 
 export const clock = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`
 
-const byFile = (c: Company, file?: string) => c.pieces.find((p) => p.file === file)
-export const featured = (c: Company): Piece | undefined => byFile(c, c.brand.featured) ?? c.pieces[0]
-export const hero = (c: Company): Piece | undefined => byFile(c, c.brand.hero) ?? featured(c)
+const byFile = (v: Version, file?: string) => v.pieces.find((p) => p.file === file)
+export const featured = (v: Version): Piece | undefined => byFile(v, v.featured) ?? v.pieces[0]
+export const hero = (v: Version): Piece | undefined => byFile(v, v.hero) ?? featured(v)
+
+/** The version a company leads with: the one marked showcase, else the first. */
+export const showcase = (c: Company): Version | undefined => c.versions.find((v) => v.showcase) ?? c.versions[0]
+export const versionPath = (c: Company, v: Version) => `/${c.slug}/${v.id}`
+export const versionLabel = (v: Version) => `${v.id} ${v.name}`
 
 export const pad2 = (n: number) => String(n).padStart(2, '0')
 export const host = (url: string) => url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')
