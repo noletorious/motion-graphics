@@ -29,7 +29,7 @@ Everything we'll do eventually. Pull items into `TODO.md` when they're next.
 
 ## Content
 
-- [ ] 9:16 recap video for every version (for posting)
+- [x] Recap template (9:16). Recaps are optional per version: ask each time.
 - [ ] eBay v2 "Super Live": a redesign of eBay Live
 - [ ] eBay v3 "Retro Futurism": an experimental redesign of one aspect or feature
 - [ ] Google v2 "Gemini Redesign": exploring a set of new Gemini features

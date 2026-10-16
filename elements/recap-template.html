@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="piece:type" content="recap">
+<meta name="piece:title" content="Recap">
+<meta name="piece:duration" content="15">
+<meta name="piece:aspect" content="9:16">
+<meta name="piece:loop" content="false">
+<meta name="piece:poster" content="11.8">
+<title>Recap</title>
+<!-- Recap template. Source of truth: elements/recap-template.html.
+     `npm run sync-recaps` rewrites every versions/<vN>/share/recap.html from this file,
+     keeping only its recap-config script block. Edit the config there, the rest here. -->
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=JetBrains+Mono:wght@500&family=Inter+Tight:wght@400&display=block" rel="stylesheet">
+<script id="recap-config">
+window.RECAP = { slug: 'company', v: 'v1', name: 'Company', vname: 'Version name', next: 'v2 Next', bg: '#FFFFFF', ink: '#111111', mute: '#666666', line: '#e5e5e5', grad: 'linear-gradient(to top,#0066FF 8%,#FFA500 92%)', colors: ['#000', '#333', '#666', '#999'], dots: 'bounce', t: { sting: 1, promoA: 0, promoB: 5.5, loop: 1.3, stingHold: 3.6, loopHold: 4.3 } }
+</script>
+<style>
+/* Safe zone: Reels/TikTok cover roughly the top 220px and bottom 380px; key content sits between. */
+#stage{background:var(--bg);color:var(--ink);font-family:"Inter Tight",sans-serif}
+.a{position:absolute;will-change:transform,opacity}
+.f{font-family:Fraunces,serif;font-weight:300;font-variation-settings:"SOFT" 100,"WONK" 1;letter-spacing:-.03em;line-height:.9}
+.m{font:500 26px/1.3 "JetBrains Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+.center{left:0;right:0;text-align:center}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;font-style:italic;font-weight:600;display:inline-block;padding-bottom:.08em}
+.frame{overflow:hidden;background:var(--bg);box-shadow:0 0 0 2px var(--line),0 40px 80px -40px rgba(0,0,0,.35)}
+.frame iframe{position:absolute;left:0;top:0;border:0;transform-origin:0 0}
+.w169{width:960px;height:540px;left:60px}.sq{width:860px;height:860px;left:110px}
+.dot{width:64px;height:64px;border-radius:50%;top:0}
+.label{color:var(--ink)}.label b{color:var(--mute);font-weight:500}
+</style>
+<script id="piece-kit"></script>
+</head><body><div id="stage">
+  <p class="a m center" id="kicker" style="top:250px"></p>
+
+  <!-- 1 · hook -->
+  <div class="a center" id="hook" style="top:620px">
+    <div class="f" id="hname" style="font-size:230px"></div>
+    <div class="f" style="font-size:150px;margin-top:10px"><span id="inmo"></span></div>
+    <div class="a" id="dots" style="left:50%;top:430px;width:0"></div>
+    <p class="m" id="hv" style="margin-top:190px;color:var(--ink)"></p>
+  </div>
+
+  <!-- 2–4 · the pieces -->
+  <p class="a m center label" id="lab1" style="top:560px"><b>01 ·</b> Logo sting</p>
+  <div class="a frame w169" id="f1" style="top:640px"><iframe data-piece="logo-sting" data-w="1920"></iframe></div>
+  <p class="a m center label" id="lab2" style="top:330px"><b>02 ·</b> 15s promo</p>
+  <div class="a frame w169" id="f2a" style="top:410px"><iframe data-piece="promo-15s" data-w="1920"></iframe></div>
+  <div class="a frame w169" id="f2b" style="top:990px"><iframe data-piece="promo-15s" data-w="1920"></iframe></div>
+  <p class="a m center label" id="lab3" style="top:430px"><b>03 ·</b> Social loop</p>
+  <div class="a frame sq" id="f3" style="top:510px"><iframe data-piece="social-loop" data-w="1080"></iframe></div>
+
+  <!-- 5 · collage -->
+  <div class="a frame w169" id="c1" style="top:290px"><iframe data-piece="promo-15s" data-w="1920"></iframe></div>
+  <div class="a frame w169" id="c2" style="top:540px"><iframe data-piece="logo-sting" data-w="1920"></iframe></div>
+  <div class="a frame sq" id="c3" style="top:600px"><iframe data-piece="social-loop" data-w="1080"></iframe></div>
+  <div class="a f center" id="allcode" style="top:1340px;font-size:96px;line-height:1">Three pieces.<br><i style="color:var(--mute)">All code.</i></div>
+
+  <!-- 6 · end -->
+  <div class="a center" id="end" style="top:760px">
+    <div id="mark" class="f" style="display:flex;justify-content:center;align-items:center;gap:28px;font-size:150px;font-weight:400"><img src="../../../../../src/assets/noletorious-logo-light.svg" alt="" style="height:120px">Motion</div>
+    <p class="m" id="url" style="margin-top:50px;color:var(--ink);font-size:34px">motion.noletorious.com</p>
+    <p class="m" id="next" style="margin:90px auto 0;display:inline-block;border:2px solid var(--line);padding:22px 36px;color:var(--ink)"></p>
+  </div>
+</div>
+<script>
+const { tw, css, ease, lerp, clamp, $, $$, S, note } = K
+const R = window.RECAP
+for (const [k, v] of Object.entries({ bg: R.bg, ink: R.ink, mute: R.mute, line: R.line, grad: R.grad })) document.documentElement.style.setProperty('--' + k, v)
+document.title = `${R.name} ${R.v} — Recap`
+$('#kicker').textContent = 'Motion · by noletorious'
+$('#hname').textContent = R.name + ','
+$('#inmo').innerHTML = [...'in motion'].map((c) => `<span class="grad">${c === ' ' ? '&nbsp;' : c}</span>`).join('')
+$('#hv').innerHTML = `${R.v} · <span style="font-family:Fraunces;font-style:italic;text-transform:none;letter-spacing:0;font-size:40px">${R.vname}</span>`
+$('#dots').innerHTML = R.colors.map((c, i) => `<i class="a dot" style="background:${c};left:${-182 + i * 100}px"></i>`).join('')
+$('#next').textContent = `Next → ${R.next}`
+const inmo = $$('#inmo span'), dots = $$('.dot')
+
+// every frame embeds a real v1 piece (sibling pieces/ folder), scaled to fit and synced to this clock
+for (const f of $$('iframe[data-piece]')) {
+  f.src = `../pieces/${f.dataset.piece}.html?t=0&muted=1`
+  const w = Number(f.dataset.w), box = f.parentElement
+  f.style.width = w + 'px'
+  f.style.height = (w === 1080 ? 1080 : 1080) + 'px'
+  f.style.transform = `scale(${box.offsetWidth / w})`
+}
+const kid = (id) => $(`#${id} iframe`).contentWindow?.piece
+const IDS = ['f1', 'f2a', 'f2b', 'f3', 'c1', 'c2', 'c3']
+Piece.setup = () => new Promise((res) => { const go = () => (IDS.every((id) => kid(id)?.ready) ? res() : setTimeout(go, 50)); go() })
+const seek = (id, x) => kid(id)?.seek(clamp(x, 0, kid(id)?.duration ?? x))
+
+Piece.render = (t) => {
+  const T = R.t
+  // kicker: brand line during the hook, then "Motion · eBay · v1"
+  $('#kicker').textContent = t < 1.5 ? 'Motion · by noletorious' : `Motion · ${R.name} · ${R.v}`
+  css($('#kicker'), { o: tw(t, 0.05, 0.3) * (t < 13 ? 1 : 1 - tw(t, 13, 13.2)) })
+
+  // 1 · hook (0–1.5)
+  const hOut = tw(t, 1.3, 1.5, ease.in3)
+  css($('#hook'), { y: -120 * hOut, o: 1 - hOut })
+  css($('#hname'), { y: lerp(50, 0, tw(t, 0.1, 0.45, ease.outExpo)), o: tw(t, 0.1, 0.3) })
+  inmo.forEach((l, i) => { const a = 0.32 + i * 0.04; css(l, { y: lerp(60, 0, tw(t, a, a + 0.35, ease.outBack)), r: lerp(-8, 0, tw(t, a, a + 0.35)), o: tw(t, a, a + 0.12) }) })
+  dots.forEach((d, i) => {
+    const a = 0.55 + i * 0.08
+    if (R.dots === 'spin') {
+      const p = tw(t, a, a + 0.5, ease.outBack), ang = (1 - p) * Math.PI * 1.5 + i
+      css(d, { x: Math.cos(ang) * 160 * (1 - p), y: Math.sin(ang) * 160 * (1 - p), s: p, o: tw(t, a, a + 0.15) })
+    } else {
+      const fall = tw(t, a, a + 0.32, ease.in3), bounce = t > a + 0.32 ? Math.abs(Math.sin((t - a - 0.32) * 9)) * 40 * Math.exp(-(t - a - 0.32) * 6) : 0
+      css(d, { y: lerp(-400, 0, fall) - bounce, o: t >= a ? 1 : 0 })
+    }
+  })
+  css($('#hv'), { o: tw(t, 0.95, 1.2) })
+
+  // 2 · logo sting (1.5–4.0)
+  const on1 = t >= 1.5 && t < 4, out1 = tw(t, 3.82, 4, ease.in3)
+  css($('#lab1'), { o: on1 ? tw(t, 1.6, 1.85) * (1 - out1) : 0 })
+  css($('#f1'), { v: on1, y: lerp(500, 0, tw(t, 1.5, 1.88, ease.outExpo)) - 200 * out1, o: 1 - out1 })
+  if (t >= 1.4 && t < 4.1) seek('f1', T.sting + (t - 1.6))
+
+  // 3 · promo, two moments stacked (4.0–8.0)
+  const on2 = t >= 4 && t < 8, out2 = tw(t, 7.82, 8, ease.in3)
+  css($('#lab2'), { o: on2 ? tw(t, 4.05, 4.3) * (1 - out2) : 0 })
+  css($('#f2a'), { v: on2, y: lerp(500, 0, tw(t, 4, 4.38, ease.outExpo)) - 200 * out2, o: 1 - out2 })
+  css($('#f2b'), { v: on2 && t >= 4.35, y: lerp(500, 0, tw(t, 4.35, 4.75, ease.outExpo)) - 200 * out2, o: 1 - out2 })
+  if (t >= 3.9 && t < 8.1) { seek('f2a', T.promoA + (t - 4.05)); seek('f2b', T.promoB + (t - 4.4)) }
+
+  // 4 · social loop (8.0–11.0)
+  const on3 = t >= 8 && t < 11, out3 = tw(t, 10.82, 11, ease.in3)
+  css($('#lab3'), { o: on3 ? tw(t, 8.05, 8.3) * (1 - out3) : 0 })
+  css($('#f3'), { v: on3, s: lerp(0.7, 1, tw(t, 8, 8.42, ease.outBack)) * (1 - 0.15 * out3), o: tw(t, 8, 8.15) * (1 - out3) })
+  if (t >= 7.9 && t < 11.1) seek('f3', T.loop + (t - 8.1))
+
+  // 5 · collage (11.0–13.0)
+  const on5 = t >= 11 && t < 13, out5 = tw(t, 12.82, 13, ease.in3)
+  ;[['c1', -4, 0.82, -40, 11], ['c2', 3, 0.82, 40, 11.12], ['c3', -2, 0.56, 0, 11.24]].forEach(([id, r, s, x, a]) => {
+    const p = tw(t, a, a + 0.45, ease.outBack)
+    css($('#' + id), { v: on5, x, y: lerp(700, 0, p), r: lerp(r * 3, r, p), s, o: tw(t, a, a + 0.12) * (1 - out5) })
+  })
+  if (t >= 10.9 && t < 13.1) { seek('c1', T.promoA + 1 + (t - 11)); seek('c2', T.stingHold); seek('c3', T.loopHold) }
+  css($('#allcode'), { y: lerp(40, 0, tw(t, 11.5, 11.85, ease.outExpo)), o: on5 ? tw(t, 11.5, 11.7) * (1 - out5) : 0 })
+
+  // 6 · end card (13.0–15.0)
+  const on6 = t >= 13
+  css($('#end'), { o: on6 ? 1 : 0 })
+  css($('#mark'), { y: lerp(40, 0, tw(t, 13.05, 13.45, ease.outExpo)), o: tw(t, 13.05, 13.3) })
+  css($('#url'), { y: lerp(24, 0, tw(t, 13.3, 13.6)), o: tw(t, 13.3, 13.55) })
+  const pulse = t > 14 ? Math.sin(Math.min(1, (t - 14) / 0.4) * Math.PI) * 0.06 : 0
+  css($('#next'), { s: lerp(0.8, 1, tw(t, 13.55, 13.9, ease.outBack)) + pulse, o: tw(t, 13.55, 13.7) })
+}
+
+// ---- sound: soft keys + a hit per beat ----
+const snd = []
+const at = (t, fn) => snd.push({ t, fn })
+const chord = (b, ns) => (c, o, a) => { S.keys(c, o, a, note(b), 0.1, 2.2); ns.forEach((n, k) => S.keys(c, o, a + k * 0.03, note(n), 0.05, 2)) }
+at(0.1, chord(48, [60, 64, 67]))
+;[0, 1, 2, 3].forEach((i) => at(0.55 + i * 0.08 + (R.dots === 'spin' ? 0.25 : 0.32), (c, o, a) => S.pluck(c, o, a, note([72, 76, 79, 84][i]), 0.12, 0.5)))
+at(1.45, (c, o, a) => S.whoosh(c, o, a, 0.3, 0.1))
+at(1.5, chord(45, [57, 60, 64]))
+at(3.95, (c, o, a) => S.whoosh(c, o, a, 0.3, 0.1))
+at(4.0, chord(41, [57, 60, 65]))
+at(7.95, (c, o, a) => S.whoosh(c, o, a, 0.3, 0.1))
+at(8.0, chord(43, [55, 59, 62]))
+at(10.95, (c, o, a) => S.whoosh(c, o, a, 0.35, 0.12))
+;[11.4, 11.52, 11.64].forEach((x) => at(x, (c, o, a) => S.thump(c, o, a, 0.22)))
+at(13.0, (c, o, a) => { S.chime(c, o, a, note(81), 0.07); chord(48, [55, 60, 64, 67])(c, o, a) })
+at(14.0, (c, o, a) => S.pluck(c, o, a, note(84), 0.06, 0.5))
+Piece.sounds = snd
+Piece.cuts = [1.5, 4, 8, 11, 13]
+Piece.gain = 1.4 // peaks land around -9 dBFS
+</script>
+</body></html>

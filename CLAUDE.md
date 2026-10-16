@@ -11,6 +11,7 @@ Vite + React + TypeScript + Tailwind v4, scaffolded from `../vitejs-starter` wit
 ```
 npm run dev                          # site (5173, or next free port); /review = Level 3 review page, dev only
 npm run sync-kit                     # copy elements/piece-kit.js into every piece (run after editing the kit)
+npm run sync-recaps                  # rebuild every versions/<vN>/share/recap.html from elements/recap-template.html (keeps each recap-config), then sync-kit
 npm run frames -- <slug>/<v>/<piece> [t…]  # QA contact sheet → exports/frames/
 npm run posters [-- <slug>[/<v>]]    # <piece>.poster.jpg at each piece's piece:poster time
 npm run export -- <slug>[/<v>[/<piece>]] | --all [--fps 60]   # → exports/<slug>/<v>/<piece>.mp4, ffprobe-checked
@@ -37,7 +38,7 @@ Adding a company means adding `companies/<slug>/` with a `brand.json` and at lea
 
 ## Versions
 
-Each version is an exploration with a name and a premise: v1 is the first take, and later versions redesign a feature, propose new features, or experiment. One version per company has `"showcase": true`; it's what home and the carousel lead with. Every version also gets posting assets in `share/`: a 9:16 recap for Reels/TikTok/Shorts, plus a 16:9 blog header graphic whose poster frame is the 1920×1080 thumbnail. The blog (noletorious.com, a separate repo) links to https://motion.noletorious.com.
+Each version is an exploration with a name and a premise: v1 is the first take, and later versions redesign a feature, propose new features, or experiment. One version per company has `"showcase": true`; it's what home and the carousel lead with. Posting assets live in `share/`: a 9:16 recap for Reels/TikTok/Shorts, and a 16:9 blog header graphic whose poster frame is the 1920×1080 thumbnail. **Recaps are optional: when a version is finished, ask the user "recap for this one, or skip?" before making one.** The blog (noletorious.com, a separate repo) links to https://motion.noletorious.com.
 
 Wording: "v1, v2…" only ever means a company's version. Never call review passes "rounds"; the storyboard page has "Needs your review" and "Already built". Navigation is breadcrumbs (`Motion / eBay / v1 Bright Bounce`) plus the Directory modal, which is the main way around the site.
 

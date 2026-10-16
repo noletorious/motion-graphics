@@ -12,7 +12,8 @@
     "posters": "node scripts/posters.mjs",
     "export": "node scripts/export.mjs",
     "sync-kit": "node scripts/sync-kit.mjs",
-    "frames": "node scripts/frames.mjs"
+    "frames": "node scripts/frames.mjs",
+    "sync-recaps": "node scripts/sync-recaps.mjs"
   },
   "dependencies": {
     "clsx": "^2.0.0",

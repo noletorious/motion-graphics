@@ -24,7 +24,7 @@ Series name: **Motion, by company.** Season 1 = eBay and Google, v1–v3 (six dr
 
 Each version ships as a bundle. Most of it is already produced by the build:
 
-1. **9:16 recap** (15s): already in the pipeline. Social only.
+1. **9:16 recap** (15s), optional: you decide per version whether it's worth a social post. Social only.
 1b. **Blog header + thumbnail**: a 16:9 motion graphic for the top of the post, plus a 1920×1080 still of it for the thumbnail and social card.
 2. **Case study** (blog, ~800–1,200 words):
    - the premise and why that company or feature

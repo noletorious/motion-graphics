@@ -31,7 +31,7 @@ If a recording is supplied, transcribe it with AssemblyAI (`ASSEMBLYAI_API_KEY`)
 | promo-15s | 16:9 | 15s | hook → product → features → numbers → how it works → CTA (PDF prompt 05) |
 | feature-loop | 16:9 | 6–10s | one feature, seamless loop |
 | social-loop | 1:1 | 4–8s | last frame = first frame |
-| recap | 9:16 | 15s (30s if the version needs it) | what this version built, for posting: hook → the pieces in action → name + version → handle |
+| recap | 9:16, optional (ask first) | 15s (30s if the version needs it) | what this version built, for posting: hook → the pieces in action → name + version → handle |
 | stat | 16:9 or 1:1 | 3–5s | one number counts up, then holds |
 | lower-third | 16:9 transparent bg | 4–6s | in, hold, out |
 
