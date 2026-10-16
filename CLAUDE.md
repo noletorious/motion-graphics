@@ -23,7 +23,8 @@ npm run storyboard                   # re-screenshot storyboard stills
 companies/<slug>/brand.json                    # company facts; one company = one folder
 companies/<slug>/assets/                       # logo, images shared by its pieces
 companies/<slug>/versions/<vN>/version.json    # one version = one folder: name, premise, showcase, featured, hero
-companies/<slug>/versions/<vN>/pieces/*.html   # self-contained motion pieces (+ generated *.poster.jpg)
+companies/<slug>/versions/<vN>/pieces/*.html   # self-contained motion pieces shown on the site (+ generated *.poster.jpg)
+companies/<slug>/versions/<vN>/share/*.html    # posting assets, never shown on the site: recap (9:16), blog header (16:9; its poster = 1920×1080 thumbnail)
 scripts/companies-plugin.ts     # scans companies/ → `virtual:companies`; copies folder into dist on build
 scripts/*.mjs                   # export, posters, frames, storyboard, sync-kit (headless Chrome via puppeteer-core)
 src/                            # site: Home, /<slug> (version list), /<slug>/<vN> (version page), /review (dev only)
@@ -36,7 +37,9 @@ Adding a company means adding `companies/<slug>/` with a `brand.json` and at lea
 
 ## Versions
 
-Each version is an exploration with a name and a premise: v1 is the first take, and later versions redesign a feature, propose new features, or experiment. One version per company has `"showcase": true`; it's what home and the carousel lead with. Every version also gets a 9:16 recap video for posting. Navigation is breadcrumbs (`Motion / eBay / v1 Bright Bounce`) plus the Directory modal, which is the main way around the site.
+Each version is an exploration with a name and a premise: v1 is the first take, and later versions redesign a feature, propose new features, or experiment. One version per company has `"showcase": true`; it's what home and the carousel lead with. Every version also gets posting assets in `share/`: a 9:16 recap for Reels/TikTok/Shorts, plus a 16:9 blog header graphic whose poster frame is the 1920×1080 thumbnail. The blog (noletorious.com, a separate repo) links to https://motion.noletorious.com.
+
+Wording: "v1, v2…" only ever means a company's version. Never call review passes "rounds"; the storyboard page has "Needs your review" and "Already built". Navigation is breadcrumbs (`Motion / eBay / v1 Bright Bounce`) plus the Directory modal, which is the main way around the site.
 
 ## brand.json
 

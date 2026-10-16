@@ -8,6 +8,7 @@ Everything we'll do eventually. Pull items into `TODO.md` when they're next.
 2. **The hook.** The home page is the pitch: a centred headline, with a slowly rotating carousel of company showcases below it.
 3. **Range.** v2 for eBay and Google, then v3 and more companies. Each version proves a different style, so the site shows range rather than one look.
 4. **Launch.** Verified facts, real logos, hosting, share previews, performance and accessibility.
+5. **Exposure.** Each version ships as a drop: recap, case study, Substack letter, LinkedIn post, process clip. See `EXPOSURE.md`.
 
 ## Structure & navigation
 
@@ -60,6 +61,15 @@ Supported now (kit + site): `feature-loop`, `stat`, `lower-third`, at 16:9 or 1:
 - [ ] Element library index page that previews everything in `elements/catalog.json`
 - [ ] Architecture diagram of the pipeline in Excalidraw (prompt 02)
 - [ ] Calibrate `/animate` after each review round, with feedback written as rules
+
+## Exposure (see EXPOSURE.md)
+
+- [ ] Embed URL for blog posts: `/embed/<company>/<v>/<piece>`
+- [ ] Case-study page per version: storyboard rounds + comments + final pieces
+- [ ] Newsletter signup (Substack embed) in the footer and on version pages
+- [ ] UTM-tagged share links per channel
+- [ ] Launch post: "Why I'm redesigning brands in motion"
+- [ ] Process-clip template (screen recording of a /review comment → fix)
 
 ## Launch
 
