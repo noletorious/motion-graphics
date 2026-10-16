@@ -46,7 +46,7 @@ Wording: "v1, v2…" only ever means a company's version. Never call review pass
 
 `name, tagline, description, website, order, colors{}, fonts{display, body, note}, logo, cta, features[], howItWorks[], keyFacts[{label, value, source}]`
 
-`version.json`: `name, premise, showcase, featured, hero`. `featured` is the piece that loops on home; `hero` is the reel at the top of the version page. Both default to the first piece.
+`version.json`: `name, premise, showcase, featured, hero, draft`. `"draft": true` hides a version (and a company with no visible versions) from the site while it's being storyboarded and built; remove it when the user approves. `featured` is the piece that loops on home; `hero` is the reel at the top of the version page. Both default to the first piece.
 - Every number in `keyFacts` needs a `source`. Never invent figures. If a fact is unverified, its source says "verify before publishing".
 - Use real brand colours. For proprietary fonts, pick a stand-in and say so in `fonts.note`.
 
@@ -60,6 +60,7 @@ Each piece is one HTML file that runs in the site (inside an iframe) and on its 
 - **Time-driven**: everything is drawn from one `render(t)`. Nothing runs on wall-clock timers, so any frame can be reproduced exactly for export.
 - **API** (from the kit): `window.piece = { duration, loop, seek(t), play(), pause(), setMuted, setRate, buildAudio(ctx, when) }`. The site drives it over postMessage (`{ source: 'site', type: play|pause|seek|restart|mute|rate }`); the piece reports `{ source: 'piece', type: ready|time|play|pause|ended }`. Audio is built through a `BaseAudioContext`, so `OfflineAudioContext` renders it for export.
 - **URL params**: `?autoplay=1&muted=1` for hover previews, `?t=2.5` for a frozen still, `?export=1` to hide any UI.
+- **Products in 3D** come from real model files (GLB) in `companies/<slug>/assets/`, loaded with `elements/models/studio.js` (three.js + Draco from a CDN). Never hand-build a real product's geometry; it doesn't look right. Supplied photography (`assets/photos/`, converted from the user's refs) is preferred for realistic shots; 3D covers what photos can't (turntables, top-down/map moves). Record every asset's source in `version.json` → `credits`.
 - **Self-contained**: inline CSS and JS. Load fonts from Google Fonts, three.js from a CDN only when needed. Assets use relative paths (`../assets/…`).
 - **Export**: 1080p MP4 via headless Chrome frame-stepping, piped into ffmpeg, with the offline-rendered audio muxed in. Requires ffmpeg (Homebrew, `/opt/homebrew/bin/ffmpeg`).
 

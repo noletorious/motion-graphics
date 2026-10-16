@@ -10,6 +10,8 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'),
     },
   },
+  // only the app is a Vite entry; pieces under companies/ are standalone pages (three via their own import map)
+  optimizeDeps: { entries: ['index.html'] },
   server: {
     port: Number(process.env.PORT) || 5173,
     open: true,

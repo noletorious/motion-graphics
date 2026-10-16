@@ -13,7 +13,7 @@ const CHROME = process.env.CHROME_PATH ?? '/Applications/Google Chrome.app/Conte
 const board = JSON.parse(fs.readFileSync(path.join(DIR, 'board.json'), 'utf8'))
 const only = process.argv.slice(2)
 
-const browser = await puppeteer.launch({ executablePath: CHROME, headless: true, args: ['--allow-file-access-from-files'] })
+const browser = await puppeteer.launch({ executablePath: CHROME, headless: true, args: ['--allow-file-access-from-files', '--ignore-gpu-blocklist'] })
 const page = await browser.newPage()
 
 // Site pages embed piece shots, so shoot pieces first.
@@ -27,6 +27,8 @@ const scenes = board.sections.flatMap((s) => s.scenes).sort((a, b) => Number(!!a
       const url = pathToFileURL(path.join(DIR, 'scenes', `${scene.id}.html`)).href + `?shot=${i + 1}`
       await page.goto(url, { waitUntil: 'networkidle0' })
       await page.evaluate(() => document.fonts.ready)
+      // 3D scenes set window.__async and flip window.__done once the frame is rendered
+      await page.waitForFunction(() => !window.__async || window.__done, { timeout: 60000 })
       const out = path.join(DIR, 'shots', `${scene.id}-${i + 1}.png`)
       await page.screenshot({ path: out, fullPage: !!scene.page }) // full-page capture drops 3D layers; only site pages need it
       console.log('✓', path.relative(ROOT, out))

@@ -50,6 +50,9 @@ function scanShares() {
   for (const g of dirs(path.resolve(ROOT, '../share'))) out.push({ group: `Site · ${g}`, pieces: readPieces(path.resolve(ROOT, '../share', g), `/share/${g}`) })
   for (const slug of dirs(ROOT))
     for (const v of dirs(path.join(ROOT, slug, 'versions'))) {
+      // draft versions are off the site but still need reviewing here
+      const vj = path.join(ROOT, slug, 'versions', v, 'version.json')
+      if (fs.existsSync(vj) && readJson(vj).draft) out.push({ group: `${slug} ${v} · draft`, pieces: scanPieces(slug, v) })
       const pieces = readPieces(path.join(ROOT, slug, 'versions', v, 'share'), `/companies/${slug}/versions/${v}/share`)
       if (pieces.length) out.push({ group: `${slug} ${v} · share`, pieces })
     }
@@ -65,8 +68,11 @@ function scan() {
         .filter((v) => fs.existsSync(path.join(ROOT, slug, 'versions', v, 'version.json')))
         .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
         .map((id) => ({ id, ...readJson(path.join(ROOT, slug, 'versions', id, 'version.json')), pieces: scanPieces(slug, id) }))
+        // "draft": true in version.json keeps a version off the site until it's built and approved
+        .filter((v) => !v.draft)
       return { slug, brand, versions }
     })
+    .filter((c) => c.versions.length)
     .sort((a, b) => (a.brand.order ?? 99) - (b.brand.order ?? 99) || a.slug.localeCompare(b.slug))
 }
 
@@ -88,6 +94,16 @@ export function companiesPlugin(): Plugin {
     configureServer(server) {
       const SHARE = path.resolve(ROOT, '../share')
       server.watcher.add([ROOT, SHARE])
+      // piece libraries (assets/lib/*.js) import `three` through the piece's import map, so serve them as-is
+      // instead of letting Vite rewrite their bare imports (the build copies them untouched too)
+      server.middlewares.use((req, res, next) => {
+        const url = decodeURIComponent((req.url ?? '').split('?')[0])
+        if (!url.startsWith('/companies/') || !url.endsWith('.js')) return next()
+        const file = path.join(ROOT, url.slice('/companies/'.length))
+        if (!file.startsWith(ROOT) || !fs.existsSync(file)) return next()
+        res.setHeader('Content-Type', 'text/javascript')
+        res.end(fs.readFileSync(file))
+      })
       const reload = (file: string) => {
         if (!file.startsWith(ROOT) && !file.startsWith(SHARE)) return
         for (const id of [RESOLVED_ID, RESOLVED_SHARES]) {
