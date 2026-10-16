@@ -16,6 +16,7 @@ npm run frames -- <slug>/<v>/<piece> [t…]  # QA contact sheet → exports/fram
 npm run posters [-- <slug>[/<v>]]    # <piece>.poster.jpg at each piece's piece:poster time
 npm run export -- <slug>[/<v>[/<piece>]] | --all [--fps 60]   # → exports/<slug>/<v>/<piece>.mp4, ffprobe-checked
 npm run storyboard                   # re-screenshot storyboard stills
+npm run og                           # home page at 1920×1080 → public/og.jpg, the share image for every route
 ```
 
 ## Layout
@@ -26,7 +27,8 @@ companies/<slug>/assets/                       # logo, images shared by its piec
 companies/<slug>/versions/<vN>/version.json    # one version = one folder: name, premise, showcase, featured, hero
 companies/<slug>/versions/<vN>/pieces/*.html   # self-contained motion pieces shown on the site (+ generated *.poster.jpg)
 companies/<slug>/versions/<vN>/share/*.html    # posting assets, never shown on the site: recap (9:16), blog header (16:9; its poster = 1920×1080 thumbnail)
-scripts/companies-plugin.ts     # scans companies/ → `virtual:companies`; copies folder into dist on build
+scripts/companies-plugin.ts     # scans companies/ → `virtual:companies`; copies folder into dist on build; writes per-route SEO heads, sitemap.xml, robots.txt
+src/lib/seo.ts                  # per-route title/description/canonical/OG/Twitter/JSON-LD (shared by client + build)
 scripts/*.mjs                   # export, posters, frames, storyboard, sync-kit (headless Chrome via puppeteer-core)
 src/                            # site: Home, /<slug> (version list), /<slug>/<vN> (version page), /review (dev only)
 exports/                        # MP4s + QA sheets (gitignored)

@@ -6,6 +6,7 @@ import { linkTo } from '@/lib/router'
 import { PieceFrame, type PieceFrameHandle } from '@/components/PieceFrame'
 import { Foot, TopBar } from '@/components/Chrome'
 import { cn } from '@/lib/utils'
+import { applyMeta, versionMeta } from '@/lib/seo'
 
 /** Next stop after this version: the company's next version, else the next company's showcase. */
 function nextOf(c: Company, v: Version) {
@@ -20,7 +21,7 @@ export function VersionPage({ company: c, version: v }: { company: Company; vers
   const hero = heroOf(v)
   const heroRef = useRef<PieceFrameHandle>(null)
   const [active, setActive] = useState<string | null>(null)
-  useEffect(() => void (document.title = `${c.brand.name} ${versionLabel(v)} — Motion`), [c, v])
+  useEffect(() => applyMeta(versionMeta(c, v)), [c, v])
   useEffect(() => setActive(null), [c, v])
 
   const play = (file: string) => {

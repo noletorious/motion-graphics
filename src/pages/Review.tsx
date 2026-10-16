@@ -5,6 +5,7 @@ import { PieceFrame, type PieceFrameHandle, type PieceMessage } from '@/componen
 import { shape, typeLabel } from '@/lib/pieces'
 import { cn } from '@/lib/utils'
 import logo from '@/assets/noletorious-logo-dark.svg'
+import { applyMeta } from '@/lib/seo'
 
 // Level 3 review page (PDF prompt 11). Dev only: /review
 // Click the picture to pin a comment at that time and spot, comment on sound,
@@ -58,7 +59,7 @@ export default function Review() {
   const input = useRef<HTMLInputElement>(null)
   const dur = entry.piece.duration
 
-  useEffect(() => void (document.title = 'Review — Motion'), [])
+  useEffect(() => applyMeta({ title: 'Review — Motion', description: 'Dev-only review page.', path: '/review', noindex: true }), [])
   useEffect(() => {
     try {
       localStorage.setItem(KEY, JSON.stringify(notes))

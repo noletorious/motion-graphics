@@ -3,10 +3,11 @@ import type { Company } from '@/lib/types'
 import { pad2, versionPath } from '@/lib/pieces'
 import { linkTo } from '@/lib/router'
 import { Foot, TopBar } from '@/components/Chrome'
+import { applyMeta, companyMeta } from '@/lib/seo'
 
 /** Plain list of a company's versions. The directory modal is the main way around. */
 export function CompanyPage({ company: c }: { company: Company }) {
-  useEffect(() => void (document.title = `${c.brand.name} — Motion`), [c])
+  useEffect(() => applyMeta(companyMeta(c)), [c])
   return (
     <div className="page">
       <TopBar crumbs={[{ label: c.brand.name }]} />

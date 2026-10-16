@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import type { Plugin } from 'vite'
+import { SITE, companyMeta, headTags, homeMeta, versionMeta, type Meta } from '../src/lib/seo'
 
 // Scans companies/<slug>/brand.json and companies/<slug>/versions/<v>/{version.json,pieces/*.html}
 // and exposes them as `virtual:companies`. Adding a company or a version = adding a folder.
@@ -76,6 +77,17 @@ function scan() {
     .sort((a, b) => (a.brand.order ?? 99) - (b.brand.order ?? 99) || a.slug.localeCompare(b.slug))
 }
 
+/** Every public route with its SEO meta (drafts are already filtered out by scan). */
+function routes(): Meta[] {
+  const cs = scan()
+  return [homeMeta(cs), ...cs.flatMap((c) => [companyMeta(c), ...c.versions.map((v) => versionMeta(c, v))])]
+}
+const metaFor = (url: string) => {
+  const p = '/' + url.split('?')[0].split('/').filter(Boolean).join('/')
+  if (p === '/review') return { title: 'Review — Motion', description: 'Dev-only review page.', path: p, noindex: true }
+  return routes().find((m) => m.path === p) ?? routes()[0]
+}
+
 export function companiesPlugin(): Plugin {
   let outDir = 'dist'
   return {
@@ -90,6 +102,10 @@ export function companiesPlugin(): Plugin {
     load(id) {
       if (id === RESOLVED_ID) return `export default ${JSON.stringify(scan())}`
       if (id === RESOLVED_SHARES) return `export default ${JSON.stringify(scanShares())}`
+    },
+    // the route's title, description, canonical, Open Graph, Twitter and JSON-LD tags
+    transformIndexHtml(html, ctx) {
+      return html.replace('<!--seo-->', `<!--seo-->${headTags(metaFor(ctx.originalUrl ?? ctx.path ?? '/'))}<!--/seo-->`)
     },
     configureServer(server) {
       const SHARE = path.resolve(ROOT, '../share')
@@ -120,6 +136,19 @@ export function companiesPlugin(): Plugin {
       // Pieces are self-contained pages; ship the folder as-is.
       // share/ folders are posting assets (recaps, blog headers); they never ship with the site
       if (fs.existsSync(ROOT)) fs.cpSync(ROOT, path.join(outDir, 'companies'), { recursive: true, filter: (src) => !src.split(path.sep).includes('share') })
+      // SEO: a prerendered index.html per route (so link previews see that page's tags), plus sitemap and robots
+      const index = fs.readFileSync(path.join(outDir, 'index.html'), 'utf8')
+      const head = /<!--seo-->[\s\S]*?<!--\/seo-->/
+      const all = routes()
+      for (const m of all.slice(1)) {
+        const dir = path.join(outDir, ...m.path.split('/').filter(Boolean))
+        fs.mkdirSync(dir, { recursive: true })
+        fs.writeFileSync(path.join(dir, 'index.html'), index.replace(head, `<!--seo-->${headTags(m)}<!--/seo-->`))
+      }
+      const today = new Date().toISOString().slice(0, 10)
+      const urls = all.map((m) => `  <url><loc>${SITE}${m.path}</loc><lastmod>${today}</lastmod><priority>${m.path === '/' ? '1.0' : m.type === 'article' ? '0.8' : '0.6'}</priority></url>`)
+      fs.writeFileSync(path.join(outDir, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`)
+      fs.writeFileSync(path.join(outDir, 'robots.txt'), `User-agent: *\nAllow: /\nDisallow: /review\n\nSitemap: ${SITE}/sitemap.xml\n`)
     },
   }
 }

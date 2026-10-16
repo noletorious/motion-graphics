@@ -13,7 +13,8 @@
     "export": "node scripts/export.mjs",
     "sync-kit": "node scripts/sync-kit.mjs",
     "frames": "node scripts/frames.mjs",
-    "sync-recaps": "node scripts/sync-recaps.mjs"
+    "sync-recaps": "node scripts/sync-recaps.mjs",
+    "og": "node scripts/og.mjs"
   },
   "dependencies": {
     "clsx": "^2.0.0",

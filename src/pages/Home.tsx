@@ -6,11 +6,12 @@ import { navigate } from '@/lib/router'
 import { PieceFrame } from '@/components/PieceFrame'
 import { Foot, TopBar } from '@/components/Chrome'
 import { cn } from '@/lib/utils'
+import { applyMeta, homeMeta } from '@/lib/seo'
 
 const versions = companies.reduce((n, c) => n + c.versions.length, 0)
 
 export function Home() {
-  useEffect(() => void (document.title = 'Motion'), [])
+  useEffect(() => applyMeta(homeMeta(companies)), [])
   return (
     <div className="page">
       <TopBar />
