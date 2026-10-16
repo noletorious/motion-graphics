@@ -20,7 +20,7 @@ What we're doing now, in order. Items come from `BACKLOG.md`; finished ones get 
    - [ ] Your /review notes on the second pass
    - [ ] More real sounds: send any Tesla clips you record into `companies/tesla/assets/sounds/`
    - [x] Out of draft
-   - [ ] Ask recap or skip; final MP4 export when you say done
+   - [x] Recap (`share/recap.mp4`, not reviewed; may not be used) and final MP4s in `exports/tesla/v1/` (will likely be redone after later edits)
 2. [ ] **Tesla v2: Roadster.** Assets are arriving in `companies/tesla/assets/roadster/` (untracked, ~91 MB). Convert the GLB to an optimized copy, credit it (krea.ai, like v1), then storyboard and stop for comments.
 3. [ ] **v1 blog headers + thumbnails.** For each version, a 16:9 header graphic for the top of its blog post; its poster frame is the 1920×1080 thumbnail. In `share/`, never shown on the site. Storyboard first.
 4. [ ] **v2: eBay "Super Live", Google "Gemini Redesign".** Storyboard, then stop for your comments. No build until you've commented.
