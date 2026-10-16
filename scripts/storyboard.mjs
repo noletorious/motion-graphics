@@ -58,7 +58,7 @@ h2{font:400 64px/1 "Instrument Serif",serif;letter-spacing:-.01em}
 .scene h3 span{color:var(--mute)}
 .scene p.note{margin-top:8px;color:var(--mute);max-width:900px}
 .grid{margin-top:24px;display:grid;gap:28px 20px;grid-template-columns:repeat(auto-fill,minmax(var(--min,340px),1fr))}
-.sq .grid{--min:260px}.page .grid{--min:560px}
+.sq .grid{--min:260px}.tall .grid{--min:200px}.page .grid{--min:560px}
 figure img{width:100%;display:block;border:1px solid var(--line);background:#111}
 figcaption{margin-top:12px;font-size:15px}
 .t{font:500 12px "JetBrains Mono",monospace;color:var(--fg);display:flex;gap:10px;margin-bottom:6px}
@@ -74,7 +74,7 @@ ${board.sections
     (s) => `<section><h2>${esc(s.title)}</h2>
 ${s.scenes
   .map(
-    (sc) => `<div class="scene ${sc.size[0] === sc.size[1] ? 'sq' : ''} ${sc.page ? 'page' : ''}" id="${sc.id}">
+    (sc) => `<div class="scene ${sc.size[0] === sc.size[1] ? 'sq' : sc.size[0] < sc.size[1] ? 'tall' : ''} ${sc.page ? 'page' : ''}" id="${sc.id}">
   <h3>${esc(sc.title)} <span>${esc(sc.meta)}</span></h3>${sc.note ? `<p class="note">${esc(sc.note)}</p>` : ''}
   <div class="grid">${sc.shots
     .map(

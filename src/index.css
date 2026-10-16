@@ -609,6 +609,12 @@ button {
 .piece-frame.square {
   aspect-ratio: 1;
 }
+.piece-frame.tall {
+  aspect-ratio: 9 / 16;
+}
+.piece.tall {
+  grid-column: span 3;
+}
 .play {
   position: absolute;
   left: 50%;
@@ -665,6 +671,10 @@ button {
 @media (max-width: 900px) {
   .co-head {
     grid-template-columns: 1fr;
+  }
+  .piece.tall {
+    grid-column: span 12;
+    max-width: 420px;
   }
   .piece.wide,
   .piece.sq,
@@ -762,6 +772,13 @@ button {
   background: #000;
   width: 100%;
   max-height: 72vh;
+}
+.rv-stage.tall {
+  aspect-ratio: 9 / 16;
+  width: auto;
+  height: 80vh;
+  max-height: none;
+  align-self: center;
 }
 .rv-stage.square {
   aspect-ratio: 1;

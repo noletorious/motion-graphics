@@ -44,7 +44,7 @@
   const meta = (n) => document.querySelector(`meta[name="piece:${n}"]`)?.content
   const DUR = Number(meta('duration'))
   const LOOP = meta('loop') === 'true'
-  const [W, H] = meta('aspect') === '1:1' ? [1080, 1080] : [1920, 1080]
+  const [W, H] = { '1:1': [1080, 1080], '9:16': [1080, 1920] }[meta('aspect')] ?? [1920, 1080]
   const EXPORT = P.has('export')
   const EMBED = window.parent !== window
 

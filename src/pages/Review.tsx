@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useRef, useState, type PointerEvent as RPointerEvent } from 'react'
 import companies from 'virtual:companies'
 import { PieceFrame, type PieceFrameHandle, type PieceMessage } from '@/components/PieceFrame'
-import { typeLabel } from '@/lib/pieces'
+import { shape, typeLabel } from '@/lib/pieces'
 import { cn } from '@/lib/utils'
 import logo from '@/assets/noletorious-logo-dark.svg'
 
@@ -124,7 +124,6 @@ export default function Review() {
     setTimeout(() => setCopied(false), 1400)
   }
 
-  const square = entry.piece.aspect === '1:1'
   return (
     <div className="review">
       <aside className="rv-list">
@@ -150,7 +149,7 @@ export default function Review() {
       </aside>
 
       <main className="rv-main">
-        <div className={cn('rv-stage', square && 'square')}>
+        <div className={cn('rv-stage', shape(entry.piece.aspect))}>
           <PieceFrame
             key={entry.id}
             ref={frame}

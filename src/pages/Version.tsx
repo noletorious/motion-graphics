@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import companies from 'virtual:companies'
 import type { Company, Piece, Version } from '@/lib/types'
-import { clock, hero as heroOf, host, pad2, showcase, typeLabel, versionLabel, versionPath } from '@/lib/pieces'
+import { clock, hero as heroOf, host, pad2, shape, showcase, typeLabel, versionLabel, versionPath } from '@/lib/pieces'
 import { linkTo } from '@/lib/router'
 import { PieceFrame, type PieceFrameHandle } from '@/components/PieceFrame'
 import { Foot, TopBar } from '@/components/Chrome'
@@ -129,7 +129,8 @@ function PieceCard({ piece: p, index, active, onPlay }: { piece: Piece; index: n
   useEffect(() => {
     if (!active) setReady(false)
   }, [active])
-  const span = p.aspect === '1:1' ? 'sq' : p.type === 'promo-15s' ? 'full' : 'wide'
+  const sh = shape(p.aspect)
+  const span = sh === 'square' ? 'sq' : sh === 'tall' ? 'tall' : p.type === 'promo-15s' ? 'full' : 'wide'
   const click = () => {
     if (active) {
       setEnded(false)
@@ -138,7 +139,7 @@ function PieceCard({ piece: p, index, active, onPlay }: { piece: Piece; index: n
   }
   return (
     <article className={cn('piece', span)}>
-      <button className={cn('piece-frame', p.aspect === '1:1' && 'square')} onClick={click} aria-label={`Play ${p.title}`}>
+      <button className={cn('piece-frame', shape(p.aspect))} onClick={click} aria-label={`Play ${p.title}`}>
         {p.poster && <img src={p.poster} alt="" loading="lazy" decoding="async" />}
         {active && (
           <PieceFrame

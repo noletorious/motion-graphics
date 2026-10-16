@@ -50,9 +50,9 @@ Each version is an exploration with a name and a premise: v1 is the first take, 
 
 Each piece is one HTML file that runs in the site (inside an iframe) and on its own.
 
-- **Metadata** goes in the head: `<meta name="piece:type|title|duration|aspect|loop|poster" content="…">`. Types: `logo-sting`, `promo-15s`, `feature-loop`, `social-loop`, `stat`, `lower-third`. `poster` is the time of the still used for tiles.
+- **Metadata** goes in the head: `<meta name="piece:type|title|duration|aspect|loop|poster" content="…">`. Types: `logo-sting`, `promo-15s`, `feature-loop`, `social-loop`, `stat`, `lower-third`, `recap`. `poster` is the time of the still used for tiles.
 - **Kit**: every piece carries `<script id="piece-kit">` (copied from `elements/piece-kit.js` by `npm run sync-kit`; never edit it in place). The piece defines `Piece.render(t)`, `Piece.sounds = [{ t, fn(ctx, out, at) }]`, optional `Piece.setup()` (measure layout after fonts load) , `Piece.cuts` (scene cuts, shown as trim handles on /review) and `Piece.gain` (master trim; keep export peaks between −6 and −10 dBFS). Helpers live on `K` (`tw`, `css`, `ease`, `S` synths, `note`, `rng`).
-- **Fixed stage**: 1920×1080 (16:9) or 1080×1080 (1:1), scaled to fit with a CSS transform. Layout is never responsive inside the stage.
+- **Fixed stage**: 1920×1080 (16:9), 1080×1080 (1:1) or 1080×1920 (9:16, recaps), scaled to fit with a CSS transform. Layout is never responsive inside the stage.
 - **Time-driven**: everything is drawn from one `render(t)`. Nothing runs on wall-clock timers, so any frame can be reproduced exactly for export.
 - **API** (from the kit): `window.piece = { duration, loop, seek(t), play(), pause(), setMuted, setRate, buildAudio(ctx, when) }`. The site drives it over postMessage (`{ source: 'site', type: play|pause|seek|restart|mute|rate }`); the piece reports `{ source: 'piece', type: ready|time|play|pause|ended }`. Audio is built through a `BaseAudioContext`, so `OfflineAudioContext` renders it for export.
 - **URL params**: `?autoplay=1&muted=1` for hover previews, `?t=2.5` for a frozen still, `?export=1` to hide any UI.
