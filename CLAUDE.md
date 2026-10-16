@@ -61,7 +61,7 @@ Each piece is one HTML file that runs in the site (inside an iframe) and on its 
 
 ## Site look
 
-Dark, editorial, big type, minimal chrome. Near-black `#0a0a0b`, off-white `#ecebe6`, one hairline `#232326`. Top-left mark: `src/assets/noletorious-logo-dark.svg` + "Motion". Instrument Serif for display, Inter Tight for UI, JetBrains Mono for labels and timecodes. No brand colour in the frame itself. Page transitions use the View Transitions API. Previews lazy-load: a tile mounts its iframe only on hover or when it comes into view.
+Dark, editorial, big type, minimal chrome. Near-black `#0a0a0b`, off-white `#ecebe6`, one hairline `#232326`. Top-left mark: `src/assets/noletorious-logo-dark.svg` + "Motion". Instrument Serif for display, Inter Tight for UI, JetBrains Mono for labels and timecodes. No brand colour in the frame itself. Page transitions use the View Transitions API. Home is a centred headline above a slowly turning 3D ring of company showcases; only the front card mounts a live iframe, the rest show posters.
 
 ## Legal
 

@@ -20,11 +20,11 @@ Everything we'll do eventually. Pull items into `TODO.md` when they're next.
 
 ## Home (the hook)
 
-- [ ] Centred headline: byline, "Exploring motion, by company", intro line
-- [ ] Slow, continuously rotating carousel of showcases below the headline
-- [ ] Carousel performance: only the front card plays live; the others show posters
-- [ ] Carousel on mobile: swipe, and still drifts slowly when idle
-- [ ] Reduced-motion fallback for the carousel
+- [x] Centred headline: byline, "Exploring motion, by company", intro line
+- [x] Slow, continuously rotating carousel of showcases below the headline
+- [x] Carousel performance: only the front card plays live; the others show posters
+- [x] Carousel on mobile: swipe, and still drifts slowly when idle
+- [x] Reduced-motion fallback for the carousel
 
 ## Content
 

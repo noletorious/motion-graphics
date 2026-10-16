@@ -90,7 +90,8 @@ button {
 }
 @media (prefers-reduced-motion: reduce) {
   .rise,
-  .wave span {
+  .wave span,
+  .c-label {
     animation: none;
   }
 }
@@ -279,10 +280,11 @@ button {
 
 /* ---------- home ---------- */
 .intro {
-  padding-top: clamp(56px, 8vw, 130px);
+  padding-top: clamp(32px, 3.6vw, 64px);
+  text-align: center;
 }
 .display {
-  font: 400 clamp(64px, 12.3vw, 236px) / 0.86 var(--font-display);
+  font: 400 clamp(56px, 7.8vw, 150px) / 0.86 var(--font-display);
   letter-spacing: -0.035em;
 }
 .display i {
@@ -295,7 +297,7 @@ button {
 }
 .byline {
   display: inline-block;
-  margin-bottom: clamp(20px, 2.4vw, 36px);
+  margin-bottom: clamp(16px, 1.6vw, 28px);
   color: var(--mute);
   transition: color 0.3s var(--ease), transform 0.3s var(--ease);
 }
@@ -332,32 +334,13 @@ button {
   }
 }
 .lede {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  gap: 24px;
-  margin-top: clamp(32px, 4vw, 72px);
-  flex-wrap: wrap;
-}
-.lede p {
-  max-width: 440px;
+  max-width: 460px;
+  margin: clamp(18px, 2vw, 32px) auto 0;
   color: var(--mute);
   font-size: 19px;
 }
-.grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 640px), 1fr));
-  gap: 56px 28px;
-  margin-top: clamp(56px, 6vw, 110px);
-}
-.tile {
-  display: block;
-  transition: opacity 0.45s var(--ease);
-}
-.tile.dim {
-  opacity: 0.38;
-}
-.frame,
+
+/* shared frame for anything that shows a piece */
 .hero,
 .piece-frame {
   position: relative;
@@ -367,9 +350,9 @@ button {
   display: block;
   width: 100%;
 }
-.frame img,
 .hero img,
 .piece-frame img,
+.c-card img,
 .live {
   position: absolute;
   inset: 0;
@@ -386,74 +369,86 @@ button {
 .live.show {
   opacity: 1;
 }
-.chip {
-  position: absolute;
-  left: 16px;
-  top: 16px;
-  background: rgba(10, 10, 11, 0.82);
-  padding: 8px 12px;
+
+/* the carousel: a slowly turning 3D ring of showcases */
+.carousel {
+  margin: clamp(20px, 2.4vw, 44px) calc(-1 * var(--gutter)) 0;
+  overflow: hidden;
+}
+.c-stage {
+  position: relative;
   display: flex;
-  gap: 10px;
   align-items: center;
-  opacity: 0;
-  transform: translateY(-4px);
-  transition: 0.3s var(--ease);
+  justify-content: center;
+  cursor: grab;
+  touch-action: pan-y;
+  user-select: none;
 }
-.chip b {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: #ff4d3d;
+.c-stage:active {
+  cursor: grabbing;
 }
-.chip.show,
-.progress.show {
-  opacity: 1;
-  transform: none;
+.c-ring {
+  position: relative;
+  transform-style: preserve-3d;
 }
-.progress {
+.c-card {
   position: absolute;
-  left: 0;
-  bottom: 0;
-  height: 3px;
-  background: var(--fg);
-  opacity: 0;
-  transition: width 0.12s linear, opacity 0.3s;
+  inset: 0;
+  overflow: hidden;
+  background: var(--panel);
+  backface-visibility: hidden;
+  outline: 1px solid rgba(255, 255, 255, 0.04);
+  will-change: opacity, filter;
 }
-.meta {
+.c-card.front {
+  box-shadow: 0 40px 90px -30px rgba(0, 0, 0, 0.9);
+}
+.c-card:focus-visible {
+  outline: 2px solid var(--fg);
+  outline-offset: 4px;
+}
+.c-caption {
   display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  margin-top: 22px;
-  gap: 16px;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(16px, 3vw, 48px);
+  margin-top: 12px;
+  padding: 0 var(--gutter);
 }
-.meta .idx {
-  margin-right: 20px;
+.c-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  min-width: 240px;
+  animation: c-in 0.6s var(--ease);
 }
-.meta .name {
-  font: 400 clamp(40px, 3.4vw, 64px) / 1 var(--font-display);
+.c-name {
+  font: 400 clamp(40px, 3.6vw, 64px) / 1 var(--font-display);
   letter-spacing: -0.02em;
 }
-.hint {
-  display: grid;
-  text-align: right;
+.c-label:hover .c-name {
+  font-style: italic;
 }
-.hint > span {
-  grid-area: 1 / 1;
-  transition: 0.3s var(--ease);
+@keyframes c-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
 }
-.hint .go {
-  opacity: 0;
-  color: var(--fg);
-  transform: translateX(-6px);
+.c-btn {
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: none;
+  font-size: 16px;
+  transition: background 0.2s, color 0.2s, border-color 0.2s;
 }
-.tile:hover .hint .rest,
-.tile:focus-visible .hint .rest {
-  opacity: 0;
-}
-.tile:hover .hint .go,
-.tile:focus-visible .hint .go {
-  opacity: 1;
-  transform: none;
+.c-btn:hover {
+  background: var(--fg);
+  color: var(--bg);
+  border-color: var(--fg);
 }
 
 /* ---------- company ---------- */
