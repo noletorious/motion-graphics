@@ -6,7 +6,7 @@
 <meta name="piece:duration" content="15">
 <meta name="piece:aspect" content="16:9">
 <meta name="piece:loop" content="false">
-<meta name="piece:poster" content="2.9">
+<meta name="piece:poster" content="4.9">
 <title>Tesla v1 — Promo 15s</title>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;500;600;700&display=block" rel="stylesheet">
@@ -22,16 +22,22 @@
 .shade-l{background:linear-gradient(90deg,rgba(0,0,0,.72),rgba(0,0,0,.25) 45%,transparent 70%)}
 .shade-t{background:linear-gradient(rgba(0,0,0,.65),transparent 35%)}
 #w3{overflow:hidden}
-#bg3{background:#111214}
 #gl{position:absolute;left:0;top:0;width:1920px;height:1080px}
-.phone{position:absolute;left:750px;top:110px;width:420px;height:860px;border-radius:64px;background:#0b0c0f;border:12px solid #1d1f24;box-shadow:0 60px 120px -40px #000;overflow:hidden}
-#btn{left:40px;right:40px;bottom:60px;padding:26px;border-radius:999px;background:#fff;color:#000;text-align:center;font-weight:700;font-size:26px}
-.ring{position:absolute;left:170px;top:420px;width:80px;height:80px;border-radius:50%;border:2px solid var(--accent)}
+/* phone: a Robotaxi-style hail screen */
+.phone{position:absolute;left:750px;top:110px;width:420px;height:860px;border-radius:64px;background:#0b0c0f;border:12px solid #1d1f24;box-shadow:0 60px 140px -30px #000,0 0 0 1px #2a2d33;overflow:hidden}
+#map{position:absolute;left:0;top:0;width:2048px;height:2048px;transform-origin:0 0}
+.pin{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;background:#fff;box-shadow:0 0 0 7px rgba(255,255,255,.18)}
+.pin::after{content:"";position:absolute;inset:8px;border-radius:50%;background:#0b0c0f}
+#cab{position:absolute;width:30px;height:16px;margin:-8px 0 0 -15px;border-radius:7px;background:var(--accent);box-shadow:0 0 16px 4px rgba(233,211,166,.55)}
+.chip{position:absolute;left:24px;top:56px;padding:10px 18px;border-radius:999px;background:rgba(17,19,23,.88);font-size:17px;font-weight:600;letter-spacing:.02em}
+.sheet{position:absolute;left:0;right:0;bottom:0;height:300px;border-radius:30px 30px 0 0;background:#111317;box-shadow:0 -20px 40px rgba(0,0,0,.5)}
+.sheet .handle{position:absolute;left:50%;top:12px;width:44px;height:5px;margin-left:-22px;border-radius:3px;background:#3a3d44}
+#btn{left:28px;right:28px;bottom:40px;padding:24px;border-radius:999px;background:#fff;color:#000;text-align:center;font-weight:700;font-size:24px}
+#touch{position:absolute;left:198px;top:766px;width:70px;height:70px;margin:-35px 0 0 -35px;border-radius:50%;background:rgba(255,255,255,.35)}
 .mark{position:absolute;color:#fff}.mark svg{width:100%;height:100%;display:block}
 .spray{position:absolute;background:currentColor;color:#fff;-webkit-mask:url(../../../assets/cybercab-spray.svg) center/contain no-repeat;mask:url(../../../assets/cybercab-spray.svg) center/contain no-repeat}
-#slash{left:-200px;top:240px;width:2300px;height:600px;color:var(--accent)}
-#line{left:0;right:0;top:538px;height:4px;background:#fff;box-shadow:0 0 40px 10px rgba(255,255,255,.75);opacity:0}
-#white{background:#fff;opacity:0}
+#wline{left:-2px;top:0;bottom:0;width:4px;background:#fff;box-shadow:0 0 40px 12px rgba(255,240,215,.75),0 0 8px 2px #fff;opacity:0}
+#dip{background:#000;opacity:0}
 .grain{position:absolute;inset:-50%;pointer-events:none;opacity:.08;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 </style>
 <script id="piece-kit">
@@ -351,98 +357,145 @@
 })()
 </script>
 </head><body><div id="stage">
-  <!-- 1 · phone -->
-  <div class="L" id="s1" style="background:radial-gradient(ellipse 60% 60% at 50% 50%,#12151c,#000 75%)">
-    <div class="phone" id="phone">
-      <div class="L" style="background:radial-gradient(circle at 50% 38%,#1a2233,#0b0c0f 60%)"></div>
-      <div class="a label" style="left:40px;top:70px;font-size:20px">Robotaxi</div>
-      <div class="a" style="left:40px;top:110px;font-size:44px;font-weight:600;line-height:1.1" id="ask">Where to?</div>
-      <div class="a" style="left:40px;top:200px;right:40px;padding:22px 26px;border-radius:20px;background:#171a20;font-size:24px;color:#d0d1d2">Downtown · 12 min</div>
-      <div class="a" id="btn">Summon</div>
-      <div class="ring" id="r1"></div><div class="ring" id="r2"></div>
-      <div class="a" id="dot" style="left:170px;top:420px;width:80px;height:80px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 22px rgba(233,211,166,.16),0 0 0 50px rgba(233,211,166,.07)"></div>
-    </div>
-    <div class="a big" id="tap" style="left:140px;top:420px;font-size:90px">Tap.</div>
+  <!-- 3 · it comes to you (also the blurred backdrop behind the phone in 2) -->
+  <div class="L" id="sh3" style="z-index:2">
+    <div class="L photo" id="p82" style="background-image:url(../../../assets/photos/cybercab-82.jpg);background-position:55% 55%;transform-origin:55% 55%"></div>
+    <div class="L shade-t" id="sh3-shade"></div>
+    <div class="a big" id="c3" style="left:120px;top:110px;font-size:110px">It comes <span class="acc">to you.</span></div>
   </div>
-  <!-- photos -->
-  <div class="L photo" id="p82" style="background-image:url(../../../assets/photos/cybercab-82.jpg);background-position:55% 55%;transform-origin:55% 55%"></div>
-  <div class="L photo" id="p75" style="background-image:url(../../../assets/photos/cybercab-75.jpg);background-position:55% 50%;transform-origin:55% 50%"></div>
-  <div class="L photo" id="p83" style="background-image:url(../../../assets/photos/cybercab-83.jpg);background-position:70% 60%;transform-origin:70% 60%"></div>
-  <div class="L photo" id="p85" style="background-image:url(../../../assets/photos/cybercab-85.jpg);background-position:50% 8%;filter:brightness(.62)"></div>
-  <div class="L shade-t" id="sh-t"></div>
-  <div class="L shade-l" id="sh-l"></div>
-  <!-- 3D: map/satellite, then the pad at night -->
-  <div class="L" id="w3"><div class="L" id="bg3"></div><canvas id="gl"></canvas></div>
-  <div class="L" id="g75"></div>
-  <div class="L" id="g83"></div>
-  <!-- type -->
-  <div class="a big" id="c2" style="left:120px;top:110px;font-size:110px">It comes <span class="acc">to you.</span></div>
-  <div class="a big" id="c3a" style="left:120px;top:760px;font-size:110px">Every seat is a</div>
-  <div class="a big" id="c3b" style="left:120px;top:880px;font-size:110px"><span class="acc">passenger seat.</span></div>
-  <div class="a big" id="c4" style="right:120px;top:880px;text-align:right;font-size:90px;text-shadow:0 2px 30px #000">No driver. <span id="c4b">Just the route.</span></div>
-  <div class="a big" id="c6a" style="right:120px;top:110px;text-align:right;font-size:100px">Drops you off.</div>
-  <div class="a big" id="c6b" style="right:120px;top:220px;text-align:right;font-size:100px;color:#c9c9cc">Keeps working.</div>
-  <div class="a big" id="c7" style="left:120px;top:110px;font-size:110px">Charges itself.</div>
-  <div class="a label" id="c7b" style="left:126px;top:240px">Inductive charging · no plug</div>
-  <div class="mark" id="tm" style="left:920px;top:110px;width:80px;height:80px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="12.4 0 253.9 252.6"><g fill="currentColor"><path transform="translate(-33.796,-64.797)" d="m173.146 317.299 35.476-199.519c33.815 0 44.481 3.708 46.021 18.843 0 0 22.684-8.458 34.125-25.636-44.646-20.688-89.505-21.621-89.505-21.621l-26.176 31.882 0.059-4e-3 -26.176-31.883s-44.86 0.934-89.5 21.622c11.431 17.178 34.124 25.636 34.124 25.636 1.549-15.136 12.202-18.844 45.79-18.868l35.762 199.548"/>
+  <!-- 2 · the hail screen -->
+  <div class="L" id="sh2" style="z-index:3">
+    <div class="phone" id="phone">
+      <canvas id="map"></canvas>
+      <svg class="L" id="route" width="396" height="836"><polyline id="rline" fill="none" stroke="#e9d3a6" stroke-width="5" stroke-linejoin="round" stroke-linecap="round" style="filter:drop-shadow(0 0 6px rgba(233,211,166,.7))"/></svg>
+      <div class="L" style="background:linear-gradient(rgba(11,12,15,.0) 60%,rgba(11,12,15,.6))"></div>
+      <div class="pin" id="pin"></div>
+      <div id="cab"></div>
+      <div class="chip">Robotaxi</div>
+      <div class="sheet"><div class="handle"></div>
+        <div class="a" style="left:28px;top:36px;font-size:30px;font-weight:600">Cybercab</div>
+        <div class="a" id="eta" style="left:28px;top:80px;font-size:19px;color:#9a9ca3">Pickup in 3 min · Mercer St</div>
+        <div class="a" id="btn">Request</div>
+      </div>
+      <div id="touch"></div>
+    </div>
+  </div>
+  <!-- 4 · every seat -->
+  <div class="L" id="sh4" style="z-index:4">
+    <div class="L photo" id="p75" style="background-image:url(../../../assets/photos/cybercab-75.jpg);background-position:55% 50%;transform-origin:55% 50%"></div>
+    <div class="L shade-l"></div>
+    <div class="a big" id="c4a" style="left:120px;top:760px;font-size:110px">Every seat is a</div>
+    <div class="a big" id="c4b" style="left:120px;top:880px;font-size:110px"><span class="acc">passenger seat.</span></div>
+  </div>
+  <!-- 3D: 1 the chrome lettering, 5 the drive, 7 the charge -->
+  <div class="L" id="w3"><div class="L" id="bg3"></div><canvas id="gl"></canvas>
+    <div class="a big" id="c5" style="right:120px;top:880px;text-align:right;font-size:90px;text-shadow:0 2px 30px #000">No driver. <span style="color:#d9dade">Just the route.</span></div>
+    <div class="a big" id="c7" style="left:120px;top:110px;font-size:110px">Charges itself.</div>
+    <div class="a label" id="c7b" style="left:126px;top:240px">Inductive charging · no plug</div>
+  </div>
+  <!-- 6 · drops you off -->
+  <div class="L" id="sh6" style="z-index:6">
+    <div class="L photo" id="p83" style="background-image:url(../../../assets/photos/cybercab-83.jpg);background-position:70% 60%;transform-origin:70% 60%"></div>
+    <div class="L shade-t"></div>
+    <div class="a big" id="c6a" style="right:120px;top:110px;text-align:right;font-size:100px">Drops you off.</div>
+    <div class="a big" id="c6b" style="right:120px;top:220px;text-align:right;font-size:100px;color:#c9c9cc">Keeps working.</div>
+  </div>
+  <!-- 8 · end card -->
+  <div class="L" id="sh8" style="z-index:8">
+    <div class="L photo" id="p85" style="background-image:url(../../../assets/photos/cybercab-85.jpg);background-position:50% 8%;filter:brightness(.62)"></div>
+    <div class="mark" id="tm" style="left:920px;top:110px;width:80px;height:80px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="12.4 0 253.9 252.6"><g fill="currentColor"><path transform="translate(-33.796,-64.797)" d="m173.146 317.299 35.476-199.519c33.815 0 44.481 3.708 46.021 18.843 0 0 22.684-8.458 34.125-25.636-44.646-20.688-89.505-21.621-89.505-21.621l-26.176 31.882 0.059-4e-3 -26.176-31.883s-44.86 0.934-89.5 21.622c11.431 17.178 34.124 25.636 34.124 25.636 1.549-15.136 12.202-18.844 45.79-18.868l35.762 199.548"/>
     <path transform="translate(-33.796,-64.797)" d="m173.132 80.157c36.09-0.276 77.399 5.583 119.687 24.014 5.652-10.173 7.105-14.669 7.105-14.669-46.227-18.289-89.518-24.548-126.797-24.705-37.277 0.157-80.566 6.417-126.787 24.705 0 0 2.062 5.538 7.1 14.669 42.28-18.431 83.596-24.29 119.687-24.014h5e-3"/></g></svg></div>
-  <div class="mark" id="wm" style="left:770px;top:220px;width:380px;height:50px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 324.0 278.7 36.5"><g fill="currentColor"><path transform="translate(-28.524,-64.797)" d="m28.524 388.986c0.812 3.167 3.554 6.404 7.316 7.215h11.37l0.58 0.229v28.691h7.1v-28.691l0.645-0.229h11.38c3.804-0.98 6.487-4.048 7.285-7.215v-0.07h-45.676v0.07"/><path transform="translate(-28.524,-64.797)" d="m98.795 425.202h27.011c3.758-0.747 6.551-4.058 7.334-7.263h-41.679c0.778 3.206 3.612 6.516 7.334 7.263"/><path transform="translate(-28.524,-64.797)" d="m98.795 410.485h27.011c3.758-0.741 6.551-4.053 7.334-7.262h-41.679c0.778 3.21 3.612 6.521 7.334 7.262"/><path transform="translate(-28.524,-64.797)" d="m98.795 396.163h27.011c3.758-0.749 6.551-4.058 7.334-7.265h-41.679c0.778 3.207 3.612 6.516 7.334 7.265"/><path transform="translate(-28.524,-64.797)" d="m160.398 396.094h24.954c3.762-1.093 6.921-3.959 7.691-7.136h-39.64v21.415h32.444v7.515l-25.449 0.02c-3.988 1.112-7.37 3.79-9.057 7.327l2.062-0.038h39.415v-21.944h-32.42v-7.159"/><path transform="translate(-28.524,-64.797)" d="m245.319 425.206c3.543-1.502 5.449-4.1 6.179-7.14h-31.517l0.02-29.118-7.065 0.02v36.238h32.383"/><path transform="translate(-28.524,-64.797)" d="m272.845 396.192h27.02c3.753-0.746 6.544-4.058 7.331-7.262h-41.681c0.779 3.205 3.611 6.516 7.33 7.262"/><path transform="translate(-28.524,-64.797)" d="m266.601 403.28v21.912h7.027v-14.589h25.575v14.589h7.022v-21.874l-39.624-0.038"/></g></svg></div>
-  <div class="spray" id="sp" style="left:810px;top:300px;width:300px;height:110px"></div>
+    <div class="mark" id="wm" style="left:770px;top:220px;width:380px;height:50px"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 324.0 278.7 36.5"><g fill="currentColor"><path transform="translate(-28.524,-64.797)" d="m28.524 388.986c0.812 3.167 3.554 6.404 7.316 7.215h11.37l0.58 0.229v28.691h7.1v-28.691l0.645-0.229h11.38c3.804-0.98 6.487-4.048 7.285-7.215v-0.07h-45.676v0.07"/><path transform="translate(-28.524,-64.797)" d="m98.795 425.202h27.011c3.758-0.747 6.551-4.058 7.334-7.263h-41.679c0.778 3.206 3.612 6.516 7.334 7.263"/><path transform="translate(-28.524,-64.797)" d="m98.795 410.485h27.011c3.758-0.741 6.551-4.053 7.334-7.262h-41.679c0.778 3.21 3.612 6.521 7.334 7.262"/><path transform="translate(-28.524,-64.797)" d="m98.795 396.163h27.011c3.758-0.749 6.551-4.058 7.334-7.265h-41.679c0.778 3.207 3.612 6.516 7.334 7.265"/><path transform="translate(-28.524,-64.797)" d="m160.398 396.094h24.954c3.762-1.093 6.921-3.959 7.691-7.136h-39.64v21.415h32.444v7.515l-25.449 0.02c-3.988 1.112-7.37 3.79-9.057 7.327l2.062-0.038h39.415v-21.944h-32.42v-7.159"/><path transform="translate(-28.524,-64.797)" d="m245.319 425.206c3.543-1.502 5.449-4.1 6.179-7.14h-31.517l0.02-29.118-7.065 0.02v36.238h32.383"/><path transform="translate(-28.524,-64.797)" d="m272.845 396.192h27.02c3.753-0.746 6.544-4.058 7.331-7.262h-41.681c0.779 3.205 3.611 6.516 7.33 7.262"/><path transform="translate(-28.524,-64.797)" d="m266.601 403.28v21.912h7.027v-14.589h25.575v14.589h7.022v-21.874l-39.624-0.038"/></g></svg></div>
+    <div class="spray" id="sp" style="left:810px;top:300px;width:300px;height:110px"></div>
+  </div>
   <!-- transitions -->
-  <div class="spray" id="slash"></div>
-  <div class="L" id="white"></div>
-  <div class="L" id="line"></div>
-  <div class="grain"></div>
+  <div class="L" id="dip" style="z-index:9"></div>
+  <div class="a" id="wline" style="z-index:9"></div>
+  <div class="grain" style="z-index:10"></div>
 </div>
 <script type="module">
-import { THREE, createWorld, loadCar, buildCity, buildPad, glitchImage, glitchReveal, flash } from '../../../assets/lib/tesla.js'
-const { tw, css, ease, lerp, clamp, $, S, note } = K
-let st, car, city, pad
+import { THREE, createWorld, loadCar, loadLettering, buildPad, buildDrive, lightWipe, drawMap, ROUTE } from '../../../assets/lib/tesla.js'
+import { V, CH, groove, pads, loadSample } from '../../../assets/lib/sound.js'
+const { tw, css, ease, lerp, clamp, $ } = K
+let st, car, text, pad, drive, tron
+
+// shot starts, on the 120 BPM grid (one beat = 0.5s)
+const S1 = 0, S2 = 2, S3 = 4, S4 = 5.5, S5 = 7, S6 = 9.5, S7 = 11, S8 = 12.5
+const WIPE4 = [S4 - 0.2, S4 + 0.15], WIPE6 = [S6 - 0.2, S6 + 0.15] // light-bar wipes
+const ZOOM5 = [S5 - 0.15, S5 + 0.2] // zoom-through into the drive
+const DIP7 = [S7 - 0.2, S7 + 0.2] // dip to black into the charge
+const FADE8 = [S8 - 0.2, S8 + 0.25] // crossfade to the end card
 
 Piece.setup = async () => {
   st = createWorld($('#gl'), 1920, 1080)
   car = await loadCar()
-  city = buildCity(st)
+  text = await loadLettering(3.6, 5.0, { rainbow: st.renderer })
   pad = buildPad(st)
-  st.scene.add(car)
+  drive = buildDrive(st)
+  st.scene.add(car, text)
+  drawMap($('#map'), { route: false })
+  tron = await loadSample('../../../assets/sounds/tron.wav')
 }
 
-// shot starts (match the storyboard)
-const S1 = 0, S2 = 2, S3 = 4, S4 = 6, S6 = 8.5, S7 = 10.5, S8 = 12.5
 const vis = (el, on) => (el.style.visibility = on ? 'visible' : 'hidden')
 // type comes in sharp: a short rise behind a clip, then holds
-const rise = (el, t, at, inShot) => {
+const rise = (el, t, at, on = true) => {
   const p = tw(t, at, at + 0.45, ease.out3)
-  vis($(el), inShot && t >= at)
+  vis($(el), on && t >= at)
   css($(el), { y: lerp(40, 0, p), o: clamp(p * 2), clip: p < 1 ? `inset(-30% -10% ${(1 - p) * 60 - 30}% -10%)` : 'none' })
 }
 
+// ---- the phone's map: world metres → screen pixels (citymap: 2048px for 80m, centred on 0,0)
+const K_MAP = 0.24, CENTRE = [-4, 10], SCREEN = [198, 300]
+const toScreen = ([x, z]) => [SCREEN[0] + (x - CENTRE[0]) * 25.6 * K_MAP, SCREEN[1] + (z - CENTRE[1]) * 25.6 * K_MAP]
+const lens = ROUTE.slice(1).map((p, i) => Math.hypot(p[0] - ROUTE[i][0], p[1] - ROUTE[i][1])), full = lens.reduce((a, b) => a + b)
+function along(u) {
+  let d = u * full
+  for (let i = 0; i < lens.length; i++) {
+    if (d <= lens[i] || i === lens.length - 1) {
+      const [a, b] = [ROUTE[i], ROUTE[i + 1]], f = Math.min(1, d / lens[i])
+      return { p: [a[0] + (b[0] - a[0]) * f, a[1] + (b[1] - a[1]) * f], ang: Math.atan2(a[1] - b[1], a[0] - b[0]) } // heading toward the rider (route start)
+    }
+    d -= lens[i]
+  }
+}
+const TAP = 2.8
+
 function render3D(t) {
-  const onMap = t >= S4 - 0.2 && t < S6
-  city.group.visible = onMap
-  pad.group.visible = !onMap
-  st.floor.visible = !onMap
-  if (onMap) {
-    // the car drives the route; the map dissolves to satellite as the camera dives
-    const u = lerp(0.34, 0.47, tw(t, S4, S6, ease.inOut3))
-    const at = city.at(u)
-    car.position.set(at.x, 0, at.z)
-    car.rotation.y = at.heading
-    car.userData.setBar(0)
-    const dive = tw(t, 7.0, 7.8, ease.inOut3)
-    city.set(tw(t, 7.0, 7.6, ease.inOut3), tw(t, S4 + 0.1, S4 + 1.0, ease.inOut3))
-    const h = lerp(lerp(98, 90, tw(t, S4, 7.0, ease.lin)), 46, dive), x = lerp(0, at.x, dive)
-    st.camera.position.set(x, h, 4.01)
-    st.camera.lookAt(x, 0, 4)
-    st.key.intensity = 140
-    st.key.position.set(at.x + 3, 14, at.z + 4)
-    st.key.target.position.set(at.x, 0, at.z)
+  const shot = t < S2 + 0.1 ? 1 : t < S6 ? 5 : 7
+  text.visible = shot === 1
+  car.visible = shot !== 1
+  drive.group.visible = shot === 5
+  pad.group.visible = shot === 7
+  st.floor.visible = shot !== 1
+  st.scene.fog = shot === 5 ? new THREE.Fog(0x07080b, 18, 60) : null
+  if (shot === 1) {
+    // the chrome lettering turns in out of the dark, catching the rainbow as it goes, then rushes the camera
+    text.position.set(0, 1.25, 0)
+    text.rotation.y = THREE.MathUtils.degToRad(lerp(-120, 0, tw(t, 0, 1.5, ease.outBackSoft)))
+    text.rotation.x = THREE.MathUtils.degToRad(lerp(14, 0, tw(t, 0, 1.5, ease.out3)))
+    const z = lerp(lerp(8.5, 6.2, tw(t, 0, 1.5, ease.out3)), 2.2, tw(t, 1.6, 2.1, ease.in3))
+    st.camera.position.set(0.01, 2.25, z)
+    st.camera.lookAt(0, 2.05, 0)
+  } else if (shot === 5) {
+    // driving: the car holds, the world streams past; a slow tracking move
+    const tt = t - (S5 - 0.15)
+    drive.set(tt)
+    car.position.set(0, 0, 0)
+    car.rotation.y = 0
+    car.userData.setBar(1)
+    const k = tw(t, S5 - 0.15, S6, ease.lin)
+    st.camera.position.set(lerp(7.8, 5.6, k), lerp(1.5, 1.2, k), lerp(5.4, 6.4, k))
+    st.camera.lookAt(0.6, 0.75, 0)
+    st.key.intensity = 120
+    st.key.position.set(2.5, 8, 4)
+    st.key.target.position.set(0, 0, 0)
   } else {
-    // parked on the pad at night, a slow orbit; the pad breathes
+    // parked on the pad at night, a slow orbit; green pulses ripple out from under the car
     car.position.set(0, 0, 0)
     car.rotation.y = 0
     car.userData.setBar(0.4)
-    pad.pulse(0.5 + 0.5 * Math.sin((t - S7) * 4))
+    pad.set(t - S7)
     const a = Math.PI / 4 + 0.18 * tw(t, S7, S8, ease.lin), r = Math.hypot(5.4, 5.4)
     st.camera.position.set(r * Math.sin(a), 5.2, r * Math.cos(a))
     st.camera.lookAt(0, 0.2, 0)
@@ -454,88 +507,130 @@ function render3D(t) {
 }
 
 Piece.render = (t) => {
-  // 1 · phone: rises in, the dot is tapped, the button answers
-  const in1 = t < S2
-  vis($('#s1'), in1)
-  css($('#phone'), { y: lerp(140, 0, tw(t, 0, 0.6, ease.out3)), o: tw(t, 0, 0.3) })
-  rise('#tap', t, 0.35, in1)
-  const tap = 1.0, press = tw(t, tap - 0.08, tap, ease.lin) * (1 - tw(t, tap, tap + 0.15))
-  css($('#dot'), { s: 1 - 0.18 * press })
-  for (const [id, d] of [['#r1', 0], ['#r2', 0.18]]) {
-    const p = tw(t, tap + d, tap + d + 0.7, ease.out3)
-    css($(id), { s: 1 + 2.2 * p, o: t >= tap + d ? 1 - p : 0 })
-  }
-  const on = t >= tap + 0.05
-  $('#btn').style.background = on ? 'var(--accent)' : '#fff'
-  $('#btn').textContent = on ? 'On its way · 3 min' : 'Summon'
+  // ---- 3D layer: on for 1, 5 and 7; it sits above whatever it covers
+  const in1 = t < S2 + 0.1, in5 = t >= ZOOM5[0] && t < WIPE6[1], in7 = t >= S7 && t < FADE8[1]
+  const w3 = $('#w3')
+  vis(w3, in1 || in5 || in7)
+  w3.style.zIndex = in1 ? 10 : in5 ? 5 : 7
+  $('#bg3').style.background = in1
+    ? 'radial-gradient(ellipse 60% 55% at 50% 45%,#16120e,#060504 70%,#000)'
+    : in5 ? '#07080b' : 'radial-gradient(ellipse 50% 40% at 50% 62%,#0f1a13,#050706 70%)'
+  if (in1 || in5 || in7) render3D(t)
+  // 1 → 2: the lettering rushes the lens and the layer falls away to the blurred street
+  const out1 = tw(t, 1.75, S2 + 0.1, ease.in3)
+  // 4 → 5: zoom-through: the photo blows forward and blurs out, the drive settles in from a blur
+  const z5 = tw(t, ZOOM5[0], ZOOM5[1], ease.inOut3)
+  css(w3, in1 ? { o: 1 - out1 } : in5 && t < ZOOM5[1] ? { s: lerp(1.25, 1, z5), o: z5, blur: lerp(14, 0, z5) } : { o: 1, blur: 0 })
 
-  // photos (with slow pushes)
-  css($('#p82'), { v: t >= S2 && t < S3 + 0.08, s: lerp(1.08, 1.14, tw(t, S2, S3, ease.lin)) })
-  css($('#p75'), { v: t >= S3 + 0.08 && t < S4 + 0.1, s: lerp(1.12, 1.18, tw(t, S3, S4, ease.lin)) })
-  css($('#p83'), { v: t >= S6 + 0.08 && t < S7 + 0.1, s: lerp(1.1, 1.16, tw(t, S6, S7, ease.lin)) })
-  css($('#p85'), { v: t >= S8, s: lerp(1.06, 1, tw(t, S8, 15, ease.out3)) })
-  vis($('#sh-t'), (t >= S2 && t < S3 + 0.08) || (t >= S6 + 0.08 && t < S7 + 0.1))
-  vis($('#sh-l'), t >= S3 + 0.08 && t < S4 + 0.1)
+  // ---- 2 · the hail screen over the blurred street
+  vis($('#sh2'), t >= S2 - 0.1 && t < S3 + 0.2)
+  const up = tw(t, S2 - 0.1, S2 + 0.45, ease.out3), away = tw(t, S3 - 0.3, S3 + 0.15, ease.in3)
+  css($('#phone'), { y: lerp(900, 0, up) + lerp(0, 1150, away), s: lerp(1, 0.94, away) })
+  css($('#map'), { x: SCREEN[0] - (CENTRE[0] + 40) * 25.6 * K_MAP, y: SCREEN[1] - (CENTRE[1] + 40) * 25.6 * K_MAP, s: K_MAP })
+  const [px, py] = toScreen(ROUTE[0])
+  $('#pin').style.left = `${px}px`
+  $('#pin').style.top = `${py}px`
+  const cab = along(lerp(0.62, 0.42, tw(t, TAP + 0.1, S3, ease.inOut3)))
+  const [cx, cy] = toScreen(cab.p)
+  // the route left to drive: from the cab back along the streets to the rider's pin
+  let seg = 0
+  for (let d = 0, u = lerp(0.62, 0.42, tw(t, TAP + 0.1, S3, ease.inOut3)) * full; seg < lens.length && d + lens[seg] < u; seg++) d += lens[seg]
+  $('#rline').setAttribute('points', [cab.p, ...ROUTE.slice(0, seg + 1).reverse()].map((q) => toScreen(q).join(',')).join(' '))
+  $('#cab').style.left = `${cx}px`
+  $('#cab').style.top = `${cy}px`
+  $('#cab').style.transform = `rotate(${cab.ang}rad)`
+  const press = tw(t, TAP - 0.12, TAP, ease.out3) * (1 - tw(t, TAP + 0.05, TAP + 0.35))
+  css($('#touch'), { o: press, s: lerp(0.6, 1, press) })
+  css($('#btn'), { s: 1 - 0.04 * press })
+  const booked = t >= TAP + 0.05
+  $('#btn').style.background = booked ? 'var(--accent)' : '#fff'
+  $('#btn').textContent = booked ? 'On the way · 3 min' : 'Request'
+  $('#eta').textContent = booked ? 'Arriving in 3 min · Mercer St' : 'Pickup in 3 min · Mercer St'
 
-  // 3D world: on for the map/satellite and the pad
-  const w3 = (t >= S4 - 0.15 && t < S6 + 0.08) || (t >= S7 - 0.1 && t < S8 + 0.05)
-  vis($('#w3'), w3)
-  $('#bg3').style.background = t < S6 + 0.2 ? '#111214' : 'radial-gradient(ellipse 50% 40% at 50% 62%,#1d1710,#060708 70%)'
-  if (w3) render3D(t)
-  // spray slash into the map: the 3D world is cut in on a diagonal behind a flying stroke of the lettering
-  const sl = tw(t, S4 - 0.15, S4 + 0.2, ease.inOut3)
-  const sx = lerp(-2200, 1900, sl), edge = ((950 + sx) / 1920) * 100 // the cut follows the stroke's centre
-  if (t < S6) $('#w3').style.clipPath = sl < 1 ? `polygon(0 0, ${edge + 12}% 0, ${edge - 12}% 100%, 0 100%)` : 'none'
-  css($('#slash'), { v: sl > 0 && sl < 1, x: sx, r: -14, o: 0.9 })
-  // glitch into the pad at night
-  if (t >= S7 - 0.1) ($('#w3').style.clipPath = 'none'), glitchReveal($('#w3'), tw(t, S7 - 0.1, S7 + 0.06, ease.lin), 11)
-  else $('#w3').style.transform = 'none'
+  // ---- 3 · the street comes into focus as the phone drops away
+  vis($('#sh3'), t >= S2 - 0.1 && t < WIPE4[1])
+  const focus = tw(t, S3 - 0.25, S3 + 0.2, ease.inOut3)
+  css($('#p82'), { s: lerp(1.14, 1.08, focus) + 0.04 * tw(t, S3, S4, ease.lin) })
+  $('#p82').style.filter = focus < 1 ? `blur(${lerp(18, 0, focus)}px) brightness(${lerp(0.45, 1, focus)})` : 'none'
+  css($('#sh3-shade'), { o: focus })
+  rise('#c3', t, S3 + 0.2)
 
-  // glitch slices between photos
-  glitchImage($('#g75'), { src: '../../../assets/photos/cybercab-75.jpg', x: '55%', y: '50%', s: 1.12 }, tw(t, S3 - 0.08, S3 + 0.08, ease.lin), 3)
-  glitchImage($('#g83'), { src: '../../../assets/photos/cybercab-83.jpg', x: '70%', y: '60%', s: 1.1 }, tw(t, S6 - 0.08, S6 + 0.08, ease.lin), 9)
+  // ---- 4 · every seat (light-bar wipe in)
+  vis($('#sh4'), t >= WIPE4[0] && t < ZOOM5[1])
+  const w4 = tw(t, WIPE4[0], WIPE4[1], ease.inOut3)
+  if (t < ZOOM5[0]) lightWipe($('#sh4'), $('#wline'), w4)
+  css($('#p75'), { s: lerp(1.12, 1.18, tw(t, S4, S5, ease.lin)) })
+  // out: blown forward into the drive
+  const o4 = tw(t, ZOOM5[0], ZOOM5[1], ease.in3)
+  if (t >= ZOOM5[0]) css($('#sh4'), { s: lerp(1, 1.4, o4), o: 1 - o4, blur: 14 * o4 })
+  else css($('#sh4'), { o: 1, blur: 0 })
+  rise('#c4a', t, S4 + 0.2)
+  rise('#c4b', t, S4 + 0.35)
+  rise('#c5', t, S5 + 0.35, in5)
 
-  // type
-  rise('#c2', t, S2 + 0.3, t < S3)
-  rise('#c3a', t, S3 + 0.3, t < S4)
-  rise('#c3b', t, S3 + 0.45, t < S4)
-  rise('#c4', t, S4 + 0.35, t >= S4 && t < S6)
-  $('#c4b').style.color = `rgb(${lerp(167, 217, tw(t, 7, 7.6)) | 0},${lerp(169, 218, tw(t, 7, 7.6)) | 0},${lerp(174, 222, tw(t, 7, 7.6)) | 0})`
-  rise('#c6a', t, S6 + 0.3, t < S7)
-  rise('#c6b', t, S6 + 0.5, t < S7)
-  rise('#c7', t, S7 + 0.3, t < S8)
-  rise('#c7b', t, S7 + 0.5, t < S8)
+  // ---- 6 · drops you off (light-bar wipe in over the drive)
+  vis($('#sh6'), t >= WIPE6[0] && t < S7)
+  const w6 = tw(t, WIPE6[0], WIPE6[1], ease.inOut3)
+  if (t >= WIPE6[0] - 0.01) lightWipe($('#sh6'), $('#wline'), w6)
+  css($('#p83'), { s: lerp(1.1, 1.16, tw(t, S6, S7, ease.lin)) })
+  rise('#c6a', t, S6 + 0.2)
+  rise('#c6b', t, S6 + 0.35)
 
-  // 8 · end card: T, wordmark, then the Cybercab lettering sprays on
-  rise('#tm', t, S8 + 0.3, true)
-  rise('#wm', t, S8 + 0.45, true)
+  // ---- 7 · charge (dip through black)
+  css($('#dip'), { o: t < S7 ? tw(t, DIP7[0], S7, ease.in3) : 1 - tw(t, S7, DIP7[1], ease.out3) })
+  rise('#c7', t, S7 + 0.25, in7)
+  rise('#c7b', t, S7 + 0.45, in7)
+
+  // ---- 8 · end card (crossfade), T, wordmark, then the lettering sprays on
+  vis($('#sh8'), t >= FADE8[0])
+  css($('#sh8'), { o: tw(t, FADE8[0], FADE8[1], ease.inOut3) })
+  css($('#p85'), { s: lerp(1.06, 1, tw(t, S8, 15, ease.out3)) })
+  rise('#tm', t, S8 + 0.3)
+  rise('#wm', t, S8 + 0.45)
   const sp = tw(t, S8 + 0.8, S8 + 1.6, ease.inOut3)
   css($('#sp'), { v: t >= S8 + 0.8, clip: `inset(0 ${(1 - sp) * 100}% 0 0)` })
-
-  // light-bar flashes: phone → photo, pad → end card
-  const f1 = tw(t, S2 - 0.1, S2 + 0.1, ease.lin), f2 = tw(t, S8 - 0.1, S8 + 0.1, ease.lin)
-  flash($('#line'), $('#white'), f1 > 0 && f1 < 1 ? f1 : f2)
 }
 
-// ---- sound: one warm bed, a tap, flashes, glitch crunches, a spray hiss, the pad hum, a resolve ----
-const crunch = (t0, base = 1200) => [0, 1, 2, 3].map((i) => ({ t: t0 + i * 0.03, fn: (c, o, a) => (S.click(c, o, a, 0.1, base + i * 800), S.noise(c, o, a, { f: 400 + i * 600, dur: 0.03, gain: 0.07, q: 6 })) }))
-const bang = (t0) => ({ t: t0, fn: (c, o, a) => (S.whoosh(c, o, a, 0.2, 0.15), S.noise(c, o, a + 0.1, { f: 5000, dur: 0.08, gain: 0.07, type: 'highpass' }), S.thump(c, o, a + 0.1, 0.25)) })
+// ---- sound: hits timed from the visuals' own numbers; low, dark music at 120 BPM (1 bar = 2s) ----
+const chordAt = (t) => [CH.Am, CH.Am, CH.F, CH.F, CH.C, CH.G, CH.Am, CH.F][Math.floor(t / 2)]
+const mid = ([a, b]) => (a + b) / 2 // inOut3 transitions cross half-way at their midpoint
+const every = (from, to, step, fn) => Array.from({ length: Math.ceil((to - from) / step) }, (_, i) => ({ t: from + i * step, fn }))
 Piece.sounds = [
-  { t: 0, fn: (c, o, a) => S.pad(c, o, a, [note(45), note(52), note(57), note(64)], 12.4, 0.025) },
-  { t: 0.35, fn: (c, o, a) => S.pluck(c, o, a, note(69), 0.08) },
-  { t: 1.0, fn: (c, o, a) => (S.click(c, o, a, 0.14, 3000), S.chime(c, o, a + 0.05, note(81), 0.06), S.chime(c, o, a + 0.18, note(88), 0.04)) },
-  bang(S2 - 0.1),
-  ...crunch(S3 - 0.08),
-  { t: S4 - 0.15, fn: (c, o, a) => S.noise(c, o, a, { f: 3000, to: 7000, dur: 0.4, gain: 0.1, type: 'highpass', attack: 0.05 }) },
-  { t: 7.0, fn: (c, o, a) => S.whoosh(c, o, a, 0.8, 0.1, false) },
-  ...crunch(S6 - 0.08, 900),
-  ...crunch(S7 - 0.1, 600),
-  { t: S7, fn: (c, o, a) => S.tone(c, o, a, { f: 60, dur: 2, gain: 0.1, attack: 0.3 }) },
-  bang(S8 - 0.1),
-  { t: S8 + 0.3, fn: (c, o, a) => (S.pad(c, o, a, [note(45), note(57), note(64), note(69), note(76)], 2.2, 0.04), S.chime(c, o, a, note(81), 0.05)) },
-  { t: S8 + 0.8, fn: (c, o, a) => S.noise(c, o, a, { f: 4000, to: 9000, dur: 0.8, gain: 0.06, type: 'highpass', attack: 0.1, curve: 'lin' }) },
+  // music
+  { t: 0, fn: (c, o, a) => V.sample(c, o, a, tron, { gain: 0.9, dur: 2.6, fade: 0.5 }) }, // the intro, under the chrome lettering
+  ...pads(0, S2, chordAt, 0.012),
+  ...groove(S2, S3, chordAt, { kick: false, clap: false, arp: true, level: 0.6 }), // the phone: no drums yet
+  ...groove(S3, ZOOM5[0], chordAt, { level: 0.85 }),
+  ...pads(S2, S5, chordAt),
+  ...groove(S5, WIPE6[1], chordAt, { arp: true }),
+  ...pads(S5, S7, chordAt),
+  ...groove(S7, FADE8[0], chordAt, { clap: false, level: 0.7 }),
+  ...pads(S7, S8, chordAt, 0.014),
+  { t: S8, fn: (c, o, a) => (V.stab(c, o, a, CH.Am.slice(1)), V.bass(c, o, a, 55, 2.2, 0.1)) },
+  ...pads(S8, 15, () => CH.Am, 0.02),
+  { t: S8 + 0.8, fn: (c, o, a) => V.pluck(c, o, a, 64, 0.035, 0.9) },
+  { t: S8 + 1.6, fn: (c, o, a) => V.pluck(c, o, a, 69, 0.03, 1.3) },
+  // design
+  { t: S2 + 0.15, fn: (c, o, a) => V.swoosh(c, o, a, 0.5, 0.025) }, // the phone rises in
+  { t: TAP - 0.02, fn: (c, o, a) => V.tap(c, o, a) }, // finger on "Request"
+  { t: TAP + 0.05, fn: (c, o, a) => V.glint(c, o, a, 69, 0.03) }, // booked
+  { t: S3 - 0.1, fn: (c, o, a) => V.swoosh(c, o, a, 0.5, 0.035) }, // the phone drops away
+  { t: S3 + 0.1, fn: (c, o, a) => V.impact(c, o, a, 0.15) }, // the street snaps into focus
+  { t: mid(WIPE4), fn: (c, o, a) => V.swoosh(c, o, a, 0.45, 0.04) },
+  { t: mid(ZOOM5), fn: (c, o, a) => V.swoosh(c, o, a, 0.4, 0.05) },
+  { t: S5, fn: (c, o, a) => V.impact(c, o, a, 0.22) },
+  { t: ZOOM5[0], fn: (c, o, a) => V.motor(c, o, a, WIPE6[1] - ZOOM5[0], () => 0.55, 0.018) }, // cruising
+  ...every(ZOOM5[0], WIPE6[0], 0.6, (c, o, a) => V.ping(c, o, a, 0.025)), // a ping as each lidar ring leaves the car
+  { t: mid(WIPE6), fn: (c, o, a) => V.swoosh(c, o, a, 0.45, 0.04) },
+  { t: S7, fn: (c, o, a) => V.impact(c, o, a, 0.2) }, // out of the black
+  { t: S7, fn: (c, o, a) => V.hum(c, o, a, FADE8[1] - S7, (tt) => 0.3 + 0.7 * Math.exp(-((tt % pad.PERIOD) / pad.PERIOD) * 5), 0.05, 49) },
+  ...every(S7, FADE8[0], 0.75, (c, o, a) => V.ping(c, o, a, 0.022, 147)), // each green wave (pad.PERIOD)
+  { t: S8, fn: (c, o, a) => V.impact(c, o, a, 0.25) },
+  { t: S8 + 0.3, fn: (c, o, a) => V.glint(c, o, a, 76, 0.022) }, // the T
+  { t: S8 + 0.8, fn: (c, o, a) => V.spray(c, o, a, 0.8, 0.04) }, // the lettering sprays on
 ]
-Piece.cuts = [S2, S3, S4, S6, S7, S8]
-Piece.gain = 1.3
+Piece.cuts = [S2, S3, S4, S5, S6, S7, S8]
+
+Piece.gain = 0.78
 </script>
 </body></html>

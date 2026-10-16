@@ -6,13 +6,13 @@
 <meta name="piece:duration" content="6">
 <meta name="piece:aspect" content="1:1">
 <meta name="piece:loop" content="true">
-<meta name="piece:poster" content="0.97">
+<meta name="piece:poster" content="0">
 <title>Tesla v1 — Social loop</title>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/"}}</script>
 <style>
 #stage{background:#050403}
 .L{position:absolute;inset:0}
-.void{background:radial-gradient(ellipse 70% 30% at 50% 82%,rgba(120,84,48,.35),transparent 70%),radial-gradient(ellipse 60% 55% at 50% 40%,#1c140d,#0a0806 70%,#050403)}
+.void{background:radial-gradient(ellipse 70% 30% at 50% 82%,rgba(150,108,64,.45),transparent 70%),radial-gradient(ellipse 60% 55% at 50% 40%,#2a1e14,#120d09 70%,#080605)}
 #gl{position:absolute;left:0;top:0;width:1080px;height:1080px}
 .mark{position:absolute;color:#fff}.mark svg{width:100%;height:100%;display:block}
 .grain{position:absolute;inset:-50%;pointer-events:none;opacity:.1;mix-blend-mode:overlay;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
@@ -342,38 +342,50 @@
 </div>
 <script type="module">
 import { THREE, createWorld, voidLighting, loadCar, loadLettering } from '../../../assets/lib/tesla.js'
-const { $, S, note } = K
+import { V, CH, groove, pads } from '../../../assets/lib/sound.js'
+const { $ } = K
 let st, car, text
 
 Piece.setup = async () => {
   st = createWorld($('#gl'), 1080, 1080)
-  voidLighting(st)
+  voidLighting(st, 1.35)
+  st.renderer.toneMappingExposure = 1.25
   car = await loadCar()
-  car.rotation.y = (-28 * Math.PI) / 180
-  text = await loadLettering(3.7, 5.0)
+  // a warm light that rides with the car, so its highlights sweep the floor and the body as it turns
+  const ride = new THREE.SpotLight(0xffe2bd, 90, 18, 0.7, 1, 1.6)
+  ride.position.set(3.2, 4.2, 2.2)
+  ride.castShadow = true
+  ride.shadow.mapSize.set(1024, 1024)
+  ride.shadow.radius = 10
+  car.add(ride, ride.target)
+  text = await loadLettering(3.7, 5.0, { rainbow: st.renderer })
   text.position.set(0, 1.15, -1.6)
   st.scene.add(car, text)
   st.camera.position.set(0.01, 1.7, 11.5)
   st.camera.lookAt(0, 1.55, 0)
 }
 
-// one full turn of the lettering behind the car per loop; the light bar answers when it faces front
+// the car turns once per loop (a perfect 360, so the loop is seamless); the lettering holds still behind it
+const DEG = Math.PI / 180
+const spin = (t) => (-2 * Math.PI * t) / 6
+const carFront = (t) => Math.max(0, -Math.sin(-28 * DEG + spin(t))) // light bar toward the camera, 0..1
 Piece.render = (t) => {
-  const rot = THREE.MathUtils.degToRad(58 - 60 * t)
-  const front = Math.max(0, Math.cos(rot))
-  text.rotation.y = rot
-  car.userData.setBar(0.15 + 0.85 * front * front)
-  st.scene.environmentIntensity = 0.9 * (0.55 + 0.25 * front)
+  car.rotation.y = -28 * DEG + spin(t)
+  const f = carFront(t)
+  car.userData.setBar(0.15 + 0.85 * f * f)
   st.renderer.render(st.scene, st.camera)
 }
 
-// ---- sound: a 6s bed, a glint as the lettering faces front, air as it turns away ----
+// ---- sound: a 3-bar groove at 120 BPM (6s, loops clean); a warm swell as the light bar comes round ----
+const chordAt = (t) => [CH.Am, CH.F, CH.G][Math.floor(t / 2) % 3]
+const FRONT = (90 - 28) / 60 // the car's nose points straight at the camera here (1.03s)
 Piece.sounds = [
-  { t: 0, fn: (c, o, a) => S.tone(c, o, a, { f: 55, dur: 6, gain: 0.09, attack: 0.4 }) },
-  { t: 0, fn: (c, o, a) => S.pad(c, o, a, [note(45), note(52), note(57), note(64)], 6, 0.022) },
-  { t: 0.9, fn: (c, o, a) => (S.chime(c, o, a, note(81), 0.05), S.chime(c, o, a + 0.12, note(88), 0.03)) },
-  { t: 3.4, fn: (c, o, a) => S.whoosh(c, o, a, 1.2, 0.05) },
+  ...groove(0, 6, chordAt, { kick: false, clap: false, arp: true, level: 0.7 }),
+  ...[0, 1, 2, 3, 4, 5].map((t) => ({ t, fn: (c, o, a) => V.kick(c, o, a, 0.32) })), // half-time pulse
+  ...pads(0, 6, chordAt, 0.014),
+  { t: 0, fn: (c, o, a) => V.hum(c, o, a, 6, (tt) => carFront(tt) ** 2, 0.045, 49) },
+  { t: FRONT, fn: (c, o, a) => V.glint(c, o, a, 69, 0.028) },
 ]
-Piece.gain = 1.3
+Piece.gain = 1.1
 </script>
 </body></html>

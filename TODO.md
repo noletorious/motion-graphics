@@ -13,10 +13,13 @@ What we're doing now, in order. Items come from `BACKLOG.md`; finished ones get 
 ## Up next
 
 1. [ ] **Tesla v1: Cybercab fixes** (stays `draft`; I'll ask before taking it out).
-   - [ ] Social loop: proper rotation on the vehicle and the 3D lettering
-   - [ ] Music: a real music bed (now only synth hits and pads)
-   - [ ] Sounds: the haptic/hit sounds don't match the visuals; re-time and re-voice them
-   - [ ] Your /review edits
+   - [x] First pass: turntable loop, music in code, sound timed to picture
+   - [x] Second pass (your notes): rainbow chrome lettering; loop = car-only 360 with a light riding on it, brighter;
+         promo re-cut (chrome lettering opener with `tron.wav` → hail-screen phone over the blurred street → focus pull into
+         "It comes to you" → 3D drive with streaks, lidar, chevrons, gates → green charging pulses); light-bar wipes,
+         zoom-through, dip and crossfade replace the glitch/slash/flash; music pitched lower and darker everywhere
+   - [ ] Your /review notes on the second pass
+   - [ ] More real sounds: send any Tesla clips you record into `companies/tesla/assets/sounds/`
    - [ ] Then: ask to take it out of draft, ask recap or skip, final export when you say done
 2. [ ] **Tesla v2: Roadster.** Assets are arriving in `companies/tesla/assets/roadster/` (untracked, ~91 MB). Convert the GLB to an optimized copy, credit it (krea.ai, like v1), then storyboard and stop for comments.
 3. [ ] **v1 blog headers + thumbnails.** For each version, a 16:9 header graphic for the top of its blog post; its poster frame is the 1920×1080 thumbnail. In `share/`, never shown on the site. Storyboard first.

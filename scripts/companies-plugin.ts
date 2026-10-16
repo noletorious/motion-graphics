@@ -110,14 +110,15 @@ export function companiesPlugin(): Plugin {
     configureServer(server) {
       const SHARE = path.resolve(ROOT, '../share')
       server.watcher.add([ROOT, SHARE])
-      // piece libraries (assets/lib/*.js) import `three` through the piece's import map, so serve them as-is
-      // instead of letting Vite rewrite their bare imports (the build copies them untouched too)
+      // pieces are standalone pages: serve their HTML and libraries (assets/lib/*.js, which import `three`
+      // through the piece's import map) as-is, so Vite never rewrites or pre-transforms them (the build copies them untouched too)
       server.middlewares.use((req, res, next) => {
         const url = decodeURIComponent((req.url ?? '').split('?')[0])
-        if (!url.startsWith('/companies/') || !url.endsWith('.js')) return next()
+        const type = url.endsWith('.js') ? 'text/javascript' : url.endsWith('.html') ? 'text/html; charset=utf-8' : null
+        if (!url.startsWith('/companies/') || !type) return next()
         const file = path.join(ROOT, url.slice('/companies/'.length))
         if (!file.startsWith(ROOT) || !fs.existsSync(file)) return next()
-        res.setHeader('Content-Type', 'text/javascript')
+        res.setHeader('Content-Type', type)
         res.end(fs.readFileSync(file))
       })
       const reload = (file: string) => {

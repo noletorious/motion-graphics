@@ -7,7 +7,7 @@ import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js'
 import { buildStudio, loadModel } from './studio.js'
 import { drawMap, drawAerial, SIZE, ROUTE } from './citymap.js'
 
-export { THREE }
+export { THREE, drawMap, ROUTE }
 const ASSETS = new URL('../', import.meta.url).href // companies/tesla/assets/
 
 /** One renderer for a piece: a transparent canvas over CSS backdrops (void, photos, night). */
@@ -52,14 +52,61 @@ export async function loadCar() {
   return car
 }
 
-/** The 3D "Cybercab" lettering in champagne metal (its texture has a glitch, so one clean material). */
-export async function loadLettering(width = 3.6, glow = 3.8) {
+/** A reflection map of soft rainbow light panels on black: what the chrome lettering mirrors. */
+let rainbowTex = null
+export function rainbowEnv(renderer) {
+  if (rainbowTex) return rainbowTex
+  const e = new THREE.Scene()
+  e.background = new THREE.Color(0x030303)
+  // a ring of saturated hue bands all the way round, bright at the horizon, falling to black above and below
+  const c = document.createElement('canvas')
+  c.width = 1024
+  c.height = 256
+  const g = c.getContext('2d')
+  for (let x = 0; x < 1024; x++) {
+    const h = ((x / 1024) * 5) % 1 // the spectrum five times around, so every view angle catches several hues
+    g.fillStyle = `hsl(${h * 360},100%,55%)`
+    g.fillRect(x, 0, 1, 256)
+  }
+  const fade = g.createLinearGradient(0, 0, 0, 256)
+  fade.addColorStop(0, 'rgba(0,0,0,1)')
+  fade.addColorStop(0.35, 'rgba(0,0,0,0)')
+  fade.addColorStop(0.65, 'rgba(0,0,0,0)')
+  fade.addColorStop(1, 'rgba(0,0,0,1)')
+  g.fillStyle = fade
+  g.fillRect(0, 0, 1024, 256)
+  const tex = new THREE.CanvasTexture(c)
+  tex.colorSpace = THREE.SRGBColorSpace
+  const ring = new THREE.Mesh(new THREE.CylinderGeometry(8, 8, 10, 96, 1, true), new THREE.MeshBasicMaterial({ map: tex, side: THREE.BackSide }))
+  ring.position.y = 2
+  e.add(ring)
+  // one small white strip overhead for a crisp chrome highlight
+  const top = new THREE.Mesh(new THREE.PlaneGeometry(6, 0.8), new THREE.MeshBasicMaterial({ color: 0xffffff, side: THREE.DoubleSide }))
+  top.position.set(0, 8, 0)
+  top.rotation.x = Math.PI / 2
+  e.add(top)
+  rainbowTex = new THREE.PMREMGenerator(renderer).fromScene(e, 0.03).texture
+  return rainbowTex
+}
+
+/**
+ * The 3D "Cybercab" lettering (its texture has a glitch, so one clean material).
+ * Default: champagne metal. With `rainbow: renderer`: iridescent chrome that mirrors rainbowEnv.
+ */
+export async function loadLettering(width = 3.6, glow = 3.8, { rainbow = null } = {}) {
   const text = await loadModel(THREE, GLTFLoader, DRACOLoader, ASSETS + 'cybercab-text-compressed.glb', { length: width, solid: 0xead9b8, metalness: 0.85, roughness: 0.24 })
+  const env = rainbow && rainbowEnv(rainbow)
   text.traverse((o) => {
     if (!o.isMesh) return
     o.castShadow = false
     if (o.geometry.type === 'PlaneGeometry') o.visible = false // no contact shadow: it floats
-    if (o.material.isMeshPhysicalMaterial) o.material.envMapIntensity = glow
+    if (!o.material.isMeshPhysicalMaterial) return
+    if (env)
+      o.material = new THREE.MeshPhysicalMaterial({
+        color: 0xffffff, metalness: 1, roughness: 0.08, normalMap: o.material.normalMap, envMap: env, envMapIntensity: glow * 0.5,
+        iridescence: 0.5, iridescenceIOR: 1.4, iridescenceThicknessRange: [250, 700], clearcoat: 1, clearcoatRoughness: 0.05,
+      })
+    else o.material.envMapIntensity = glow
   })
   return text
 }
@@ -113,26 +160,160 @@ export function buildCity(st) {
   }
 }
 
-/** A wide charging-pad outline around the car's footprint, pulsing warm. */
+/** The charging pad: a green outline around the car's footprint, a glow beneath, and pulses rippling out from under it. */
 export function buildPad(st) {
+  const GREEN = 0x3ee07f
   const group = new THREE.Group()
-  const ring = new THREE.Mesh(new THREE.RingGeometry(2.55, 2.66, 128), new THREE.MeshBasicMaterial({ color: 0xf3e3c3, transparent: true }))
-  const disc = new THREE.Mesh(new THREE.CircleGeometry(2.55, 128), new THREE.MeshBasicMaterial({ color: 0xffd9a0, transparent: true, opacity: 0.08 }))
-  for (const m of [ring, disc]) (m.rotation.x = -Math.PI / 2), m.scale.set(1, 0.52, 1)
-  ring.position.y = 0.004
-  disc.position.y = 0.003
-  const glow = new THREE.PointLight(0xffd9a0, 8, 2.5)
+  const flat = (geo, color, opacity, y) => {
+    const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color, transparent: true, opacity, depthWrite: false, blending: THREE.AdditiveBlending }))
+    m.rotation.x = -Math.PI / 2
+    m.scale.set(1, 0.52, 1)
+    m.position.y = y
+    group.add(m)
+    return m
+  }
+  const ring = flat(new THREE.RingGeometry(2.55, 2.66, 128), GREEN, 0.9, 0.004)
+  const disc = flat(new THREE.CircleGeometry(2.55, 128), GREEN, 0.12, 0.003)
+  const waves = [0, 1, 2].map(() => flat(new THREE.RingGeometry(0.96, 1, 128), GREEN, 0, 0.005))
+  const glow = new THREE.PointLight(GREEN, 8, 3.2)
   glow.position.set(0, 0.15, 0)
-  group.add(ring, disc, glow)
+  group.add(glow)
   st.scene.add(group)
-  return { group, pulse: (p) => ((ring.material.opacity = 0.55 + 0.45 * p), (disc.material.opacity = 0.05 + 0.1 * p), (glow.intensity = 4 + 6 * p)) }
+  const PERIOD = 0.75
+  return {
+    group,
+    /** tt: seconds since the shot began. Waves leave the car's centre every PERIOD and fade at the outline. */
+    set(tt) {
+      const beat = (tt % PERIOD) / PERIOD
+      const thump = Math.exp(-beat * 5) // bright right as a wave leaves
+      ring.material.opacity = 0.55 + 0.45 * thump
+      disc.material.opacity = 0.08 + 0.18 * thump
+      glow.intensity = 5 + 9 * thump
+      waves.forEach((w, i) => {
+        const ph = ((tt + i * PERIOD) % (3 * PERIOD)) / (3 * PERIOD)
+        w.scale.set(0.6 + 2.2 * ph, (0.6 + 2.2 * ph) * 0.52, 1)
+        w.material.opacity = tt < i * PERIOD ? 0 : 0.85 * (1 - ph)
+      })
+    },
+    PERIOD,
+  }
+}
+
+/**
+ * The drive: the car holds still while the world streams past at speed (grid, lane dashes, light
+ * streaks, gates overhead), lidar rings sweep out from the car and route chevrons glow ahead of it.
+ */
+export function buildDrive(st, { speed = 16 } = {}) {
+  const group = new THREE.Group()
+  const r = rng(21)
+  const add = (geo, color, opacity, additive = true) => {
+    const m = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ color, transparent: true, opacity, depthWrite: false, blending: additive ? THREE.AdditiveBlending : THREE.NormalBlending }))
+    group.add(m)
+    return m
+  }
+  // ground grid (4m cells), scrolled by texture offset
+  const c = document.createElement('canvas')
+  c.width = c.height = 256
+  const g = c.getContext('2d')
+  g.fillStyle = '#08090c'
+  g.fillRect(0, 0, 256, 256)
+  g.strokeStyle = 'rgba(233,211,166,.38)'
+  g.lineWidth = 2
+  g.strokeRect(0, 0, 256, 256)
+  g.strokeStyle = 'rgba(190,220,255,.1)'
+  for (let i = 1; i < 4; i++) (g.beginPath(), g.moveTo(i * 64, 0), g.lineTo(i * 64, 256), g.moveTo(0, i * 64), g.lineTo(256, i * 64), g.stroke())
+  const tex = new THREE.CanvasTexture(c)
+  tex.colorSpace = THREE.SRGBColorSpace
+  tex.wrapS = tex.wrapT = THREE.RepeatWrapping
+  tex.repeat.set(40, 40)
+  tex.anisotropy = 8
+  const ground = new THREE.Mesh(new THREE.PlaneGeometry(160, 160), new THREE.MeshBasicMaterial({ map: tex }))
+  ground.rotation.x = -Math.PI / 2
+  ground.position.y = -0.003
+  group.add(ground)
+  // lane edges: dashes either side of the car
+  const dashes = []
+  for (const z of [-2.1, 2.1]) for (let i = 0; i < 26; i++) {
+    const d = add(new THREE.PlaneGeometry(2, 0.09), 0xf3e3c3, 0.85)
+    d.rotation.x = -Math.PI / 2
+    d.position.set(0, 0.004, z)
+    dashes.push({ m: d, x0: -40 + i * 4 })
+  }
+  // route chevrons ahead of the car, in its lane
+  const chev = new THREE.Shape()
+  chev.moveTo(0, 0.7), chev.lineTo(0.55, 0), chev.lineTo(0, -0.7), chev.lineTo(-0.25, -0.7), chev.lineTo(0.3, 0), chev.lineTo(-0.25, 0.7)
+  const chevrons = []
+  for (let i = 0; i < 12; i++) {
+    const m = add(new THREE.ShapeGeometry(chev), 0xe9d3a6, 0)
+    m.rotation.x = -Math.PI / 2
+    m.position.y = 0.006
+    chevrons.push({ m, x0: 3 + i * 1.8 })
+  }
+  // light streaks in the air either side
+  const streaks = []
+  for (let i = 0; i < 90; i++) {
+    const side = r() < 0.5 ? -1 : 1
+    const m = add(new THREE.BoxGeometry(3 + r() * 6, 0.025, 0.025), r() < 0.3 ? 0xbfe6ff : r() < 0.6 ? 0xf3e3c3 : 0xffffff, 0.35 + r() * 0.5)
+    // far side: anywhere up to 4.8m high; camera side: low and close to the road, so none cross the lens
+    const far = side < 0
+    streaks.push({ m, x0: -60 + r() * 120, y: far ? 0.3 + r() * 4.5 : 0.08 + r() * 0.5, z: far ? -(3.5 + r() * 12) : 2.9 + r() * 1.3, v: 1.6 + r() * 1.8 })
+  }
+  // gates overhead: thin frames the car passes under
+  const gates = []
+  for (let i = 0; i < 4; i++) {
+    const gate = new THREE.Group()
+    const mat = new THREE.MeshBasicMaterial({ color: 0xf3e3c3, transparent: true, opacity: 0.7, blending: THREE.AdditiveBlending, depthWrite: false })
+    const post = (z) => {
+      const m = new THREE.Mesh(new THREE.BoxGeometry(0.06, 4.2, 0.06), mat)
+      m.position.set(0, 2.1, z)
+      gate.add(m)
+    }
+    post(-3.6), post(3.6)
+    const beam = new THREE.Mesh(new THREE.BoxGeometry(0.06, 0.06, 7.2), mat)
+    beam.position.set(0, 4.2, 0)
+    gate.add(beam)
+    group.add(gate)
+    gates.push({ g: gate, x0: 10 + i * 22 })
+  }
+  // lidar: rings sweeping out from the car
+  const lidar = [0, 1, 2, 3].map(() => {
+    const m = add(new THREE.RingGeometry(0.97, 1, 160), 0xbfe6ff, 0)
+    m.rotation.x = -Math.PI / 2
+    m.position.y = 0.008
+    return m
+  })
+  st.scene.add(group)
+  const wrap = (x, lo, hi) => lo + ((((x - lo) % (hi - lo)) + (hi - lo)) % (hi - lo))
+  return {
+    group,
+    LIDAR: 0.6,
+    /** tt: seconds since the drive began */
+    set(tt) {
+      const d = tt * speed
+      tex.offset.x = (d / 4) % 1
+      for (const s of dashes) s.m.position.x = wrap(s.x0 - d, -50, 54)
+      for (const s of chevrons) {
+        const x = wrap(s.x0 - d * 0.5, 3, 24.6) // they drift toward the car slower than the ground: the route ahead
+        s.m.position.x = x
+        s.m.material.opacity = 0.9 * Math.min(1, (x - 3) / 2) * Math.min(1, (24.6 - x) / 6)
+      }
+      for (const s of streaks) s.m.position.set(wrap(s.x0 - d * s.v, -60, 60), s.y, s.z)
+      for (const s of gates) s.g.position.x = wrap(s.x0 - d, -30, 58)
+      lidar.forEach((m, i) => {
+        const ph = ((tt + i * 0.6) % 2.4) / 2.4
+        m.scale.setScalar(2.4 + 16 * ph)
+        m.material.opacity = tt < i * 0.6 ? 0 : 0.7 * (1 - ph) ** 1.5
+      })
+    },
+  }
 }
 
 // ---------------------------------------------------------------- transitions (DOM)
 
 const rng = (seed) => () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646
 
-function bandsFor(seed) {
+/** The torn bands of a glitch (seeded); sound.js times one hit per band from these. */
+export function bandsFor(seed) {
   const r = rng(seed), bands = []
   let y = 0
   while (y < 100) {
@@ -184,4 +365,12 @@ export function flash(line, white, p) {
   line.style.opacity = p > 0 && p < 1 ? 1 - fade : 0
   line.style.transform = `scaleX(${open})`
   white.style.opacity = p > 0.35 && p < 1 ? (1 - fade) * 0.9 : 0
+}
+
+/** Light-bar wipe: the incoming layer is revealed left to right behind a bright vertical line. p: 0 → 1. */
+export function lightWipe(incoming, line, p) {
+  const on = p > 0 && p < 1
+  incoming.style.clipPath = p >= 1 ? 'none' : `inset(0 ${(1 - Math.max(0, p)) * 100}% 0 0)`
+  line.style.opacity = on ? 1 : 0
+  line.style.transform = `translateX(${p * 1920}px)`
 }
