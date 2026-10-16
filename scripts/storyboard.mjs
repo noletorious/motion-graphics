@@ -39,20 +39,20 @@ const esc = (s) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;')
 const html = `<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Storyboard</title>
-<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=Inter+Tight:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 :root{--bg:#0a0a0b;--fg:#ecebe6;--mute:#8a8984;--line:#232326}
 *{box-sizing:border-box;margin:0}
 body{background:var(--bg);color:var(--fg);font:16px/1.5 "Inter Tight",system-ui,sans-serif;padding:72px 56px 120px}
 header{max-width:1600px;margin:0 auto 72px}
-h1{font:400 clamp(56px,8vw,128px)/.9 "Instrument Serif",serif;letter-spacing:-.02em}
+h1{font:400 clamp(56px,8vw,128px)/.9 Fraunces,serif;letter-spacing:-.02em}
 h1 i{color:var(--mute)}
 .intro{margin-top:24px;max-width:720px;color:var(--mute)}
 nav{margin-top:32px;display:flex;flex-wrap:wrap;gap:8px 20px;font:13px "JetBrains Mono",monospace}
 nav a{color:var(--fg);text-decoration:none;border-bottom:1px solid var(--line)}
 section{max-width:1600px;margin:0 auto;padding-top:56px;border-top:1px solid var(--line)}
 section+section{margin-top:96px}
-h2{font:400 64px/1 "Instrument Serif",serif;letter-spacing:-.01em}
+h2{font:400 64px/1 Fraunces,serif;letter-spacing:-.01em}
 .scene{margin-top:56px}
 .scene h3{font:500 13px "JetBrains Mono",monospace;text-transform:uppercase;letter-spacing:.08em;display:flex;gap:16px;align-items:baseline}
 .scene h3 span{color:var(--mute)}
