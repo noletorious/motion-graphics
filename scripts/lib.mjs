@@ -14,12 +14,23 @@ export function findPieces(args = []) {
   const all = []
   for (const slug of subdirs(path.join(ROOT, 'companies'))) {
     for (const version of subdirs(path.join(ROOT, 'companies', slug, 'versions'))) {
-      const dir = path.join(ROOT, 'companies', slug, 'versions', version, 'pieces')
-      if (!fs.existsSync(dir)) continue
-      for (const f of fs.readdirSync(dir).filter((f) => f.endsWith('.html')).sort()) {
-        const name = f.replace(/\.html$/, '')
-        all.push({ slug, version, name, id: `${slug}/${version}/${name}`, file: path.join(dir, f) })
+      // pieces/ shows on the site; share/ holds posting assets (recap, blog header) the site never reads
+      for (const folder of ['pieces', 'share']) {
+        const dir = path.join(ROOT, 'companies', slug, 'versions', version, folder)
+        if (!fs.existsSync(dir)) continue
+        for (const f of fs.readdirSync(dir).filter((f) => f.endsWith('.html')).sort()) {
+          const name = f.replace(/\.html$/, '')
+          all.push({ slug, version, name, folder, id: `${slug}/${version}/${name}`, file: path.join(dir, f) })
+        }
       }
+    }
+  }
+  // site-level posting assets: share/<group>/*.html (e.g. share/launch/launch.html → id share/launch/launch)
+  for (const group of subdirs(path.join(ROOT, 'share'))) {
+    const dir = path.join(ROOT, 'share', group)
+    for (const f of fs.readdirSync(dir).filter((f) => f.endsWith('.html')).sort()) {
+      const name = f.replace(/\.html$/, '')
+      all.push({ slug: 'share', version: group, name, folder: 'share', id: `share/${group}/${name}`, file: path.join(dir, f) })
     }
   }
   if (!args.length) return all

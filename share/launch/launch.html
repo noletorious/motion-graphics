@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="piece:type" content="launch">
+<meta name="piece:title" content="Motion, by company — launch">
+<meta name="piece:duration" content="14.5">
+<meta name="piece:aspect" content="16:9">
+<meta name="piece:loop" content="true">
+<meta name="piece:poster" content="3.0">
+<title>Motion — launch video</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=JetBrains+Mono:wght@500&family=Inter+Tight:wght@400&display=block" rel="stylesheet">
+<style>
+#stage{background:#0a0a0b;color:#ecebe6;font-family:"Inter Tight",sans-serif}
+.a{position:absolute;will-change:transform,opacity}
+.f{font-family:Fraunces,serif;font-weight:300;font-variation-settings:"SOFT" 100,"WONK" 1;letter-spacing:-.03em;line-height:.9}
+.m{font:500 22px/1.4 "JetBrains Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:#8a8984}
+.center{left:0;right:0;text-align:center}
+.grad{background:linear-gradient(to top,#933fff 8%,#ffe494 92%);-webkit-background-clip:text;background-clip:text;color:transparent;font-style:italic;font-weight:600;display:inline-block;padding-bottom:.08em}
+#logo{left:0;right:0;top:420px;display:flex;justify-content:center;align-items:center;gap:30px;font-size:120px;font-weight:400}
+#logo img{height:1.05em}
+#logo span span{display:inline-block}
+#ringwrap{inset:0;perspective:3000px}
+/* no will-change/opacity on the ring: either one flattens its 3D */
+#ring{position:absolute;left:50%;top:470px;width:960px;height:540px;margin-left:-480px;margin-top:-270px;transform-style:preserve-3d}
+.card{position:absolute;inset:0;overflow:hidden;backface-visibility:hidden;background:#151517;outline:1px solid rgba(255,255,255,.05)}
+.card img{width:100%;height:100%;object-fit:cover;display:block}
+.full{inset:0;overflow:hidden}
+.full iframe{position:absolute;inset:0;width:1920px;height:1080px;border:0}
+.tag{position:absolute;left:64px;bottom:56px;background:rgba(10,10,11,.85);color:#ecebe6;padding:14px 20px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:140px;width:1060px;margin:70px auto 0;text-align:left}
+.cols h3{font:400 64px/1 Fraunces,serif;font-variation-settings:"SOFT" 100,"WONK" 1;margin-bottom:26px}
+.row{font:italic 300 42px/1.5 Fraunces,serif;color:#ecebe6}.row b{font:500 22px "JetBrains Mono";font-style:normal;margin-right:16px;letter-spacing:.06em}
+</style>
+<script id="piece-kit">
+// piece-kit v1. Source of truth: elements/piece-kit.js.
+// `npm run sync-kit` copies this into every piece's <script id="piece-kit">,
+// so each piece stays a single self-contained file.
+//
+// A piece defines (before the kit boots on load):
+//   Piece.setup()            optional, runs once after fonts load (measure layout here); may be async
+//   Piece.render(t)          draw everything for time t; must be pure
+//   Piece.sounds             [{ t, fn(ctx, out, at) }] one-shot sound events
+//   Piece.cuts               optional scene-cut times, shown as trim handles on the review page
+//   Piece.gain               optional master trim, to keep the export peak near -7 dBFS
+// The kit provides: stage scaling, playback, Web Audio scheduling, URL params,
+// postMessage control from the site, and window.piece for export.
+;(() => {
+  const P = new URLSearchParams(location.search)
+  const meta = (n) => document.querySelector(`meta[name="piece:${n}"]`)?.content
+  const DUR = Number(meta('duration'))
+  const LOOP = meta('loop') === 'true'
+  const [W, H] = { '1:1': [1080, 1080], '9:16': [1080, 1920] }[meta('aspect')] ?? [1920, 1080]
+  const EXPORT = P.has('export')
+  const EMBED = window.parent !== window
+
+  // ---------- math ----------
+  const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v))
+  const lerp = (a, b, p) => a + (b - a) * p
+  const ease = {
+    lin: (p) => p,
+    in3: (p) => p * p * p,
+    out3: (p) => 1 - Math.pow(1 - p, 3),
+    inOut3: (p) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2),
+    outExpo: (p) => (p >= 1 ? 1 : 1 - Math.pow(2, -10 * p)),
+    inExpo: (p) => (p <= 0 ? 0 : Math.pow(2, 10 * p - 10)),
+    inOutExpo: (p) => (p <= 0 ? 0 : p >= 1 ? 1 : p < 0.5 ? Math.pow(2, 20 * p - 10) / 2 : (2 - Math.pow(2, -20 * p + 10)) / 2),
+    outBack: (p) => 1 + 2.70158 * Math.pow(p - 1, 3) + 1.70158 * Math.pow(p - 1, 2),
+    outBackSoft: (p) => 1 + 2.2 * Math.pow(p - 1, 3) + 1.2 * Math.pow(p - 1, 2),
+    outElastic: (p) => (p <= 0 ? 0 : p >= 1 ? 1 : Math.pow(2, -10 * p) * Math.sin((p * 10 - 0.75) * ((2 * Math.PI) / 3)) + 1),
+    outBounce: (p) => {
+      const n = 7.5625, d = 2.75
+      if (p < 1 / d) return n * p * p
+      if (p < 2 / d) return n * (p -= 1.5 / d) * p + 0.75
+      if (p < 2.5 / d) return n * (p -= 2.25 / d) * p + 0.9375
+      return n * (p -= 2.625 / d) * p + 0.984375
+    },
+  }
+  /** eased progress of t between a and b, 0..1 */
+  const tw = (t, a, b, e = ease.out3) => e(clamp((t - a) / (b - a)))
+  /** set transform/opacity/filter in one call */
+  const css = (el, o) => {
+    if (!el) return
+    const tr = []
+    if (o.x != null || o.y != null) tr.push(`translate(${o.x ?? 0}px,${o.y ?? 0}px)`)
+    if (o.r != null) tr.push(`rotate(${o.r}deg)`)
+    if (o.ry != null) tr.push(`perspective(1600px) rotateY(${o.ry}deg)`)
+    if (o.s != null) tr.push(`scale(${o.s})`)
+    if (o.sx != null || o.sy != null) tr.push(`scale(${o.sx ?? 1},${o.sy ?? 1})`)
+    el.style.transform = tr.join(' ')
+    if (o.o != null) el.style.opacity = o.o
+    if (o.blur != null) el.style.filter = o.blur > 0.05 ? `blur(${o.blur}px)` : 'none'
+    if (o.clip != null) el.style.clipPath = o.clip
+    if (o.v != null) el.style.visibility = o.v ? 'visible' : 'hidden'
+  }
+  /** seeded PRNG, so "random" layouts are identical every render */
+  const rng = (seed) => () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646
+  const $ = (s) => document.querySelector(s)
+  const $$ = (s) => [...document.querySelectorAll(s)]
+
+  // ---------- sound ----------
+  const noiseBufs = new WeakMap()
+  const noiseBuf = (ctx) => {
+    if (!noiseBufs.has(ctx)) {
+      const b = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate)
+      const d = b.getChannelData(0), r = rng(7)
+      for (let i = 0; i < d.length; i++) d[i] = r() * 2 - 1
+      noiseBufs.set(ctx, b)
+    }
+    return noiseBufs.get(ctx)
+  }
+  const env = (ctx, at, { attack = 0.005, dur = 0.3, gain = 0.3, curve = 'exp' } = {}) => {
+    const g = ctx.createGain()
+    g.gain.setValueAtTime(0.0001, at)
+    g.gain.linearRampToValueAtTime(gain, at + attack)
+    if (curve === 'exp') g.gain.exponentialRampToValueAtTime(0.0001, at + dur)
+    else g.gain.linearRampToValueAtTime(0.0001, at + dur)
+    return g
+  }
+  const S = {
+    tone(ctx, out, at, { f = 440, to, type = 'sine', dur = 0.3, gain = 0.2, attack = 0.005, detune = 0 } = {}) {
+      const o = ctx.createOscillator()
+      o.type = type
+      o.frequency.setValueAtTime(f, at)
+      if (to) o.frequency.exponentialRampToValueAtTime(to, at + dur)
+      o.detune.value = detune
+      const g = env(ctx, at, { attack, dur, gain })
+      o.connect(g).connect(out)
+      o.start(at)
+      o.stop(at + dur + 0.05)
+    },
+    noise(ctx, out, at, { dur = 0.2, gain = 0.2, f = 2000, to, q = 0.8, type = 'bandpass', attack = 0.005, curve = 'exp' } = {}) {
+      const s = ctx.createBufferSource()
+      s.buffer = noiseBuf(ctx)
+      const fl = ctx.createBiquadFilter()
+      fl.type = type
+      fl.Q.value = q
+      fl.frequency.setValueAtTime(f, at)
+      if (to) fl.frequency.exponentialRampToValueAtTime(to, at + dur)
+      const g = env(ctx, at, { attack, dur, gain, curve })
+      s.connect(fl).connect(g).connect(out)
+      s.start(at, 0)
+      s.stop(at + dur + 0.05)
+    },
+    kick(ctx, out, at, gain = 0.5) {
+      S.tone(ctx, out, at, { f: 150, to: 45, dur: 0.28, gain, type: 'sine' })
+      S.noise(ctx, out, at, { f: 3000, dur: 0.02, gain: gain * 0.25, type: 'highpass' })
+    },
+    hat(ctx, out, at, gain = 0.06) {
+      S.noise(ctx, out, at, { f: 8000, dur: 0.05, gain, type: 'highpass', q: 0.5 })
+    },
+    click(ctx, out, at, gain = 0.15, f = 2400) {
+      S.noise(ctx, out, at, { f, dur: 0.025, gain, q: 2 })
+    },
+    pluck(ctx, out, at, f, gain = 0.18, dur = 0.5) {
+      S.tone(ctx, out, at, { f, dur, gain, type: 'triangle' })
+      S.tone(ctx, out, at, { f: f * 2, dur: dur * 0.5, gain: gain * 0.25, type: 'sine' })
+    },
+    keys(ctx, out, at, f, gain = 0.12, dur = 1.6) {
+      // soft electric-piano-ish tone
+      S.tone(ctx, out, at, { f, dur, gain, type: 'sine', attack: 0.004 })
+      S.tone(ctx, out, at, { f: f * 2, dur: dur * 0.4, gain: gain * 0.3, type: 'sine' })
+      S.tone(ctx, out, at, { f: f * 3.01, dur: dur * 0.15, gain: gain * 0.12, type: 'sine' })
+    },
+    pad(ctx, out, at, freqs, dur = 2, gain = 0.05) {
+      for (const f of freqs) {
+        S.tone(ctx, out, at, { f, dur, gain, type: 'triangle', attack: 0.25, detune: -6 })
+        S.tone(ctx, out, at, { f, dur, gain: gain * 0.7, type: 'sine', attack: 0.25, detune: 7 })
+      }
+    },
+    whoosh(ctx, out, at, dur = 0.4, gain = 0.18, up = true) {
+      S.noise(ctx, out, at, { f: up ? 400 : 4000, to: up ? 4000 : 400, dur, gain, q: 1.2, attack: dur * 0.6, curve: 'lin' })
+    },
+    thump(ctx, out, at, gain = 0.5) {
+      S.tone(ctx, out, at, { f: 90, to: 38, dur: 0.45, gain })
+      S.noise(ctx, out, at, { f: 600, dur: 0.12, gain: gain * 0.35, type: 'lowpass' })
+    },
+    chime(ctx, out, at, f = 880, gain = 0.12) {
+      ;[1, 2.01, 3.02, 4.2].forEach((m, i) => S.tone(ctx, out, at, { f: f * m, dur: 1.4 - i * 0.25, gain: gain / (i + 1) }))
+    },
+  }
+  const note = (n) => 440 * Math.pow(2, (n - 69) / 12) // MIDI → Hz
+
+  // ---------- playback ----------
+  const Piece = (window.Piece = { setup: null, render: () => {}, sounds: [], cuts: [], gain: 1 })
+  window.K = { clamp, lerp, ease, tw, css, rng, $, $$, S, note, W, H, DUR }
+
+  let t = clamp(Number(P.get('t') ?? 0), 0, DUR)
+  let playing = false, raf = 0, lastNow = 0, lastPost = -1, rate = 1
+  let muted = P.has('muted') ? P.get('muted') !== '0' : EMBED
+  let ctx = null, bus = null, schedAbs = 0, absT = 0
+
+  const draw = () => {
+    Piece.render(t)
+    if (EMBED && Math.abs(t - lastPost) > 0.03) post('time')
+  }
+  const post = (type) => {
+    lastPost = t
+    if (EMBED) window.parent.postMessage({ source: 'piece', type, t, duration: DUR, playing, muted, rate, cuts: Piece.cuts }, '*')
+  }
+
+  function audioOn() {
+    if (muted || EXPORT) return false
+    ctx ??= new (window.AudioContext || window.webkitAudioContext)()
+    if (ctx.state === 'suspended') ctx.resume()
+    return true
+  }
+  function newBus() {
+    if (bus) {
+      const old = bus
+      old.gain.setTargetAtTime(0, ctx.currentTime, 0.02)
+      setTimeout(() => old.disconnect(), 200)
+    }
+    bus = null
+    if (!audioOn()) return
+    bus = master(ctx)
+    absT = t
+    schedAbs = t
+  }
+  function master(c) {
+    const comp = c.createDynamicsCompressor()
+    comp.threshold.value = -10
+    comp.ratio.value = 4
+    const g = c.createGain()
+    g.gain.value = 0.9 * Piece.gain
+    g.connect(comp).connect(c.destination)
+    return g
+  }
+  // Lookahead scheduler on a monotonic clock, so loops wrap cleanly.
+  function schedule() {
+    if (!bus || !ctx) return
+    const horizon = absT + 0.25 * rate
+    const sounds = Piece.sounds
+    while (schedAbs < horizon) {
+      const cycle = Math.floor(schedAbs / DUR)
+      const from = schedAbs - cycle * DUR
+      const to = Math.min(DUR, from + (horizon - schedAbs))
+      for (const e of sounds) {
+        if (e.t >= from && e.t < to) {
+          const at = ctx.currentTime + (cycle * DUR + e.t - absT) / rate
+          if (at >= ctx.currentTime - 0.01) e.fn(ctx, bus, Math.max(at, ctx.currentTime))
+        }
+      }
+      schedAbs = cycle * DUR + to
+      if (to >= DUR && !LOOP) break
+    }
+  }
+
+  function frame(now) {
+    if (!playing) return
+    const dt = Math.min(0.1, (now - lastNow) / 1000) * rate
+    lastNow = now
+    t += dt
+    absT += dt
+    if (t >= DUR) {
+      if (LOOP) t -= DUR
+      else {
+        t = DUR
+        draw()
+        pause()
+        post('ended')
+        return
+      }
+    }
+    draw()
+    schedule()
+    raf = requestAnimationFrame(frame)
+  }
+  function play() {
+    if (playing) return
+    if (!LOOP && t >= DUR - 0.01) t = 0
+    playing = true
+    lastNow = performance.now()
+    newBus()
+    schedule()
+    raf = requestAnimationFrame(frame)
+    post('play')
+  }
+  function pause() {
+    playing = false
+    cancelAnimationFrame(raf)
+    if (bus && ctx) newBus()
+    post('pause')
+  }
+  function seek(x) {
+    t = clamp(x, 0, DUR)
+    draw()
+    if (playing) newBus()
+  }
+  function setRate(r) {
+    rate = r
+    if (playing) newBus()
+    post('rate')
+  }
+  function setMuted(m) {
+    muted = m
+    if (playing) newBus()
+    post('mute')
+  }
+
+  // Export: schedule every sound for one pass onto any BaseAudioContext.
+  function buildAudio(c, when = 0) {
+    const out = master(c)
+    for (const e of Piece.sounds) e.fn(c, out, when + e.t)
+  }
+
+  window.piece = { duration: DUR, loop: LOOP, width: W, height: H, seek, play, pause, buildAudio, setMuted, setRate, get cuts() { return Piece.cuts }, get t() { return t }, ready: false }
+
+  // ---------- stage ----------
+  function fit() {
+    const stage = document.getElementById('stage')
+    if (EXPORT) {
+      stage.style.transform = 'none'
+      return
+    }
+    const s = Math.min(innerWidth / W, innerHeight / H)
+    stage.style.transform = `translate(${(innerWidth - W * s) / 2}px,${(innerHeight - H * s) / 2}px) scale(${s})`
+  }
+  const base = document.createElement('style')
+  base.textContent = `*,*::before,*::after{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;background:#000}#stage{position:absolute;left:0;top:0;width:${W}px;height:${H}px;overflow:hidden;transform-origin:0 0}`
+  document.head.prepend(base)
+  addEventListener('resize', fit)
+
+  addEventListener('message', (e) => {
+    const m = e.data
+    if (!m || m.source !== 'site') return
+    if (m.type === 'play') play()
+    if (m.type === 'pause') pause()
+    if (m.type === 'seek') seek(m.t)
+    if (m.type === 'restart') { seek(0); play() }
+    if (m.type === 'mute') setMuted(!!m.muted)
+    if (m.type === 'rate') setRate(Number(m.rate) || 1)
+  })
+  if (!EMBED && !EXPORT) {
+    // Opened directly: click toggles sound + restarts, space toggles play.
+    addEventListener('click', () => { setMuted(false); seek(0); play() })
+    addEventListener('keydown', (e) => { if (e.code === 'Space') { e.preventDefault(); playing ? pause() : play() } })
+  }
+
+  addEventListener('load', async () => {
+    fit()
+    await document.fonts.ready
+    await Piece.setup?.()
+    draw()
+    window.piece.ready = true
+    post('ready')
+    if (!EXPORT && !P.has('t') && (P.get('autoplay') === '1' || !EMBED)) play()
+  })
+})()
+</script>
+</head><body><div id="stage">
+  <div class="a" id="logo"><img src="../../src/assets/noletorious-logo-dark.svg" alt=""><span class="f" id="word"></span></div>
+  <p class="a m center" id="by" style="top:600px">by noletorious</p>
+
+  <div class="a center" id="head" style="top:330px">
+    <div class="f" style="font-size:190px"><span id="exp">Exploring</span> <span id="mo"></span><span id="comma">,</span></div>
+    <div class="f" id="byco" style="font-size:95px;color:#8a8984;margin-top:20px"><i>by company</i></div>
+  </div>
+
+  <div class="a" id="ringwrap"><div id="ring"></div></div>
+  <div class="a center" id="cap" style="top:820px"><div class="f" id="capname" style="font-size:72px;font-weight:400"></div><p class="m" id="capv" style="margin-top:14px"></p></div>
+
+  <div class="a full" id="full1"><iframe id="if1" src="../../companies/ebay/versions/v1/pieces/promo-15s.html?t=0&muted=1" scrolling="no"></iframe><p class="m tag">eBay · v1 · Bright Bounce</p></div>
+  <div class="a full" id="full2"><iframe id="if2" src="../../companies/google/versions/v1/pieces/promo-15s.html?t=1.2&muted=1" scrolling="no"></iframe><p class="m tag">Google · v1 · Soft Material</p></div>
+
+  <div class="a center" id="takes" style="top:250px">
+    <div class="f" id="takesT" style="font-size:110px">One company. <i style="color:#8a8984">Many takes.</i></div>
+    <div class="cols">
+      <div><h3>eBay</h3><p class="row"><b>v1</b>Bright Bounce</p><p class="row"><b>v2</b>Super Live</p><p class="row"><b>v3</b>Retro Futurism</p></div>
+      <div><h3>Google</h3><p class="row"><b>v1</b>Soft Material</p><p class="row"><b>v2</b>Gemini Redesign</p><p class="row"><b>v3</b>Brutal Elegance</p></div>
+    </div>
+  </div>
+
+  <div class="a center" id="end" style="top:410px">
+    <div class="f" id="url" style="font-size:130px">motion.<i>noletorious</i>.com</div>
+    <div id="endmark" style="display:flex;justify-content:center;align-items:center;gap:16px;margin-top:56px;color:#8a8984" class="f"><img src="../../src/assets/noletorious-logo-dark.svg" alt="" style="height:52px"><span style="font-size:48px;font-weight:400">by noletorious</span></div>
+  </div>
+  <div class="a" id="black" style="inset:0;background:#0a0a0b"></div>
+</div>
+<script>
+const { tw, css, ease, lerp, clamp, $, $$, S, note } = K
+const word = 'Motion', MO = 'motion'
+$('#word').innerHTML = [...word].map((c) => `<span>${c}</span>`).join('')
+$('#mo').innerHTML = [...MO].map((c) => `<span class="grad">${c}</span>`).join('')
+const wordL = $$('#word span'), moL = $$('#mo span'), rows = $$('#takes .row')
+
+// carousel: the site's showcase ring, turning a little faster for video
+const P = '../../companies'
+const CARDS = [
+  ['ebay', 'promo-15s', 'eBay', 'v1 · Bright Bounce'], ['google', 'promo-15s', 'Google', 'v1 · Soft Material'],
+  ['ebay', 'logo-sting', 'eBay', 'v1 · Bright Bounce'], ['google', 'logo-sting', 'Google', 'v1 · Soft Material'],
+  ['ebay', 'social-loop', 'eBay', 'v1 · Bright Bounce'], ['google', 'social-loop', 'Google', 'v1 · Soft Material'],
+  ['ebay', 'promo-15s', 'eBay', 'v1 · Bright Bounce'], ['google', 'promo-15s', 'Google', 'v1 · Soft Material'],
+]
+const N = CARDS.length, STEP = 360 / N, R = (480 + 28) / Math.tan(Math.PI / N)
+$('#ring').innerHTML = CARDS.map(([s, p]) => `<div class="card"><img src="${P}/${s}/versions/v1/pieces/${p}.poster.jpg"></div>`).join('')
+const cards = $$('.card')
+const norm = (a) => ((((a + 180) % 360) + 360) % 360) - 180
+
+// the embedded v1 promos play live, synced to this piece's clock
+const child = (id) => $(id).contentWindow?.piece
+Piece.setup = () =>
+  new Promise((resolve) => {
+    const check = () => (child('#if1')?.ready && child('#if2')?.ready ? resolve() : setTimeout(check, 50))
+    check()
+  })
+
+// the headline's wave, as on the site: lift + sharpen, dip, settle soft
+function wave(p) {
+  if (p < 0.14) { const k = ease.inOut3(p / 0.14); return { y: -0.14 * k, r: -5 * k, w: 600 + 250 * k, soft: 100 - 100 * k, wonk: 1 - k } }
+  if (p < 0.28) { const k = ease.inOut3((p - 0.14) / 0.14); return { y: lerp(-0.14, 0.03, k), r: lerp(-5, 1, k), w: lerp(850, 700, k), soft: lerp(0, 60, k), wonk: k } }
+  if (p < 0.42) { const k = ease.inOut3((p - 0.28) / 0.14); return { y: lerp(0.03, 0, k), r: lerp(1, 0, k), w: lerp(700, 600, k), soft: lerp(60, 100, k), wonk: 1 } }
+  return { y: 0, r: 0, w: 600, soft: 100, wonk: 1 }
+}
+
+Piece.render = (t) => {
+  // 1 · logo
+  const lOut = tw(t, 1.35, 1.6, ease.in3)
+  css($('#logo'), { s: lerp(0.85, 1, tw(t, 0.15, 0.7, ease.outExpo)), y: -60 * lOut, o: tw(t, 0.15, 0.5) * (1 - lOut) })
+  wordL.forEach((l, i) => css(l, { y: lerp(30, 0, tw(t, 0.35 + i * 0.04, 0.7 + i * 0.04, ease.outBack)), o: tw(t, 0.35 + i * 0.04, 0.55 + i * 0.04) }))
+  css($('#by'), { o: tw(t, 0.8, 1.1) * (1 - lOut), y: -60 * lOut })
+
+  // 2 · headline, "motion" waving like the site
+  const hOut = tw(t, 3.7, 4.05, ease.in3)
+  css($('#head'), { y: -160 * hOut, o: 1 - hOut, blur: 10 * hOut })
+  css($('#exp'), { o: tw(t, 1.55, 1.85) })
+  $('#exp').style.display = 'inline-block'
+  css($('#exp'), { y: lerp(40, 0, tw(t, 1.55, 1.95, ease.outExpo)), o: tw(t, 1.55, 1.85) })
+  moL.forEach((l, i) => {
+    const a = 1.75 + i * 0.06
+    const inn = tw(t, a, a + 0.4, ease.outBack)
+    const w = t > 2.4 ? wave((((t - 2.4 - i * 0.085) % 1.6) + 1.6) % 1.6 / 1.6) : { y: 0, r: 0, w: 600, soft: 100, wonk: 1 }
+    css(l, { y: lerp(80, 0, inn) + w.y * 190, r: lerp(-8, 0, inn) + w.r, o: tw(t, a, a + 0.15) })
+    l.style.fontWeight = Math.round(w.w)
+    l.style.fontVariationSettings = `"SOFT" ${w.soft.toFixed(0)}, "WONK" ${w.wonk > 0.5 ? 1 : 0}`
+  })
+  css($('#comma'), { o: tw(t, 2.1, 2.25) })
+  css($('#byco'), { y: lerp(24, 0, tw(t, 2.2, 2.6)), o: tw(t, 2.2, 2.5) })
+
+  // 3 · the carousel
+  const ringOn = t >= 3.85 && t < 7
+  const rIn = tw(t, 3.9, 4.5, ease.outExpo)
+  const angle = -12 * (t - 3.9)
+  css($('#ringwrap'), { y: lerp(80, 0, rIn), o: ringOn ? rIn : 0 })
+  let front = 0, best = 999
+  cards.forEach((c, i) => {
+    // place each card on the ring directly (no nested 3D), facing out
+    const phi = norm(i * STEP + angle), rad = (phi * Math.PI) / 180
+    c.style.transform = `translate3d(${(R * Math.sin(rad)).toFixed(1)}px,0,${(R * Math.cos(rad) - R).toFixed(1)}px) rotateY(${phi.toFixed(2)}deg)`
+    const rel = Math.abs(phi)
+    if (rel < best) (best = rel), (front = i)
+    const fall = Math.max(0, rel - STEP / 2)
+    c.style.opacity = Math.max(0, 1 - fall / 120)
+    c.style.filter = `brightness(${1 - Math.min(fall, 110) / 150})`
+  })
+  $('#capname').textContent = CARDS[front][2]
+  $('#capv').textContent = CARDS[front][3]
+  css($('#cap'), { o: ringOn ? tw(t, 4.2, 4.5) : 0 })
+
+  // 4–5 · the v1 promos, live and full frame, with a whip between
+  const on1 = t >= 7 && t < 8.5, on2 = t >= 8.5 && t < 10
+  const whipOut = tw(t, 8.38, 8.5, ease.in3), whipIn = 1 - tw(t, 8.5, 8.66, ease.outExpo)
+  css($('#full1'), { v: on1, x: -500 * whipOut, blur: 24 * whipOut })
+  css($('#full2'), { v: on2, x: 500 * (on2 ? whipIn : 0), blur: 24 * (on2 ? whipIn : 0) })
+  if (t >= 6.9 && t < 8.6) child('#if1')?.seek(clamp(t - 7, 0, 1.6))
+  if (t >= 8.4 && t < 10.1) child('#if2')?.seek(1.2 + clamp(t - 8.5, 0, 1.6))
+
+  // 6 · the plan: v1 built, v2 and v3 coming
+  const tOn = t >= 10 && t < 12.5
+  const tOut = tw(t, 12.3, 12.5)
+  css($('#takes'), { o: tOn ? 1 - tOut : 0 })
+  css($('#takesT'), { y: lerp(40, 0, tw(t, 10.05, 10.45, ease.outExpo)), o: tw(t, 10.05, 10.3) })
+  rows.forEach((r, i) => {
+    const k = i % 3, a = 10.35 + k * 0.14 + (i >= 3 ? 0.05 : 0)
+    css(r, { x: lerp(-24, 0, tw(t, a, a + 0.35, ease.outExpo)), o: tw(t, a, a + 0.2) * (k === 0 ? 1 : 0.4) })
+  })
+
+  // 7 · end card, then fade to black so the loop restarts cleanly
+  const eOn = t >= 12.5
+  css($('#end'), { o: eOn ? 1 : 0 })
+  css($('#url'), { y: lerp(40, 0, tw(t, 12.55, 12.95, ease.outExpo)), o: tw(t, 12.55, 12.8) })
+  css($('#endmark'), { y: lerp(20, 0, tw(t, 12.85, 13.2)), o: tw(t, 12.85, 13.1) })
+  css($('#black'), { o: tw(t, 14.05, 14.45, ease.inOut3) + (t < 0.1 ? 1 : 0) })
+}
+
+// ---- sound: soft keys, a beat per section ----
+const snd = []
+const at = (t, fn) => snd.push({ t, fn })
+const keysChord = (base, notes) => (c, o, a) => { S.keys(c, o, a, note(base), 0.1, 2.4); notes.forEach((n, k) => S.keys(c, o, a + k * 0.03, note(n), 0.05, 2.2)) }
+at(0.15, keysChord(48, [60, 64, 67]))
+;[...word].forEach((_, i) => at(0.35 + i * 0.04, (c, o, a) => S.click(c, o, a, 0.04, 2600 + i * 200)))
+at(1.6, keysChord(45, [57, 60, 64]))
+MO.split('').forEach((_, i) => at(1.75 + i * 0.06, (c, o, a) => S.tone(c, o, a, { f: note(76 + [0, 2, 4, 7, 9, 12][i]), dur: 0.16, gain: 0.05 })))
+at(3.85, (c, o, a) => S.whoosh(c, o, a, 0.4, 0.1))
+at(4.0, keysChord(41, [57, 60, 65]))
+at(7.0, (c, o, a) => { S.thump(c, o, a, 0.3); keysChord(43, [55, 59, 62])(c, o, a) })
+at(8.38, (c, o, a) => S.whoosh(c, o, a, 0.25, 0.14))
+at(10.0, keysChord(48, [60, 64, 67]))
+;[0, 1, 2].forEach((k) => at(10.35 + k * 0.14, (c, o, a) => S.pluck(c, o, a, note(72 + k * 4), 0.05, 0.4)))
+at(12.5, (c, o, a) => { S.chime(c, o, a, note(81), 0.06); keysChord(48, [55, 60, 64, 67])(c, o, a) })
+Piece.sounds = snd
+Piece.cuts = [1.5, 4, 7, 8.5, 10, 12.5]
+Piece.gain = 1
+</script>
+</body></html>

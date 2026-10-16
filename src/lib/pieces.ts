@@ -8,6 +8,7 @@ export const TYPE_LABEL: Record<string, string> = {
   stat: 'Stat',
   'lower-third': 'Lower third',
   recap: 'Recap',
+  launch: 'Launch video',
 }
 export const typeLabel = (t: string) => TYPE_LABEL[t] ?? t
 

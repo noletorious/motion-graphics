@@ -1,0 +1,17 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=JetBrains+Mono:wght@500&family=Inter+Tight:wght@400;500&display=block");
+/* Launch assets: the Motion site's own look (dark, Fraunces, mono), since this introduces the site itself. */
+body{background:#0a0a0b;color:#ecebe6;font-family:"Inter Tight",sans-serif;font-variation-settings:"SOFT" 100,"WONK" 0}
+.f{font-family:Fraunces,serif;font-weight:300;font-variation-settings:"SOFT" 100,"WONK" 1;letter-spacing:-.03em;line-height:.9}
+.f i{font-style:italic}
+.grad{background:linear-gradient(to top,#933fff 8%,#ffe494 92%);-webkit-background-clip:text;background-clip:text;color:transparent;font-style:italic;font-weight:600}
+.m{font:500 22px/1.4 "JetBrains Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:#8a8984}
+.mark{display:flex;align-items:center;gap:18px}.mark img{height:1.05em}
+.center{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.card{position:absolute;overflow:hidden;background:#151517;box-shadow:0 50px 100px -40px #000;outline:1px solid rgba(255,255,255,.05)}
+.card img{width:100%;height:100%;object-fit:cover;display:block}
+.full img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.tag{position:absolute;left:64px;bottom:56px;background:rgba(10,10,11,.85);color:#ecebe6;padding:14px 20px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:120px;text-align:left;margin-top:70px}
+.cols h3{font:400 64px/1 Fraunces,serif;font-variation-settings:"SOFT" 100,"WONK" 1;margin-bottom:26px}
+.cols p{font:italic 300 40px/1.5 Fraunces,serif;color:#8a8984}.cols p b{font:500 22px "JetBrains Mono";color:#ecebe6;font-style:normal;margin-right:14px;letter-spacing:.06em}
+.cols p.on{color:#ecebe6}

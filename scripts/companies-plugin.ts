@@ -7,6 +7,8 @@ import type { Plugin } from 'vite'
 
 const VIRTUAL_ID = 'virtual:companies'
 const RESOLVED_ID = '\0' + VIRTUAL_ID
+const SHARES_ID = 'virtual:shares'
+const RESOLVED_SHARES = '\0' + SHARES_ID
 const ROOT = path.resolve(__dirname, '../companies')
 
 function readMeta(html: string, name: string): string | undefined {
@@ -17,10 +19,10 @@ function readMeta(html: string, name: string): string | undefined {
 const readJson = (p: string) => JSON.parse(fs.readFileSync(p, 'utf8'))
 const dirs = (p: string) => (fs.existsSync(p) ? fs.readdirSync(p, { withFileTypes: true }).filter((d) => d.isDirectory()).map((d) => d.name) : [])
 
-function scanPieces(slug: string, v: string) {
-  const dir = path.join(ROOT, slug, 'versions', v, 'pieces')
+const scanPieces = (slug: string, v: string) => readPieces(path.join(ROOT, slug, 'versions', v, 'pieces'), `/companies/${slug}/versions/${v}/pieces`)
+
+function readPieces(dir: string, base: string) {
   if (!fs.existsSync(dir)) return []
-  const base = `/companies/${slug}/versions/${v}/pieces`
   return fs
     .readdirSync(dir)
     .filter((f) => f.endsWith('.html'))
@@ -40,6 +42,18 @@ function scanPieces(slug: string, v: string) {
         poster: fs.existsSync(path.join(dir, poster)) ? `${base}/${poster}` : null,
       }
     })
+}
+
+/** Posting assets (never on the public site): companies/<slug>/versions/<v>/share/ and share/<group>/. Dev /review only. */
+function scanShares() {
+  const out: { group: string; pieces: ReturnType<typeof readPieces> }[] = []
+  for (const g of dirs(path.resolve(ROOT, '../share'))) out.push({ group: `Site · ${g}`, pieces: readPieces(path.resolve(ROOT, '../share', g), `/share/${g}`) })
+  for (const slug of dirs(ROOT))
+    for (const v of dirs(path.join(ROOT, slug, 'versions'))) {
+      const pieces = readPieces(path.join(ROOT, slug, 'versions', v, 'share'), `/companies/${slug}/versions/${v}/share`)
+      if (pieces.length) out.push({ group: `${slug} ${v} · share`, pieces })
+    }
+  return out
 }
 
 function scan() {
@@ -65,16 +79,21 @@ export function companiesPlugin(): Plugin {
     },
     resolveId(id) {
       if (id === VIRTUAL_ID) return RESOLVED_ID
+      if (id === SHARES_ID) return RESOLVED_SHARES
     },
     load(id) {
       if (id === RESOLVED_ID) return `export default ${JSON.stringify(scan())}`
+      if (id === RESOLVED_SHARES) return `export default ${JSON.stringify(scanShares())}`
     },
     configureServer(server) {
-      server.watcher.add(ROOT)
+      const SHARE = path.resolve(ROOT, '../share')
+      server.watcher.add([ROOT, SHARE])
       const reload = (file: string) => {
-        if (!file.startsWith(ROOT)) return
-        const mod = server.moduleGraph.getModuleById(RESOLVED_ID)
-        if (mod) server.moduleGraph.invalidateModule(mod)
+        if (!file.startsWith(ROOT) && !file.startsWith(SHARE)) return
+        for (const id of [RESOLVED_ID, RESOLVED_SHARES]) {
+          const mod = server.moduleGraph.getModuleById(id)
+          if (mod) server.moduleGraph.invalidateModule(mod)
+        }
         server.ws.send({ type: 'full-reload' })
       }
       server.watcher.on('add', reload)
@@ -83,7 +102,8 @@ export function companiesPlugin(): Plugin {
     },
     closeBundle() {
       // Pieces are self-contained pages; ship the folder as-is.
-      if (fs.existsSync(ROOT)) fs.cpSync(ROOT, path.join(outDir, 'companies'), { recursive: true })
+      // share/ folders are posting assets (recaps, blog headers); they never ship with the site
+      if (fs.existsSync(ROOT)) fs.cpSync(ROOT, path.join(outDir, 'companies'), { recursive: true, filter: (src) => !src.split(path.sep).includes('share') })
     },
   }
 }

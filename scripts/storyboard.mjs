@@ -28,7 +28,7 @@ const scenes = board.sections.flatMap((s) => s.scenes).sort((a, b) => Number(!!a
       await page.goto(url, { waitUntil: 'networkidle0' })
       await page.evaluate(() => document.fonts.ready)
       const out = path.join(DIR, 'shots', `${scene.id}-${i + 1}.png`)
-      await page.screenshot({ path: out, fullPage: true })
+      await page.screenshot({ path: out, fullPage: !!scene.page }) // full-page capture drops 3D layers; only site pages need it
       console.log('✓', path.relative(ROOT, out))
     }
   }
@@ -49,7 +49,7 @@ h1{font:400 clamp(56px,8vw,128px)/.9 Fraunces,serif;letter-spacing:-.02em}
 h1 i{color:var(--mute)}
 .intro{margin-top:24px;max-width:720px;color:var(--mute)}
 nav{margin-top:32px;display:flex;flex-wrap:wrap;gap:8px 20px;font:13px "JetBrains Mono",monospace}
-nav a{color:var(--fg);text-decoration:none;border-bottom:1px solid var(--line)}
+nav a{color:var(--fg);text-decoration:none;border-bottom:1px solid var(--line)}nav a.ref{color:var(--mute)}
 section{max-width:1600px;margin:0 auto;padding-top:56px;border-top:1px solid var(--line)}
 section+section{margin-top:96px}
 h2{font:400 64px/1 Fraunces,serif;letter-spacing:-.01em}
@@ -65,13 +65,15 @@ figcaption{margin-top:12px;font-size:15px}
 .t span{color:var(--mute)}
 </style></head><body>
 <header>
-  <h1>Storyboard <i>v${board.version}</i></h1>
+  <h1>Storyboard</h1>
   <p class="intro">${esc(board.intro)}</p>
-  <nav>${board.sections.flatMap((s) => s.scenes.map((sc) => `<a href="#${sc.id}">${esc(s.title === "The site" ? sc.title : s.title + " · " + sc.title)}</a>`)).join('')}</nav>
+  <nav>${board.sections
+    .map((s, i) => (i === 0 ? s.scenes.map((sc) => `<a href="#${sc.id}">👀 ${esc(sc.title)}</a>`).join('') : `<a class="ref" href="#s${i}">${esc(s.title)}</a>`))
+    .join('')}</nav>
 </header>
 ${board.sections
   .map(
-    (s) => `<section><h2>${esc(s.title)}</h2>
+    (s, i) => `<section id="s${i}"><h2>${esc(s.title)}</h2>
 ${s.scenes
   .map(
     (sc) => `<div class="scene ${sc.size[0] === sc.size[1] ? 'sq' : sc.size[0] < sc.size[1] ? 'tall' : ''} ${sc.page ? 'page' : ''}" id="${sc.id}">

@@ -32,7 +32,7 @@
 // so each piece stays a single self-contained file.
 //
 // A piece defines (before the kit boots on load):
-//   Piece.setup()            optional, runs once after fonts load (measure layout here)
+//   Piece.setup()            optional, runs once after fonts load (measure layout here); may be async
 //   Piece.render(t)          draw everything for time t; must be pure
 //   Piece.sounds             [{ t, fn(ctx, out, at) }] one-shot sound events
 //   Piece.cuts               optional scene-cut times, shown as trim handles on the review page
@@ -334,7 +334,7 @@
   addEventListener('load', async () => {
     fit()
     await document.fonts.ready
-    Piece.setup?.()
+    await Piece.setup?.()
     draw()
     window.piece.ready = true
     post('ready')

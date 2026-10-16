@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useRef, useState, type PointerEvent as RPointerEvent } from 'react'
 import companies from 'virtual:companies'
+import shares from 'virtual:shares'
 import { PieceFrame, type PieceFrameHandle, type PieceMessage } from '@/components/PieceFrame'
 import { shape, typeLabel } from '@/lib/pieces'
 import { cn } from '@/lib/utils'
@@ -28,10 +29,13 @@ const load = (): Note[] => {
     return []
   }
 }
-const all = companies.flatMap((c) => c.versions.flatMap((v) => v.pieces.map((p) => ({ id: `${c.slug}/${v.id}/${p.file}`, company: c, version: v, piece: p }))))
+const all = [
+  ...companies.flatMap((c) => c.versions.flatMap((v) => v.pieces.map((p) => ({ id: `${c.slug}/${v.id}/${p.file}`, label: `${c.brand.name} ${v.id}`, piece: p })))),
+  ...shares.flatMap((g) => g.pieces.map((p) => ({ id: p.url, label: g.group, piece: p }))),
+]
 const labelOf = (id: string) => {
   const e = all.find((a) => a.id === id)
-  return e ? `${e.company.brand.name} ${e.version.id} · ${typeLabel(e.piece.type)}` : id
+  return e ? `${e.label} · ${typeLabel(e.piece.type)}` : id
 }
 const fmt = (n: Note) => {
   const head = `${labelOf(n.piece)} · ${n.t.toFixed(2)}s`
@@ -140,6 +144,20 @@ export default function Review() {
               return (
                 <button key={id} className={cn('rv-item', id === entry.id && 'on')} onClick={() => setSel(id)}>
                   <span>{typeLabel(p.type)}</span>
+                  {n > 0 && <span className="mono rv-count">{n}</span>}
+                </button>
+              )
+            })}
+          </div>
+        ))}
+        {shares.map((g) => (
+          <div key={g.group}>
+            <p className="mono muted rv-co">{g.group} (not on site)</p>
+            {g.pieces.map((p) => {
+              const n = notes.filter((x) => x.piece === p.url).length
+              return (
+                <button key={p.url} className={cn('rv-item', p.url === entry.id && 'on')} onClick={() => setSel(p.url)}>
+                  <span>{p.title}</span>
                   {n > 0 && <span className="mono rv-count">{n}</span>}
                 </button>
               )

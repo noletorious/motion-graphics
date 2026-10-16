@@ -1,0 +1,24 @@
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..900,0..100,0..1;1,9..144,300..900,0..100,0..1&family=JetBrains+Mono:wght@500&family=Inter+Tight:wght@400;500&display=block");
+/* Recap template: the company's own scene colour, Motion's type (Fraunces, mono labels), and its real pieces.
+   Colours come from window.RECAP (bg, ink, mute, line, grad).
+   Safe zone: Reels/TikTok cover roughly the top 220px and bottom 380px, so key content sits between. */
+body{background:var(--bg);color:var(--fg);font-family:"Inter Tight",sans-serif;font-variation-settings:"SOFT" 100,"WONK" 0}
+.f{font-family:Fraunces,serif;font-weight:300;font-variation-settings:"SOFT" 100,"WONK" 1;letter-spacing:-.03em}
+.m{font:500 26px/1.3 "JetBrains Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent;font-style:italic;font-weight:600}
+.top{position:absolute;left:0;right:0;top:250px;text-align:center}
+.mid{position:absolute;left:60px;right:60px;top:50%;transform:translateY(-50%);text-align:center}
+.frame{position:relative;margin:0 auto;background:var(--bg);overflow:hidden;box-shadow:0 0 0 2px var(--line),0 40px 80px -40px rgba(0,0,0,.35)}
+.frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.w169{width:960px;height:540px}.sq{width:860px;height:860px}
+.label{margin:0 0 28px;color:var(--fg)}
+.label b{color:var(--mute);font-weight:500}
+.dots{display:flex;gap:36px;justify-content:center;margin-top:70px}
+.dots i{width:64px;height:64px;border-radius:50%;display:block}
+.collage{position:relative;height:1100px}
+.collage .frame{position:absolute;left:50%}
+.end .mark{display:flex;align-items:center;justify-content:center;gap:28px}
+.end img{height:120px}
+.end .name{font-size:150px}
+.next{margin-top:90px;display:inline-block;border:2px solid var(--line);padding:22px 36px;color:var(--fg)}
+.safe{position:absolute;left:0;right:0;border-top:2px dashed rgba(255,77,61,.35);font:500 18px "JetBrains Mono";color:rgba(255,77,61,.6);padding:6px 12px;letter-spacing:.06em}

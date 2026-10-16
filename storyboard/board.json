@@ -1,9 +1,141 @@
 {
-  "version": 1,
-  "intro": "Every still is real HTML in its final look, with the motion left out. Times are each shot's start. Comment by shot number and time, e.g. \"eBay promo, shot 04, 5.5s: badge too small\". Nothing gets built until you've commented.",
+  "intro": "Everything here is named company → version → piece. \"v1\" is always a version of a company. Comment like \"eBay v1 recap, shot 03: …\". The top section needs your review; everything below it is already built and kept for reference.",
   "sections": [
     {
-      "title": "The site",
+      "title": "👀 Needs your review",
+      "scenes": [
+        {
+          "id": "launch-thumbnail",
+          "title": "Launch post · Thumbnail",
+          "meta": "1920×1080 still · the post's thumbnail and social card",
+          "note": "The site's own look, since the post introduces the site. Headline on the left, the eBay and Google work fanned on the right, and the URL. It has to read at small sizes (LinkedIn and Substack cards), so the text is big.",
+          "size": [
+            1920,
+            1080
+          ],
+          "shots": [
+            {
+              "t": "still",
+              "d": "Final thumbnail. Saved to share/launch/thumbnail-1920x1080.png."
+            }
+          ]
+        },
+        {
+          "id": "launch-video",
+          "title": "Launch post · Video",
+          "meta": "≈14.5s · 16:9 · 1920×1080 · loops",
+          "note": "Plays at the top of the post. It reuses the site's own motion: the headline wave and the turning carousel. Soft keys underneath; it also works muted.",
+          "size": [
+            1920,
+            1080
+          ],
+          "shots": [
+            {
+              "t": "0.0s",
+              "d": "Black. Your N mark draws on, then \"Motion\" sets beside it. \"by noletorious\" fades in below. A soft key note."
+            },
+            {
+              "t": "1.5s",
+              "d": "The headline sets in: \"Exploring motion,\" with the letters of \"motion\" rippling in the gradient (the same animation as the site), then \"by company\" below."
+            },
+            {
+              "t": "4.0s",
+              "d": "The headline lifts away and the carousel turns into view, slowly, with each company's v1 work. The caption under it updates as cards pass the front."
+            },
+            {
+              "t": "7.0s",
+              "d": "Cut in to full-frame eBay v1 for about 1.5s, playing live, with a mono tag."
+            },
+            {
+              "t": "8.5s",
+              "d": "Whip to full-frame Google v1 for about 1.5s, with its tag."
+            },
+            {
+              "t": "10.0s",
+              "d": "\"One company. Many takes.\" Two columns: v1 lit (built), and v2 and v3 dim (coming), listed by name. This is the plan in one frame."
+            },
+            {
+              "t": "12.5s",
+              "d": "End: motion.noletorious.com, then your mark and \"by noletorious\". Holds about 2s, then loops cleanly back to black."
+            }
+          ]
+        },
+        {
+          "id": "ebay-v1-recap",
+          "title": "eBay v1 · Recap (9:16)",
+          "meta": "15.0s · 9:16 · 1080×1920",
+          "note": "Built from the v1 Bright Bounce pieces. On eBay's own white, the same colour as its pieces, with Motion's type. Posting asset only; it won't appear on the website.",
+          "size": [
+            1080,
+            1920
+          ],
+          "shots": [
+            {
+              "t": "0.0s",
+              "d": "Hook. \"eBay,\" sets in word by word in Fraunces, then \"in motion\" ripples in with the logo gradient. The four brand dots drop in and bounce (borrowed from the v1 sting). Soft pluck on each dot."
+            },
+            {
+              "t": "1.5s",
+              "d": "\"01 · Logo sting\". The frame slides up from below and the sting plays inside it at full speed. The label types on in mono."
+            },
+            {
+              "t": "4.0s",
+              "d": "\"02 · 15s promo\". Two frames stack: the top one plays the promo's opening, and the lower one jumps ahead to a feature scene, showing the range in one beat. Cuts land on the promo's own beat."
+            },
+            {
+              "t": "8.0s",
+              "d": "\"03 · Social loop\". A square frame grows in and the loop plays one full cycle."
+            },
+            {
+              "t": "11.0s",
+              "d": "Collage. All three frames fall into a tilted stack, still playing. \"Three pieces. All code.\" sets in below. Whoosh into the stack, soft thump on landing."
+            },
+            {
+              "t": "13.0s",
+              "d": "End card. Your N mark and \"Motion\", then motion.noletorious.com, then a \"Next → v2 Super Live\" chip that pulses once. Holds for about 2s, so the loop reads clean on Reels."
+            }
+          ]
+        },
+        {
+          "id": "google-v1-recap",
+          "title": "Google v1 · Recap (9:16)",
+          "meta": "15.0s · 9:16 · 1080×1920",
+          "note": "Same template on Google's white, with its v1 Soft Material pieces. Posting asset only. Google's dots spin into place instead of bouncing, echoing its sting.",
+          "size": [
+            1080,
+            1920
+          ],
+          "shots": [
+            {
+              "t": "0.0s",
+              "d": "Hook. \"Google,\" sets in word by word in Fraunces, then \"in motion\" ripples in with the logo gradient. The four brand dots spin in and settle (borrowed from the v1 sting). Soft pluck on each dot."
+            },
+            {
+              "t": "1.5s",
+              "d": "\"01 · Logo sting\". The frame slides up from below and the sting plays inside it at full speed. The label types on in mono."
+            },
+            {
+              "t": "4.0s",
+              "d": "\"02 · 15s promo\". Two frames stack: the top one plays the promo's opening, and the lower one jumps ahead to a feature scene, showing the range in one beat. Cuts land on the promo's own beat."
+            },
+            {
+              "t": "8.0s",
+              "d": "\"03 · Social loop\". A square frame grows in and the loop plays one full cycle."
+            },
+            {
+              "t": "11.0s",
+              "d": "Collage. All three frames fall into a tilted stack, still playing. \"Three pieces. All code.\" sets in below. Whoosh into the stack, soft thump on landing."
+            },
+            {
+              "t": "13.0s",
+              "d": "End card. Your N mark and \"Motion\", then motion.noletorious.com, then a \"Next → v2 Gemini Redesign\" chip that pulses once. Holds for about 2s, so the loop reads clean on Reels."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Already built · The site (first design)",
       "scenes": [
         {
           "id": "site-home",
@@ -50,7 +182,7 @@
       ]
     },
     {
-      "title": "eBay",
+      "title": "Already built · eBay v1",
       "scenes": [
         {
           "id": "ebay-logo-sting",
@@ -151,7 +283,7 @@
       ]
     },
     {
-      "title": "Google",
+      "title": "Already built · Google v1",
       "scenes": [
         {
           "id": "google-logo-sting",
