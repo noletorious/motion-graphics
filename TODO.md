@@ -4,7 +4,6 @@ What we're doing now, in order. Items come from `BACKLOG.md`; finished ones get 
 
 ## 👀 Needs your review
 
-- [ ] **Tesla v1 build (sting, 15s promo, social loop):** `npm run dev` → `/review`, group "tesla v1 · draft". Paste notes back whenever; they join item 1 below.
 - [ ] **Spray lettering source:** where `il_1588xN.6983742403_crj3.svg` came from, for the credits in `companies/tesla/versions/v1/version.json`.
 - [ ] **Launch post:** read the draft `share/launch/post.md`; edit it freely, it's your voice.
 - [ ] **Exposure plan:** read `EXPOSURE.md`. Open questions: the goal (who are "the right people"?) and on camera vs screen-only.
@@ -12,7 +11,7 @@ What we're doing now, in order. Items come from `BACKLOG.md`; finished ones get 
 
 ## Up next
 
-1. [ ] **Tesla v1: Cybercab fixes** (stays `draft`; I'll ask before taking it out).
+1. [x] **Tesla v1: Cybercab** published (out of draft 2026-10-16).
    - [x] First pass: turntable loop, music in code, sound timed to picture
    - [x] Second pass (your notes): rainbow chrome lettering; loop = car-only 360 with a light riding on it, brighter;
          promo re-cut (chrome lettering opener with `tron.wav` → hail-screen phone over the blurred street → focus pull into
@@ -20,7 +19,8 @@ What we're doing now, in order. Items come from `BACKLOG.md`; finished ones get 
          zoom-through, dip and crossfade replace the glitch/slash/flash; music pitched lower and darker everywhere
    - [ ] Your /review notes on the second pass
    - [ ] More real sounds: send any Tesla clips you record into `companies/tesla/assets/sounds/`
-   - [ ] Then: ask to take it out of draft, ask recap or skip, final export when you say done
+   - [x] Out of draft
+   - [ ] Ask recap or skip; final MP4 export when you say done
 2. [ ] **Tesla v2: Roadster.** Assets are arriving in `companies/tesla/assets/roadster/` (untracked, ~91 MB). Convert the GLB to an optimized copy, credit it (krea.ai, like v1), then storyboard and stop for comments.
 3. [ ] **v1 blog headers + thumbnails.** For each version, a 16:9 header graphic for the top of its blog post; its poster frame is the 1920×1080 thumbnail. In `share/`, never shown on the site. Storyboard first.
 4. [ ] **v2: eBay "Super Live", Google "Gemini Redesign".** Storyboard, then stop for your comments. No build until you've commented.
