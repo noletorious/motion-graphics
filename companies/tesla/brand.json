@@ -1,0 +1,55 @@
+{
+  "name": "Tesla",
+  "tagline": "Accelerating the world's transition to sustainable energy.",
+  "description": "Electric cars, home batteries and solar, all running on the same software.",
+  "website": "https://www.tesla.com",
+  "order": 3,
+  "colors": {
+    "red": "#E82127",
+    "black": "#000000",
+    "ink": "#171A20",
+    "grey": "#393C41",
+    "silver": "#D0D1D2",
+    "paper": "#FFFFFF"
+  },
+  "fonts": {
+    "display": "Manrope",
+    "body": "Manrope",
+    "note": "Tesla's typeface (Universal Sans) is proprietary; Manrope is the stand-in. Real logo files supplied: assets/tesla-t.svg, assets/tesla-wordmark.svg (both currentColor), assets/logo.svg (combined, red)."
+  },
+  "logo": "assets/logo.svg",
+  "cta": "Order at tesla.com",
+  "features": [
+    "Supercharger network: fast charging along the routes people drive",
+    "Over-the-air updates: the car gets new features while it's parked",
+    "Powerwall: a home battery that stores solar and keeps the lights on",
+    "Autopilot and Full Self-Driving (Supervised)"
+  ],
+  "howItWorks": [
+    "Order online",
+    "Charge anywhere",
+    "Improves over time"
+  ],
+  "keyFacts": [
+    {
+      "label": "Vehicles delivered, 2024",
+      "value": "1.79M",
+      "source": "Tesla Q4 2024 deliveries report, 1,789,226 (verify before publishing)"
+    },
+    {
+      "label": "Supercharger connectors",
+      "value": "65,000+",
+      "source": "Tesla, end of 2024 (verify before publishing)"
+    },
+    {
+      "label": "Energy storage deployed, 2024",
+      "value": "31.4 GWh",
+      "source": "Tesla Q4 2024 deliveries report (verify before publishing)"
+    },
+    {
+      "label": "Founded",
+      "value": "2003",
+      "source": "Tesla company history"
+    }
+  ]
+}

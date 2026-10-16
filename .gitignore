@@ -40,3 +40,13 @@ storyboard/shots/*.tmp.png
 
 # Machine-local Claude settings
 .claude/settings.local.json
+
+# Raw 3D/source downloads (krea.ai exports, archives); only the optimized GLBs pieces load are committed
+companies/*/assets/**/*.zip
+companies/tesla/assets/cybercab.glb
+companies/tesla/assets/614c8217-a902-4fa5-812f-9926c03d081c.glb
+# Reference originals (press photos, found images); pieces use the converted copies in assets/photos
+companies/*/assets/*ref/
+
+# TypeScript build cache
+*.tsbuildinfo

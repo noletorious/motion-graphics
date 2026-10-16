@@ -1,0 +1,44 @@
+{
+  "name": "Cybercab",
+  "premise": "The first take, built around Tesla's Cybercab: summon it, nobody's driving, it drops you off and charges itself. The real car in 3D, lit like Tesla's own amber studio and wet night streets.",
+  "showcase": true,
+  "featured": "promo-15s.html",
+  "hero": "promo-15s.html",
+  "draft": true,
+  "facts": [
+    {
+      "label": "Unveiled",
+      "value": "October 2024, at Tesla's \"We, Robot\" event",
+      "source": "Tesla (verify before publishing)"
+    },
+    {
+      "label": "Seats",
+      "value": "2",
+      "source": "Tesla Cybercab unveiling (verify before publishing)"
+    },
+    {
+      "label": "Steering wheel / pedals",
+      "value": "None",
+      "source": "Tesla Cybercab unveiling (verify before publishing)"
+    },
+    {
+      "label": "Charging",
+      "value": "Inductive (wireless)",
+      "source": "Tesla Cybercab unveiling (verify before publishing)"
+    }
+  ],
+  "credits": [
+    {
+      "what": "Cybercab 3D model (assets/cybercab_optimized.glb) and 3D \"Cybercab\" lettering (assets/cybercab-text-compressed.glb)",
+      "who": "Built by the author (noletorious) with krea.ai from reference images found online"
+    },
+    {
+      "what": "Cybercab photography (assets/photos/, from assets/cybercab ref/)",
+      "who": "Tesla press imagery; used as spec/portfolio work, the user's call to publish"
+    },
+    {
+      "what": "Sprayed \"Cybercab\" lettering (assets/cybercab-spray.svg)",
+      "who": "Extracted from the user's supplied SVG; source TBD"
+    }
+  ]
+}

@@ -4,13 +4,21 @@ What we're doing now, in order. Items come from `BACKLOG.md`; finished ones get 
 
 ## 👀 Needs your review
 
+- [ ] **Tesla v1 build (sting, 15s promo, social loop):** `npm run dev` → `/review`, group "tesla v1 · draft". More edits coming from you; the list is under Up next, item 0. Still need: the spray lettering's source.
 - [ ] **Launch post:** read the draft `share/launch/post.md`; edit it freely, it's your voice.
 - [x] **Launch thumbnail:** `share/launch/thumbnail-1920x1080.png` (final, unless you want changes).
 - [x] **Launch video (built, approved):** watch `share/launch/launch.mp4`. For notes pinned to exact moments, run `npm run dev` and open `/review`, under "Site · launch".
-- [ ] **v1 recaps (built):** watch `companies/ebay/versions/v1/share/recap.mp4` and `companies/google/versions/v1/share/recap.mp4`. For pinned notes, use `/review` → "ebay v1 · share" / "google v1 · share".
 - [ ] **Exposure plan:** read `EXPOSURE.md`. The open questions now are: the goal (who are "the right people"?) and on camera vs screen-only.
 
 ## Up next
+
+0. [ ] **Tesla v1: Cybercab** (new company, `draft` until approved). Built; next session's fixes:
+   - [ ] Social loop: proper rotation on the vehicle and the 3D lettering
+   - [ ] Music: a real music bed (now only synth hits and pads)
+   - [ ] Sounds: the haptic/hit sounds don't match the visuals; re-time and re-voice them
+   - [ ] Your further edits (from /review)
+   - [ ] Then: remove `draft`, ask recap or skip, final export when you say done
+0b. [ ] **Tesla v2: Roadster.** You're gathering assets (3D via krea.ai, photos). Storyboard first once they're in `companies/tesla/assets/`.
 
 1. [x] **Top bar → breadcrumbs.** Remove "Work" and "Index", which look like links but don't go anywhere. Show the path instead: `Motion / eBay / v1 Bright Bounce`, plus one button that opens the directory.
 2. [x] **Versions structure.** Move the current eBay and Google pieces into `v1`, mark v1 as the showcase, and add routes `/<company>/<version>`.

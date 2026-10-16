@@ -5,6 +5,111 @@
       "title": "👀 Needs your review",
       "scenes": [
         {
+          "id": "tesla-v1-logo-sting",
+          "title": "Tesla v1 · Logo sting",
+          "meta": "4.0s · 16:9 · 3D lettering + photos",
+          "note": "Bookended by the 3D \"Cybercab\" lettering in champagne metal on dark, with two fast photo cuts in between. Transitions are deliberately edgy: glitch slices between photos, a light-bar flash in and out of 3D.",
+          "size": [
+            1920,
+            1080
+          ],
+          "shots": [
+            {
+              "t": "0.0s",
+              "d": "Dark void. The white T sits above; below it, the 3D lettering spins in, a thin champagne sliver with one warm glint running along it. Low hum."
+            },
+            {
+              "t": "1.0s",
+              "d": "Light-bar flash: a bright horizontal line sweeps across and flashes white into the night-fog photo of the light bar, which pushes in slowly."
+            },
+            {
+              "t": "1.6s",
+              "d": "Transition, shown mid-cut: glitch slice. The frame tears into horizontal bands that slide past each other with a red/cyan fringe and a white scan line, for about 4 frames. Sharp digital crunch on the sound."
+            },
+            {
+              "t": "1.75s",
+              "d": "The aero wheel in macro (photo), with a light sweep across it."
+            },
+            {
+              "t": "2.4s",
+              "d": "Light-bar flash back into the void: the 3D Cybercab sits low, light bar glowing; the lettering swings round to face you and settles above it; the white T and TESLA wordmark fade in at the top. Hold to 4.0s."
+            }
+          ]
+        },
+        {
+          "id": "tesla-v1-promo-15s",
+          "title": "Tesla v1 · 15s promo",
+          "meta": "15.0s · 16:9 · 3D + UI",
+          "note": "Photography where it matters (Tesla's night-street images), 3D where photos can't go (the map-to-satellite dive, the charging pad). Cuts are edgy: glitch slices between photos, a spray-slash wipe (a sprayed diagonal stroke rips across and reveals the next shot) going into the map, and light-bar flashes in and out of 3D. Sound: city ambience, soft electric passes, a digital crunch on each glitch, a warm pulse under the end card.",
+          "size": [
+            1920,
+            1080
+          ],
+          "shots": [
+            {
+              "t": "0.0s",
+              "d": "A phone with the Robotaxi app: \"Where to?\" → Summon. A champagne pulse ripples out from the tap. \"Tap.\""
+            },
+            {
+              "t": "2.0s",
+              "d": "Light-bar flash out of the app into the night street in fog (photo), slow push in. \"It comes to you.\""
+            },
+            {
+              "t": "4.0s",
+              "d": "Glitch slice into the doors lifting on a city street (photo), with a slow drift. \"Every seat is a passenger seat.\""
+            },
+            {
+              "t": "6.0s",
+              "d": "Spray slash: a sprayed diagonal stroke rips across the photo and the dark map shows through it. The route draws in champagne. \"No driver. Just the route.\""
+            },
+            {
+              "t": "7.2s",
+              "d": "The camera dives toward the car and the map dissolves into satellite view (same streets: rooftops, trees, crosswalks), with the car following the glowing route."
+            },
+            {
+              "t": "8.5s",
+              "d": "Glitch slice back to street level: it pulls away from a lit café street (photo). \"Drops you off. Keeps working.\""
+            },
+            {
+              "t": "10.5s",
+              "d": "Parked over a softly glowing charging pad, which pulses warm. \"Charges itself. Inductive charging, no plug.\""
+            },
+            {
+              "t": "12.5s",
+              "d": "Light-bar flash into the end card on Tesla's amber studio photo: white T, TESLA wordmark, and the sprayed \"Cybercab\" drawing on. Hold."
+            }
+          ]
+        },
+        {
+          "id": "tesla-v1-social-loop",
+          "title": "Tesla v1 · Social loop",
+          "meta": "6.0s · 1:1 · 3D · seamless",
+          "note": "The 3D \"Cybercab\" lettering spins a slow full 360° behind the car, champagne metal in a dark void. The car sits in front in low light. The spin ends where it began, so the loop joins invisibly.",
+          "size": [
+            1080,
+            1080
+          ],
+          "shots": [
+            {
+              "t": "0.0s",
+              "d": "Darkness. The lettering is edge-on: a thin champagne sliver catching one warm glint. Below it, the car's silhouette, its light bar barely on. A low hum."
+            },
+            {
+              "t": "2.0s",
+              "d": "The lettering turns to face you and a light sweep runs across the metal strokes. The car's light bar glows full, lighting the floor. A soft chime."
+            },
+            {
+              "t": "4.0s",
+              "d": "It keeps turning, back side catching a long glint, while the light bar eases down. It returns to edge-on at 6.0s: a seamless loop."
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "title": "Already built · Launch post and v1 recaps",
+      "scenes": [
+        {
           "id": "launch-thumbnail",
           "title": "Launch post · Thumbnail",
           "meta": "1920×1080 still · the post's thumbnail and social card",

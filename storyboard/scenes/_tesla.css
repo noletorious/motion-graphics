@@ -1,0 +1,45 @@
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=block");
+:root{--red:#E82127;--accent:#e9d3a6;--ink:#171A20;--grey:#393C41;--silver:#D0D1D2}
+body{background:#000;color:#fff;font-family:Manrope,sans-serif}
+.a{position:absolute}
+.word{font-weight:500;letter-spacing:.5em;text-indent:.5em}
+.big{font-weight:300;letter-spacing:-.04em;line-height:.9}
+.label{font-weight:500;font-size:30px;letter-spacing:.2em;text-transform:uppercase;color:#8e9096}
+.red{color:var(--accent)}
+.line{height:4px;background:var(--red)}
+.streak{height:2px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.7));}
+.car{stroke:#fff;stroke-width:5;fill:none;stroke-linecap:round;stroke-linejoin:round}
+/* layers: backdrop (night/amber) → 3D canvas → type */
+.stage{isolation:isolate}
+#gl{position:absolute;left:0;top:0;width:100%;height:100%;z-index:1}
+.over{position:absolute;inset:0;z-index:2;pointer-events:none}
+.tmark{color:#fff}
+.tmark svg,.wmark svg{width:100%;height:100%;display:block}
+.wmark{color:#fff}
+/* night city: out-of-focus lights behind the transparent 3D canvas */
+.night{position:absolute;inset:0;z-index:0;background:
+  radial-gradient(circle at 12% 30%,rgba(255,190,120,.35) 0 18px,transparent 60px),
+  radial-gradient(circle at 22% 22%,rgba(140,180,255,.30) 0 26px,transparent 80px),
+  radial-gradient(circle at 38% 34%,rgba(255,120,90,.25) 0 14px,transparent 50px),
+  radial-gradient(circle at 63% 24%,rgba(255,210,150,.30) 0 30px,transparent 90px),
+  radial-gradient(circle at 78% 31%,rgba(150,190,255,.28) 0 20px,transparent 70px),
+  radial-gradient(circle at 90% 20%,rgba(255,170,110,.25) 0 24px,transparent 80px),
+  radial-gradient(circle at 50% 18%,rgba(255,255,255,.12) 0 40px,transparent 120px),
+  radial-gradient(ellipse 60% 18% at 50% 74%,rgba(255,200,140,.10),transparent 70%),
+  linear-gradient(#07080c 0%,#0d1018 45%,#08090c 58%,#030304 100%)}
+.phone{position:absolute;width:420px;height:860px;border-radius:64px;background:#0b0c0f;border:12px solid #1d1f24;box-shadow:0 60px 120px -40px #000;overflow:hidden}
+.amber{position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse 90% 45% at 50% 78%,#f0dcc0 0%,#e2c19a 40%,transparent 75%),radial-gradient(ellipse 70% 70% at 50% 35%,#e6b47c 0%,#c4874c 45%,#7a4a22 80%,#3a2312 100%)}
+/* photography: a full-bleed plate; framing via --x/--y/--s */
+.photo{position:absolute;inset:0;z-index:0;background-size:cover;background-position:var(--x,50%) var(--y,50%);transform:scale(var(--s,1));transform-origin:var(--x,50%) var(--y,50%)}
+.vignette{position:absolute;inset:0;z-index:1;background:radial-gradient(ellipse 80% 70% at 50% 50%,transparent 40%,rgba(0,0,0,.65))}
+.shade-l{position:absolute;inset:0;z-index:1;background:linear-gradient(90deg,rgba(0,0,0,.72),rgba(0,0,0,.25) 45%,transparent 70%)}
+.shade-t{position:absolute;inset:0;z-index:1;background:linear-gradient(rgba(0,0,0,.65),transparent 35%)}
+/* the sprayed "Cybercab": white lettering as a mask, so any colour works */
+.spray{position:absolute;background:currentColor;color:#fff;-webkit-mask:url(../../companies/tesla/assets/cybercab-spray.svg) center/contain no-repeat;mask:url(../../companies/tesla/assets/cybercab-spray.svg) center/contain no-repeat}
+/* photographic grade over 3D: soft halation + fine grain, so renders sit with the photos */
+.grade{position:absolute;inset:0;z-index:2;pointer-events:none;background:radial-gradient(ellipse 60% 45% at 50% 58%,rgba(255,226,186,.16),transparent 70%);mix-blend-mode:screen}
+.grain{position:absolute;inset:-50%;z-index:2;pointer-events:none;opacity:.10;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");mix-blend-mode:overlay}
+.void{position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse 70% 30% at 50% 82%,rgba(120,84,48,.35),transparent 70%),radial-gradient(ellipse 60% 55% at 50% 40%,#1c140d,#0a0806 70%,#050403)}
+/* transition still: glitch slice: two photos torn into offset horizontal bands with an RGB fringe */
+.slice{position:absolute;inset:0;z-index:0;background-size:cover;background-position:var(--x,50%) var(--y,50%)}
+.fringe{position:absolute;inset:0;z-index:1;mix-blend-mode:screen;opacity:.55}

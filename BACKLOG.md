@@ -34,7 +34,7 @@ Everything we'll do eventually. Pull items into `TODO.md` when they're next.
 - [ ] eBay v3 "Retro Futurism": an experimental redesign of one aspect or feature
 - [ ] Google v2 "Gemini Redesign": exploring a set of new Gemini features
 - [ ] Google v3 "Brutal Elegance": a redesign of an existing feature
-- [ ] More companies
+- [ ] More companies: Tesla v1 Cybercab in progress, Tesla v2 Roadster next; more to come
 - [ ] Verify every number marked "verify before publishing" (eBay 134M, $75B; Google 5T+, 6 products)
 - [ ] Real company logos in `assets/` (currently typeset stand-ins)
 - [ ] Decide on 15s vs 20s promos
