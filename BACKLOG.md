@@ -6,7 +6,7 @@ Everything we'll do eventually. Pull items into `TODO.md` when they're next.
 
 1. **Structure.** Each company gets multiple versions (v1, v2, v3…). Each is an exploration with its own premise and style: a redesign of a feature, new features, or an experimental take. One version per company is marked as its showcase. Navigation is breadcrumbs plus a directory modal.
 2. **The hook.** The home page is the pitch: a centred headline, with a slowly rotating carousel of company showcases below it.
-3. **Range.** v2 for eBay and Google, then v3 and more companies. Each version proves a different style, so the site shows range rather than one look.
+3. **Range.** v2 for every company (up to v2 for now), then more companies. Each version proves a different style, so the site shows range rather than one look.
 4. **Launch.** Verified facts, real logos, hosting, share previews, performance and accessibility.
 5. **Exposure.** Each version ships as a drop: recap, case study, Substack letter, LinkedIn post, process clip. See `EXPOSURE.md`.
 
@@ -31,9 +31,9 @@ Everything we'll do eventually. Pull items into `TODO.md` when they're next.
 
 - [x] Recap template (9:16). Recaps are optional per version: ask each time.
 - [ ] eBay v2 "Super Live": a redesign of eBay Live
-- [ ] eBay v3 "Retro Futurism": an experimental redesign of one aspect or feature
+- [ ] (parked; only up to v2 for now) eBay v3 "Retro Futurism": an experimental redesign of one aspect or feature
 - [ ] Google v2 "Gemini Redesign": exploring a set of new Gemini features
-- [ ] Google v3 "Brutal Elegance": a redesign of an existing feature
+- [ ] (parked; only up to v2 for now) Google v3 "Brutal Elegance": a redesign of an existing feature
 - [ ] More companies: Tesla v1 Cybercab in progress, Tesla v2 Roadster next; more to come
 - [ ] Verify every number marked "verify before publishing" (eBay 134M, $75B; Google 5T+, 6 products)
 - [ ] Real company logos in `assets/` (currently typeset stand-ins)

@@ -7,7 +7,7 @@ What we're doing now, in order. Items come from `BACKLOG.md`; finished ones get 
 - [ ] **Spray lettering source:** where `il_1588xN.6983742403_crj3.svg` came from, for the credits in `companies/tesla/versions/v1/version.json`.
 - [ ] **Launch post:** read the draft `share/launch/post.md`; edit it freely, it's your voice.
 - [ ] **Exposure plan:** read `EXPOSURE.md`. Open questions: the goal (who are "the right people"?) and on camera vs screen-only.
-- [ ] **Push:** 3 commits on `main` are waiting for you (`git push`). They include Tesla v1 as a draft and the SEO work.
+- [ ] **Push:** 3 commits on `main` are waiting for you (`git push`): Tesla v1 second pass, publish, recap.
 
 ## Up next
 
@@ -21,9 +21,24 @@ What we're doing now, in order. Items come from `BACKLOG.md`; finished ones get 
    - [ ] More real sounds: send any Tesla clips you record into `companies/tesla/assets/sounds/`
    - [x] Out of draft
    - [x] Recap (`share/recap.mp4`, not reviewed; may not be used) and final MP4s in `exports/tesla/v1/` (will likely be redone after later edits)
-2. [ ] **Tesla v2: Roadster.** Assets are arriving in `companies/tesla/assets/roadster/` (untracked, ~91 MB). Convert the GLB to an optimized copy, credit it (krea.ai, like v1), then storyboard and stop for comments.
-3. [ ] **v1 blog headers + thumbnails.** For each version, a 16:9 header graphic for the top of its blog post; its poster frame is the 1920×1080 thumbnail. In `share/`, never shown on the site. Storyboard first.
-4. [ ] **v2: eBay "Super Live", Google "Gemini Redesign".** Storyboard, then stop for your comments. No build until you've commented.
+2. [ ] **Directory modal: breadcrumb-style "Home".** On routes other than home, "Home" in the slide-out directory works like a breadcrumb link (clickable, goes home) instead of a plain button.
+3. [ ] **Directory modal: show v2s before they're published.** List each company's upcoming v2 in the lineup, muted and not clickable.
+   Needs a way to list a version that isn't published yet (e.g. `version.json` with `"upcoming": "2026-10-21"`), while drafts stay hidden.
+4. [ ] **Directory modal: date capsule replaces "Showcase".** Drop the "Showcase" capsule; only unpublished versions get a capsule, showing their publish date.
+5. [ ] **Version page: "elements used" lineup.** A visual strip on each `/<company>/<vN>` page: a row of cards, one per element,
+   each showing the real thing (3D model render, photo thumbnails, colour swatches, a type sample, a playable sound, a short clip of a transition).
+   Covers both ingredients (models, photos, type, colours, sound/music) and techniques (transitions, 3D scenes, UI like the hail screen).
+   Listed per version (e.g. `version.json` → `elements`). Mock up first, then build.
+6. [ ] **v2 builds** (storyboard first, stop for your comments, then build; 2 days each, weekdays):
+
+   | Version | Build | Publish date (capsule: the day after the build) |
+   |---|---|---|
+   | eBay v2 "Super Live": a redesign of eBay Live | Mon Oct 19 – Tue Oct 20 | 2026-10-21 |
+   | Google v2 "Gemini Redesign": a set of new Gemini features | Wed Oct 21 – Thu Oct 22 | 2026-10-23 |
+   | Tesla v2 "Roadster" (assets in `companies/tesla/assets/roadster/`; optimize the GLB, credit krea.ai) | Fri Oct 23 + Mon Oct 26 | 2026-10-27 |
+
+   Before Monday: a sharper brief for eBay and Google v2 (which eBay Live moments, which Gemini features). I can draft options.
+7. [ ] **v1 blog headers + thumbnails.** For each version, a 16:9 header graphic for the top of its blog post; its poster frame is the 1920×1080 thumbnail. In `share/`, never shown on the site. Storyboard first.
 
 ## Done (clear when stale)
 
@@ -36,10 +51,13 @@ What we're doing now, in order. Items come from `BACKLOG.md`; finished ones get 
 
 - **The versions are explorations, not just styles.** Each version has a name and a premise:
 
-  | | v1 (initial build) | v2 | v3 |
-  |---|---|---|---|
-  | eBay | Bright Bounce | Super Live: a redesign of eBay Live | Retro Futurism: an experimental redesign of one aspect or feature |
-  | Google | Soft Material | Gemini Redesign: exploring a set of new Gemini features | Brutal Elegance: a redesign of an existing feature |
+  | | v1 (initial build) | v2 |
+  |---|---|---|
+  | eBay | Bright Bounce | Super Live: a redesign of eBay Live |
+  | Google | Soft Material | Gemini Redesign: exploring a set of new Gemini features |
+  | Tesla | Cybercab | Roadster |
+
+- **Versions go up to v2 for now.** The v3 ideas are parked in `BACKLOG.md`.
 
 - **Recaps are optional per version.** When a version is done, ask: recap or skip? (15s by default, 30s when needed.) eBay v1 and Google v1 have one.
 - **Drafts:** a version stays `draft` until you say otherwise; I ask when its fixes are done.
